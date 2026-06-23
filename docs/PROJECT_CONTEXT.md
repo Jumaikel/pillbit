@@ -27,6 +27,32 @@ PillBit is a React Native / Expo application for managing medications, schedulin
 **Reason:** Need to support structured, incremental schema updates over time without losing user data.
 **Status:** Accepted
 
+### Decision: Expo Router (tabs) Route Group for Navigation
+**Date:** 2026-06-23
+**Reason:** Using Expo Router's file-based routing with a `(tabs)` route group cleanly separates the Bottom Tab Navigator from the root layout. This follows Expo Router conventions and allows future route groups (e.g., `(modals)`, `(auth)`) without refactoring the tab structure.
+**Alternatives:**
+* Single-level Stack with manual tab navigation
+* React Navigation standalone (without Expo Router)
+**Status:** Accepted
+
+### Decision: Constants-Only Design System (No Theming Library)
+**Date:** 2026-06-23
+**Reason:** Consistent with `ARCHITECTURE.md` — shared code lives in `src/constants/`. A pure TypeScript token system avoids additional dependencies and stays compatible with both `StyleSheet.create` (used in components) and NativeWind `className` props. No theme context required at this stage.
+**Alternatives:**
+* Shopify Restyle
+* React Navigation ThemeContext
+**Status:** Accepted
+
+### Decision: NativeWind v4 + Tailwind CSS v3
+**Date:** 2026-06-23
+**Reason:** NativeWind v4 is the version compatible with Expo 56 / React Native 0.85. It integrates via `jsxImportSource: 'nativewind'` in Babel and `withNativeWind` in Metro — no separate Babel plugin needed.
+**Status:** Accepted
+
+### Decision: expo-symbols for Tab Icons
+**Date:** 2026-06-23
+**Reason:** `expo-symbols` is already installed and provides native SF Symbols on iOS and Material Icons on Android — zero additional dependencies and consistent with the existing project dependencies.
+**Status:** Accepted
+
 ---
 
 ## Database
@@ -54,16 +80,76 @@ PillBit is a React Native / Expo application for managing medications, schedulin
 
 ```text
 src/
-└─ database/
-   ├─ adapters/
-   ├─ dto/
-   ├─ helpers/
-   ├─ migrations/
-   ├─ models/
-   ├─ queries/
-   ├─ repositories/
-   └─ index.ts
+├── app/
+│   ├── _layout.tsx          # Root layout (CSS, SafeAreaProvider, ThemeProvider)
+│   ├── index.tsx            # Redirect to /(tabs)
+│   └── (tabs)/
+│       ├── _layout.tsx      # Bottom Tab Navigator
+│       ├── index.tsx        # Home screen (/)
+│       ├── medications.tsx  # Medications screen (/medications)
+│       ├── history.tsx      # History screen (/history)
+│       └── settings.tsx     # Settings screen (/settings)
+├── components/
+│   ├── Button.tsx
+│   ├── Card.tsx
+│   ├── Input.tsx
+│   ├── EmptyState.tsx
+│   └── index.ts             # Barrel export
+├── constants/
+│   ├── colors.ts            # Color tokens (light + dark)
+│   ├── typography.ts        # Type scale tokens
+│   ├── spacing.ts           # Spacing tokens (8px base)
+│   ├── radius.ts            # Border radius tokens
+│   ├── shadows.ts           # Shadow/elevation tokens
+│   ├── theme.ts             # Unified theme object
+│   └── index.ts             # Barrel export
+├── database/
+│   ├── adapters/
+│   ├── dto/
+│   ├── helpers/
+│   ├── migrations/
+│   ├── models/
+│   ├── queries/
+│   ├── repositories/
+│   └── index.ts
+├── features/                # (empty — future feature modules)
+├── hooks/                   # (empty — future shared hooks)
+├── lib/                     # (empty — future Zustand setup)
+├── services/                # (empty — future external integrations)
+├── types/                   # (empty — future shared types)
+├── utils/                   # (empty — future utility functions)
+└── global.css               # NativeWind/Tailwind entry point
 ```
+
+---
+
+## Navigation Structure
+
+```text
+/                   → Home tab (src/app/(tabs)/index.tsx)
+/medications        → Medications tab (src/app/(tabs)/medications.tsx)
+/history            → History tab (src/app/(tabs)/history.tsx)
+/settings           → Settings tab (src/app/(tabs)/settings.tsx)
+```
+
+**Tab Bar:**
+- Active tint: `#24C9EA` (primary)
+- Inactive tint: `#5D7482` (textSecondary light) / `#C2D3DD` (dark)
+- Icons: expo-symbols SF Symbols (house.fill, pills.fill, clock.fill, gearshape.fill)
+
+---
+
+## Design System
+
+Tokens are defined in `src/constants/` and importable via `@/constants`.
+
+**Colors:** Light + Dark theme, semantic naming (textPrimary, background, primary, etc.)
+**Typography:** 8-level scale (display → caption) with explicit fontWeight + lineHeight
+**Spacing:** 8px base unit (xxs=4, xs=8, sm=12, md=16, lg=24, xl=32, xxl=48, xxxl=64)
+**Radius:** xs=4, sm=8, md=12, lg=16, xl=24, full=9999
+**Shadows:** Minimal elevation (none, sm, card, lg) with cross-platform `getShadowStyle()`
+
+See `docs/DESIGN_SYSTEM.md` for full token reference and usage examples.
 
 ---
 
@@ -75,6 +161,10 @@ src/
 * **Repository Layer**: CRUD for each entity. Located in `repositories/`.
 * **Query Layer**: Complex cross-entity reads. Located in `queries/MedicationQueries.ts`.
 * **Transaction Helper**: Wraps `withTransactionAsync`. Located in `helpers/transaction.ts`.
+* **Button**: Reusable button with primary/secondary/outline variants, loading state. Located in `components/Button.tsx`.
+* **Card**: Surface container supporting static and pressable modes. Located in `components/Card.tsx`.
+* **Input**: Text input with label, error message, and disabled state. Located in `components/Input.tsx`.
+* **EmptyState**: Zero-data placeholder with optional action. Located in `components/EmptyState.tsx`.
 
 ---
 
@@ -101,10 +191,42 @@ Created:
 * `docs/PROJECT_CONTEXT.md`
 * `docs/DATABASE_ARCHITECTURE.md`
 
+### 2026-06-23
+Created:
+* `babel.config.js`
+* `metro.config.js`
+* `tailwind.config.js`
+* `nativewind-env.d.ts`
+* `src/app/(tabs)/_layout.tsx`
+* `src/app/(tabs)/index.tsx`
+* `src/app/(tabs)/medications.tsx`
+* `src/app/(tabs)/history.tsx`
+* `src/app/(tabs)/settings.tsx`
+* `src/constants/colors.ts`
+* `src/constants/typography.ts`
+* `src/constants/spacing.ts`
+* `src/constants/radius.ts`
+* `src/constants/shadows.ts`
+* `src/constants/theme.ts`
+* `src/constants/index.ts`
+* `src/components/Button.tsx`
+* `src/components/Card.tsx`
+* `src/components/Input.tsx`
+* `src/components/EmptyState.tsx`
+* `src/components/index.ts`
+* `docs/DESIGN_SYSTEM.md`
+
 ---
 
 ## Files Modified
-(None yet)
+
+### 2026-06-23
+Modified:
+* `src/app/_layout.tsx` — Replaced with root layout (global.css import, SafeAreaProvider, GestureHandlerRootView, ThemeProvider from expo-router)
+* `src/app/index.tsx` — Replaced with redirect to `/(tabs)`
+* `src/global.css` — Added `@tailwind` directives for NativeWind
+* `tsconfig.json` — Added `nativewind-env.d.ts` to includes
+* `package.json` — Added `nativewind@4.2.5` and `tailwindcss@3.4.19`
 
 ---
 
@@ -112,11 +234,15 @@ Created:
 * **TypeScript Standards**: Strict typing, Interfaces for models, DTOs for mutations.
 * **SQL Standards**: `pbt_` prefix, soft-deletes via timestamps, `snake_case` in DB but `camelCase` in TS models.
 * **Architecture**: Repository pattern, separation of concerns.
+* **Components**: Dumb components only in `src/components/`. No Zustand, no service calls.
+* **Styling**: `StyleSheet.create` for components (zero NativeWind className until needed per feature). Tokens from `@/constants` only.
+* **Navigation**: Expo Router file-based routing. Route groups for tab/modal/auth separation.
 
 ---
 
 ## Validation
 
+### 2026-06-17
 **Date**: 2026-06-17
 **Status**: ✅ Approved
 
@@ -134,13 +260,33 @@ Created:
 - **Finding**: `mapRow` was utilizing `any`.
 - **Fix**: Stricter typing using `Record<string, any>` across all repositories.
 
+### 2026-06-23
+**Date**: 2026-06-23
+**Status**: ✅ Approved
+
+**Executed Validations**:
+- `pnpm tsc --noEmit` — Zero errors (strict mode)
+- `pnpm expo lint` — No lint errors
+
+**Findings & Fixes**:
+- **Finding**: `DarkTheme`/`ThemeProvider` imported from `@react-navigation/native` which is not a direct dependency.
+- **Fix**: Changed import to `expo-router` which re-exports them.
+- **Finding**: `useColorScheme()` returns `ColorSchemeName` which includes `'unspecified'` — not assignable to `'light' | 'dark'`.
+- **Fix**: Added explicit type narrowing: `const colorScheme: 'light' | 'dark' = rawScheme === 'dark' ? 'dark' : 'light'`.
+- **Finding**: CSS side-effect import raised TS2882 error.
+- **Fix**: Added `declare module '*.css'` to `nativewind-env.d.ts`.
+
 ---
 
 ## Pending Work
 * Implement State Management (Zustand)
 * Implement Reminder Scheduling Logic (Expo Notifications)
 * Implement Notification Service
-* Implement Screens and UI Components
+* Implement Home Feature (Dashboard UI)
+* Implement Medications Feature (CRUD UI)
+* Implement History Feature (Consumption log UI)
+* Implement Settings Feature (App settings UI)
+* Implement dark mode support in components (currently light-only tokens in StyleSheet)
 
 ---
 
@@ -149,10 +295,19 @@ Created:
 * No user accounts
 * Migrations are currently defined via TS strings due to RN Metro bundler limitations with raw .sql files.
 * Automated tests (Jest) are not yet integrated into the repository.
+* Components currently use `LightColors` only — dark mode requires hooking into `useColorScheme()` per component or a React Context provider.
 
 ---
 
 ## Changelog
+
+### v0.2.0
+* Navigation foundation implemented (Expo Router, Bottom Tabs, 4 tabs).
+* NativeWind v4 + Tailwind CSS v3 installed and configured.
+* Design system tokens created (colors, typography, spacing, radius, shadows).
+* Shared components created: Button, Card, Input, EmptyState.
+* `docs/DESIGN_SYSTEM.md` created.
+* TypeScript strict mode validated (zero errors).
 
 ### v0.1.1
 * Fixed update query bugs across all repositories (Removed COALESCE bug).

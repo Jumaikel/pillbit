@@ -18,6 +18,7 @@
     "expo-symbols": "~56.0.6",
     "expo-system-ui": "~56.0.5",
     "expo-web-browser": "~56.0.5",
+    "nativewind": "^4.2.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.85.3",
@@ -26,10 +27,18 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.8.3"
+    "react-native-worklets": "0.8.3",
+    "tailwindcss": "^3.4.19"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.2.2",
+    "eslint": "^9.39.4",
+    "eslint-config-expo": "~56.0.4",
+    "jest": "^29.7.0",
+    "jest-expo": "^56.0.5",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -38,7 +47,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "jest"
   },
   "private": true,
   "packageManager": "pnpm@11.7.0+sha512.19cc852c120c7125760f2443ee6be0ca5b40f9f50598de1a09a1f177503e010e57c23c77646e01e761de59bf874fb22a3398c33ab9691fc13eb946b6f0f4d620"

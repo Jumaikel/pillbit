@@ -1,17 +1,9 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { Redirect } from 'expo-router';
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text>PillBit Application</Text>
-    </View>
-  );
+/**
+ * Root index — redirects immediately to the (tabs) group.
+ * The "/" route resolves to the Home tab via (tabs)/index.tsx.
+ */
+export default function Index() {
+  return <Redirect href="/(tabs)" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
