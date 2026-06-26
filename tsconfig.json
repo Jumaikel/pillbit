@@ -13,7 +13,8 @@
       "@/utils/*": ["./src/utils/*"],
       "@/constants/*": ["./src/constants/*"],
       "@/assets/*": ["./assets/*"]
-    }
+    },
+    "types": ["jest"]
   },
   "include": [
     "**/*.ts",

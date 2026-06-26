@@ -5,21 +5,30 @@ import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useEffect } from 'react';
+import { initDatabase } from '@/database';
 
 /**
  * RootLayout
  *
  * Application root layout. Responsibilities:
  * - Import global CSS (NativeWind/Tailwind)
+ * - Initialize the SQLite database (run pending migrations) on mount
  * - Provide SafeAreaProvider for insets
  * - Provide GestureHandlerRootView for gesture support
  * - Provide React Navigation ThemeProvider (light/dark)
  * - Declare the Expo Router Stack with a single "(tabs)" group
  *
- * No business logic here. No data fetching.
+ * No business logic here beyond database initialization.
  */
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    initDatabase().catch((e) => {
+      console.error('[RootLayout] Database initialization failed:', e);
+    });
+  }, []);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

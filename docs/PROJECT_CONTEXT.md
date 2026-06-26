@@ -216,6 +216,25 @@ Created:
 * `src/components/index.ts`
 * `docs/DESIGN_SYSTEM.md`
 
+### 2026-06-26
+Created:
+* `src/features/medication/components/MedicationCard.tsx`
+* `src/features/medication/components/MedicationStatusBadge.tsx`
+* `src/features/medication/hooks/useMedicationForm.ts`
+* `src/features/medication/screens/MedicationListScreen.tsx`
+* `src/features/medication/screens/MedicationDetailScreen.tsx`
+* `src/features/medication/screens/CreateMedicationScreen.tsx`
+* `src/features/medication/screens/EditMedicationScreen.tsx`
+* `src/features/medication/store/useMedicationStore.ts`
+* `src/features/medication/types/index.ts`
+* `src/features/medication/utils/medicationUtils.ts`
+* `src/features/medication/index.ts`
+* `src/app/(tabs)/medications/_layout.tsx`
+* `src/app/(tabs)/medications/index.tsx`
+* `src/app/(tabs)/medications/create.tsx`
+* `src/app/(tabs)/medications/[id].tsx`
+* `src/app/(tabs)/medications/[id]/edit.tsx`
+
 ---
 
 ## Files Modified
@@ -227,6 +246,14 @@ Modified:
 * `src/global.css` — Added `@tailwind` directives for NativeWind
 * `tsconfig.json` — Added `nativewind-env.d.ts` to includes
 * `package.json` — Added `nativewind@4.2.5` and `tailwindcss@3.4.19`
+
+### 2026-06-26
+Modified:
+* `src/app/_layout.tsx` — Wired up `initDatabase()` call to initialize SQLite on mount.
+* `src/app/(tabs)/_layout.tsx` — Replaced `medications.tsx` reference to correctly work with the nested Stack group under `(tabs)/medications`.
+* `tsconfig.json` — Added `"types": ["jest"]` for proper test compilation.
+Deleted:
+* `src/app/(tabs)/medications.tsx` — Replaced by the nested directory structure.
 
 ---
 
@@ -276,14 +303,28 @@ Modified:
 - **Finding**: CSS side-effect import raised TS2882 error.
 - **Fix**: Added `declare module '*.css'` to `nativewind-env.d.ts`.
 
+### 2026-06-26
+**Date**: 2026-06-26
+**Status**: ✅ Approved
+
+**Executed Validations**:
+- `pnpm tsc --noEmit` — Zero errors (strict mode)
+- `pnpm expo lint` — No lint errors
+
+**Findings & Fixes**:
+- **Finding**: `@hookform/resolvers` and latest `zod` versions had type incompatibilities.
+- **Fix**: Downgraded `zod` to `3.23.8`.
+- **Finding**: Jest types were not loaded globally, causing test file type errors.
+- **Fix**: Added `"types": ["jest"]` to `tsconfig.json`.
+- **Finding**: Linter warned about calling setState synchronously within useEffect in Detail and Edit screens.
+- **Fix**: Derived state synchronously during render instead of in useEffect.
+
 ---
 
 ## Pending Work
-* Implement State Management (Zustand)
 * Implement Reminder Scheduling Logic (Expo Notifications)
 * Implement Notification Service
 * Implement Home Feature (Dashboard UI)
-* Implement Medications Feature (CRUD UI)
 * Implement History Feature (Consumption log UI)
 * Implement Settings Feature (App settings UI)
 * Implement dark mode support in components (currently light-only tokens in StyleSheet)
@@ -300,6 +341,14 @@ Modified:
 ---
 
 ## Changelog
+
+### v0.3.0
+* Implemented complete Medication Module (CRUD).
+* Integrated `zustand` for state management, strictly talking to the `MedicationRepository`.
+* Integrated `react-hook-form` and `zod` for form validation.
+* Refactored Medication Tab to use a nested Expo Router Stack for detailed navigation (`create`, `[id]`, `[id]/edit`).
+* Created `MedicationCard` and `MedicationStatusBadge` UI components.
+* Wired up SQLite initialization (`initDatabase()`) on root app mount.
 
 ### v0.2.0
 * Navigation foundation implemented (Expo Router, Bottom Tabs, 4 tabs).
