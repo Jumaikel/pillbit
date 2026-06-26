@@ -19,7 +19,7 @@ import { useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useCallback } from 'react';
 import { LightColors, Typography, Spacing } from '@/constants';
-import { Button, Input, DateInput } from '@/components';
+import { Button, Input, DateInput, ImagePickerInput } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
@@ -50,6 +50,7 @@ export function CreateMedicationScreen() {
           notes: values.notes.trim() || null,
           quantityAvailable:
             values.quantityAvailable.trim() ? Number(values.quantityAvailable) : null,
+          photoPath: values.photoPath.trim() || null,
         });
         router.back();
       } catch {
@@ -86,6 +87,20 @@ export function CreateMedicationScreen() {
           <Text style={styles.screenSubtitle}>
             Fill in the details below to add a new medication.
           </Text>
+
+          <View style={styles.photoSection}>
+            <Controller
+              control={control}
+              name="photoPath"
+              render={({ field: { onChange, value } }) => (
+                <ImagePickerInput
+                  value={value}
+                  onChange={onChange}
+                  errorMessage={errors.photoPath?.message}
+                />
+              )}
+            />
+          </View>
 
           {/* ── Required fields ── */}
           <View style={styles.section}>
@@ -256,6 +271,10 @@ const styles = StyleSheet.create({
   },
 
   // Section
+  photoSection: {
+    alignItems: 'center',
+    marginVertical: Spacing.sm,
+  },
   section: {
     gap: Spacing.md,
   },

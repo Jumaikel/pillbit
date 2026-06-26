@@ -31,6 +31,7 @@ export const medicationSchema = z.object({
       (val) => val === '' || (!isNaN(Number(val)) && Number(val) >= 0),
       'Must be a positive number',
     ),
+  photoPath: z.string(),
 });
 
 export type MedicationSchema = z.infer<typeof medicationSchema>;
@@ -44,6 +45,7 @@ export const defaultMedicationFormValues: MedicationFormValues = {
   presentation: '',
   notes: '',
   quantityAvailable: '',
+  photoPath: '',
 };
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────

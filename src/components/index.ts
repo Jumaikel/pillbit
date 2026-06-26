@@ -17,3 +17,4 @@ export { Card } from './Card';
 export { Input } from './Input';
 export { EmptyState } from './EmptyState';
 export { DateInput } from './DateInput';
+export { ImagePickerInput } from './ImagePickerInput';

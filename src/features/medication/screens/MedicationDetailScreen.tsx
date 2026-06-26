@@ -14,6 +14,7 @@
 
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Medication, MedicationRepository } from '@/database';
@@ -130,6 +131,17 @@ export function MedicationDetailScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* ── Photo block ── */}
+        {medication.photoPath && (
+          <View style={styles.photoContainer}>
+            <Image
+              source={{ uri: medication.photoPath }}
+              style={styles.photo}
+              contentFit="cover"
+            />
+          </View>
+        )}
+
         {/* ── Title block ── */}
         <View style={styles.titleBlock}>
           <Text style={styles.title} accessibilityRole="header">
@@ -260,6 +272,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.xxxl,
     gap: Spacing.md,
+  },
+
+  // Photo
+  photoContainer: {
+    alignItems: 'center',
+    marginBottom: Spacing.md,
+  },
+  photo: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    borderWidth: 2,
+    borderColor: LightColors.border,
   },
 
   // Title block

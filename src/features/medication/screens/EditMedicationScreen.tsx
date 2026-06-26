@@ -28,7 +28,7 @@ import { Controller } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
 import { Medication, MedicationRepository } from '@/database';
 import { LightColors, Typography, Spacing } from '@/constants';
-import { Button, Input, DateInput } from '@/components';
+import { Button, Input, DateInput, ImagePickerInput } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
@@ -95,6 +95,7 @@ export function EditMedicationScreen() {
           notes: medication.notes ?? '',
           quantityAvailable:
             medication.quantityAvailable !== null ? String(medication.quantityAvailable) : '',
+          photoPath: medication.photoPath ?? '',
         });
         setFormReady(true);
       }, 0);
@@ -116,6 +117,7 @@ export function EditMedicationScreen() {
           quantityAvailable: values.quantityAvailable.trim()
             ? Number(values.quantityAvailable)
             : null,
+          photoPath: values.photoPath.trim() || null,
         });
         router.back();
       } catch {
@@ -176,6 +178,20 @@ export function EditMedicationScreen() {
           <Text style={styles.screenSubtitle}>
             Update the details for {medication.name}.
           </Text>
+
+          <View style={styles.photoSection}>
+            <Controller
+              control={control}
+              name="photoPath"
+              render={({ field: { onChange, value } }) => (
+                <ImagePickerInput
+                  value={value}
+                  onChange={onChange}
+                  errorMessage={errors.photoPath?.message}
+                />
+              )}
+            />
+          </View>
 
           {/* ── Required fields ── */}
           <View style={styles.section}>
@@ -357,6 +373,10 @@ const styles = StyleSheet.create({
   },
 
   // Section
+  photoSection: {
+    alignItems: 'center',
+    marginVertical: Spacing.sm,
+  },
   section: {
     gap: Spacing.md,
   },

@@ -10,6 +10,8 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { LightColors, Typography, Spacing } from '@/constants';
 import { Medication } from '@/database';
 import { MedicationStatusBadge } from './MedicationStatusBadge';
@@ -47,7 +49,18 @@ export function MedicationCard({ medication, onPress }: MedicationCardProps) {
       padded
     >
       <View style={styles.row}>
-        {/* Left — name + dosage + presentation */}
+        {/* Left — Thumbnail */}
+        <View style={styles.thumbnailContainer}>
+          {medication.photoPath ? (
+            <Image source={{ uri: medication.photoPath }} style={styles.thumbnail} contentFit="cover" />
+          ) : (
+            <View style={styles.thumbnailPlaceholder}>
+              <Ionicons name="medical" size={24} color={LightColors.primary} />
+            </View>
+          )}
+        </View>
+
+        {/* Center — name + dosage + presentation */}
         <View style={styles.info}>
           <Text style={styles.name} numberOfLines={1}>
             {medication.name}
@@ -80,8 +93,24 @@ export function MedicationCard({ medication, onPress }: MedicationCardProps) {
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
+  },
+  thumbnailContainer: {
+    marginRight: Spacing.md,
+  },
+  thumbnail: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  thumbnailPlaceholder: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#E6F4FE',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   info: {
     flex: 1,
