@@ -8,6 +8,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect } from 'react';
 import { initDatabase } from '@/database';
 
+import { NotificationService } from '@/services/NotificationService';
+
 /**
  * RootLayout
  *
@@ -25,9 +27,15 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    initDatabase().catch((e) => {
-      console.error('[RootLayout] Database initialization failed:', e);
-    });
+    const initApp = async () => {
+      try {
+        await initDatabase();
+        await NotificationService.syncReminders();
+      } catch (e) {
+        console.error('[RootLayout] Application initialization failed:', e);
+      }
+    };
+    initApp();
   }, []);
 
   return (

@@ -85,6 +85,24 @@ export class MedicationQueries {
         }));
     }
 
+    static async getRemindersByMedicationId(medicationId: number): Promise<MedicationReminder[]> {
+        const db = getDatabase();
+        const rows = await db.getAllAsync<any>(
+            `SELECT * FROM pbt_medication_reminder 
+             WHERE mdc_id = ?
+             ORDER BY mdr_reminder_time ASC`,
+            [medicationId]
+        );
+        return rows.map(row => ({
+            id: row.mdr_id,
+            medicationId: row.mdc_id,
+            reminderTime: row.mdr_reminder_time,
+            isActive: row.mdr_is_active === 1,
+            createdDatetime: row.mdr_created_datetime,
+            updatedDatetime: row.mdr_updated_datetime
+        }));
+    }
+
     static async getMedicationHistory(medicationId: number, limit: number = 50): Promise<ConsumptionRecord[]> {
         const db = getDatabase();
         const rows = await db.getAllAsync<any>(

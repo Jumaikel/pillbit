@@ -153,6 +153,15 @@ export function MedicationDetailScreen() {
           </View>
         </View>
 
+        {/* ── Quick Actions ── */}
+        <View style={styles.quickActions}>
+          <Button 
+            label="Manage Reminders" 
+            onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} 
+            variant="primary" 
+          />
+        </View>
+
         {/* ── Info card ── */}
         <Card padded>
           <DetailRow label="Dosage" value={medication.dosage} />
@@ -302,6 +311,9 @@ const styles = StyleSheet.create({
   },
   badgeRow: {
     marginTop: Spacing.xxs,
+  },
+  quickActions: {
+    marginBottom: Spacing.sm,
   },
 
   // Notes

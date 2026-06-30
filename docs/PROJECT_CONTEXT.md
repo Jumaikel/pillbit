@@ -53,6 +53,13 @@ PillBit is a React Native / Expo application for managing medications, schedulin
 **Reason:** `expo-symbols` is already installed and provides native SF Symbols on iOS and Material Icons on Android — zero additional dependencies and consistent with the existing project dependencies.
 **Status:** Accepted
 
+### Decision: Local Notification Synchronization via Payload
+**Date:** 2026-06-30
+**Reason:** Instead of altering the SQLite schema to save Expo Notification identifiers, we inject `reminderId` into the notification `data` payload. We then query the OS's scheduled notifications to sync, update, or cancel specific reminders.
+**Alternatives:**
+* Add `expo_notification_id` to `pbt_medication_reminder`
+**Status:** Accepted
+
 ---
 
 ## Database
@@ -112,12 +119,12 @@ src/
 │   ├── queries/
 │   ├── repositories/
 │   └── index.ts
-├── features/                # (empty — future feature modules)
-├── hooks/                   # (empty — future shared hooks)
-├── lib/                     # (empty — future Zustand setup)
-├── services/                # (empty — future external integrations)
-├── types/                   # (empty — future shared types)
-├── utils/                   # (empty — future utility functions)
+├── features/                # Domain-specific modules (e.g. medication, reminder)
+├── hooks/                   # Shared custom hooks
+├── lib/                     # Third-party setups (e.g. zustand)
+├── services/                # External/Device services (e.g. NotificationService)
+├── types/                   # Shared types
+├── utils/                   # Shared utilities
 └── global.css               # NativeWind/Tailwind entry point
 ```
 
@@ -235,6 +242,16 @@ Created:
 * `src/app/(tabs)/medications/[id].tsx`
 * `src/app/(tabs)/medications/[id]/edit.tsx`
 
+### 2026-06-30
+Created:
+* `src/features/reminder/types/index.ts`
+* `src/features/reminder/store/useReminderStore.ts`
+* `src/features/reminder/screens/ReminderManagementScreen.tsx`
+* `src/features/reminder/components/ReminderForm.tsx`
+* `src/features/reminder/components/ReminderItem.tsx`
+* `src/services/NotificationService.ts`
+* `src/app/(tabs)/medications/[id]/reminders.tsx`
+
 ---
 
 ## Files Modified
@@ -254,6 +271,14 @@ Modified:
 * `tsconfig.json` — Added `"types": ["jest"]` for proper test compilation.
 Deleted:
 * `src/app/(tabs)/medications.tsx` — Replaced by the nested directory structure.
+
+### 2026-06-30
+Modified:
+* `src/app/_layout.tsx` — Added `NotificationService.syncReminders()` on app startup.
+* `src/database/queries/MedicationQueries.ts` — Added `getRemindersByMedicationId`.
+* `src/app/(tabs)/medications/_layout.tsx` — Added route for `[id]/reminders`.
+* `src/features/medication/screens/MedicationDetailScreen.tsx` — Added "Manage Reminders" action button.
+* `package.json` — Added `expo-notifications`.
 
 ---
 
@@ -322,8 +347,6 @@ Deleted:
 ---
 
 ## Pending Work
-* Implement Reminder Scheduling Logic (Expo Notifications)
-* Implement Notification Service
 * Implement Home Feature (Dashboard UI)
 * Implement History Feature (Consumption log UI)
 * Implement Settings Feature (App settings UI)
@@ -341,6 +364,14 @@ Deleted:
 ---
 
 ## Changelog
+
+### v0.4.0
+* Implemented complete Reminder Module.
+* Integrated `expo-notifications` for local daily scheduling.
+* Added `NotificationService` to handle graceful permission requests and synchronization logic.
+* Added `ReminderManagementScreen`, `ReminderForm`, and `ReminderItem` UI components.
+* Created `useReminderStore` to orchestrate SQLite and Notification Service.
+* Wired up App Startup recovery for missing notifications.
 
 ### v0.3.0
 * Implemented complete Medication Module (CRUD).
