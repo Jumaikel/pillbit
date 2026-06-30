@@ -23,6 +23,8 @@ import { Button, Card } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { MedicationStatusBadge } from '../components/MedicationStatusBadge';
 import { formatExpirationDate } from '../utils/medicationUtils';
+import { useHistoryStore } from '@/features/history';
+import { ConsumptionStatus } from '@/database/models';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -92,6 +94,15 @@ export function MedicationDetailScreen() {
     );
   }, [deleteMedication, medicationId, medication?.name, router]);
 
+  const { registerConsumption } = useHistoryStore();
+  const handleQuickLog = useCallback((status: ConsumptionStatus) => {
+      registerConsumption(medicationId, status).then(() => {
+          Alert.alert('Success', `Medication marked as ${status}.`);
+      }).catch((e) => {
+          Alert.alert('Error', 'Failed to log consumption.');
+      });
+  }, [medicationId, registerConsumption]);
+
   // ─── Render: error ────────────────────────────────────────────────────────
 
   if (fetchError) {
@@ -155,10 +166,34 @@ export function MedicationDetailScreen() {
 
         {/* ── Quick Actions ── */}
         <View style={styles.quickActions}>
+          <Text style={styles.sectionTitle}>Log Dose</Text>
+          <View style={styles.logButtons}>
+            <Button 
+                label="Take" 
+                onPress={() => handleQuickLog('taken')} 
+                style={styles.flexButton}
+            />
+            <Button 
+                label="Skip" 
+                onPress={() => handleQuickLog('skipped')} 
+                variant="outline"
+                style={styles.flexButton}
+            />
+            <Button 
+                label="Postpone" 
+                onPress={() => handleQuickLog('postponed')} 
+                variant="outline"
+                style={styles.flexButton}
+            />
+          </View>
+        </View>
+
+        <View style={styles.quickActions}>
+          <Text style={styles.sectionTitle}>Management</Text>
           <Button 
             label="Manage Reminders" 
             onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} 
-            variant="primary" 
+            variant="secondary" 
           />
         </View>
 
@@ -312,8 +347,20 @@ const styles = StyleSheet.create({
   badgeRow: {
     marginTop: Spacing.xxs,
   },
+  sectionTitle: {
+    ...Typography.h4,
+    color: LightColors.textPrimary,
+    marginBottom: Spacing.xs,
+  },
   quickActions: {
     marginBottom: Spacing.sm,
+  },
+  logButtons: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+  },
+  flexButton: {
+    flex: 1,
   },
 
   // Notes

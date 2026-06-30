@@ -1,6 +1,32 @@
-import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { Medication, MedicationReminder, MedicationQueries } from '@/database';
+import { getDatabase } from '@/database/adapters/sqlite';
+
+// Fallback/Mock for Notifications in Expo Go
+let Notifications: any = {
+  setNotificationHandler: () => {},
+  getPermissionsAsync: async () => ({ status: 'granted' }),
+  requestPermissionsAsync: async () => ({ status: 'granted' }),
+  scheduleNotificationAsync: async () => 'mock-id',
+  cancelScheduledNotificationAsync: async () => {},
+  getAllScheduledNotificationsAsync: async () => [],
+  setNotificationChannelAsync: async () => {},
+  AndroidImportance: { MAX: 5 },
+  SchedulableTriggerInputTypes: { DAILY: 'daily' },
+};
+
+const isExpoGo = Constants.appOwnership === 'expo';
+
+if (!isExpoGo) {
+  try {
+    Notifications = require('expo-notifications');
+  } catch (e) {
+    console.warn('expo-notifications could not be loaded. Mocking instead.', e);
+  }
+} else {
+  console.warn('Running in Expo Go. Notifications are mocked because SDK 53 removed them from Expo Go.');
+}
 
 // Configure how notifications should behave when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -145,6 +171,59 @@ export class NotificationService {
             },
           });
         }
+      }
+    }
+  }
+
+  /**
+   * Sync expiration alerts with the OS.
+   * Cancels old expiration notifications and schedules new ones for pending alerts in the DB.
+   */
+  static async syncExpirationAlerts(): Promise<void> {
+    const hasPermission = await this.requestPermissionsAsync();
+    if (!hasPermission) return;
+
+    const db = getDatabase();
+    
+    // Fetch pending expiration alerts joined with medication
+    const pendingAlerts = await db.getAllAsync<any>(`
+      SELECT e.*, m.mdc_name 
+      FROM pbt_expiration_alert e
+      JOIN pbt_medication m ON e.mdc_id = m.mdc_id
+      WHERE e.eal_is_sent = 0 AND m.mdc_deleted_datetime IS NULL
+    `);
+
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    
+    // Cancel all current expiration notifications
+    for (const req of scheduled) {
+      if (req.content.data?.expirationAlertId !== undefined) {
+        await Notifications.cancelScheduledNotificationAsync(req.identifier);
+      }
+    }
+
+    // Schedule new ones
+    const now = new Date();
+    for (const alert of pendingAlerts) {
+      const alertDate = new Date(alert.eal_alert_datetime);
+      if (alertDate > now) {
+        let body = '';
+        switch(alert.eal_type) {
+          case '30_days_before': body = 'Expires in 30 days.'; break;
+          case '7_days_before': body = 'Expires in 7 days.'; break;
+          case '1_day_before': body = 'Expires tomorrow.'; break;
+          case 'expiration_day': body = 'Expires today.'; break;
+          case 'expired': body = 'Has expired.'; break;
+        }
+
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: `Medication Expiration: ${alert.mdc_name}`,
+            body,
+            data: { expirationAlertId: alert.eal_id, medicationId: alert.mdc_id },
+          },
+          trigger: alertDate,
+        });
       }
     }
   }

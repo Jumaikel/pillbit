@@ -252,6 +252,25 @@ Created:
 * `src/services/NotificationService.ts`
 * `src/app/(tabs)/medications/[id]/reminders.tsx`
 
+### 2026-06-30 (Week 4)
+Created:
+* `src/database/queries/ConsumptionQueries.ts`
+* `src/features/history/types/index.ts`
+* `src/features/history/services/HistoryService.ts`
+* `src/features/history/store/useHistoryStore.ts`
+* `src/features/history/components/HistoryCard.tsx`
+* `src/features/history/components/HistoryFilterBar.tsx`
+* `src/features/history/components/HistoryEmptyState.tsx`
+* `src/features/history/components/index.ts`
+* `src/features/history/index.ts`
+* `src/features/expiration/types/index.ts`
+* `src/features/expiration/services/ExpirationService.ts`
+* `src/features/expiration/store/useExpirationStore.ts`
+* `src/features/expiration/components/ExpirationCard.tsx`
+* `src/features/expiration/index.ts`
+* `src/app/(tabs)/medications/expiring.tsx`
+* `src/app/(tabs)/medications/expired.tsx`
+
 ---
 
 ## Files Modified
@@ -274,10 +293,14 @@ Deleted:
 
 ### 2026-06-30
 Modified:
-* `src/app/_layout.tsx` — Added `NotificationService.syncReminders()` on app startup.
+* `src/app/_layout.tsx` — Added `NotificationService.syncReminders()` and `NotificationService.syncExpirationAlerts()` on app startup.
 * `src/database/queries/MedicationQueries.ts` — Added `getRemindersByMedicationId`.
 * `src/app/(tabs)/medications/_layout.tsx` — Added route for `[id]/reminders`.
-* `src/features/medication/screens/MedicationDetailScreen.tsx` — Added "Manage Reminders" action button.
+* `src/features/medication/screens/MedicationDetailScreen.tsx` — Added "Manage Reminders" and "Log Dose" actions.
+* `src/features/medication/screens/MedicationListScreen.tsx` — Added "Expiring Soon" and "Expired" links.
+* `src/features/medication/store/useMedicationStore.ts` — Call `ExpirationService` and `NotificationService` after creation/updates.
+* `src/services/NotificationService.ts` — Added `syncExpirationAlerts()`.
+* `src/app/(tabs)/history.tsx` — Implemented consumption history view.
 * `package.json` — Added `expo-notifications`.
 
 ---
@@ -364,6 +387,16 @@ Modified:
 ---
 
 ## Changelog
+
+### v0.5.0 (Week 4 Scope)
+* Implemented Consumption History Module (`features/history`).
+* Created `ConsumptionRecordRepository` wrapper and `ConsumptionQueries`.
+* Added `HistoryCard`, `HistoryFilterBar`, and wired them into `/history` tab.
+* Added "Log Dose" (Take, Skip, Postpone) quick actions to `MedicationDetailScreen`.
+* Implemented Expiration Monitoring Module (`features/expiration`).
+* Created `ExpirationService` to generate alerts and `useExpirationStore`.
+* Added `/medications/expiring` and `/medications/expired` screens with `ExpirationCard`.
+* Updated `NotificationService` to handle `syncExpirationAlerts()`.
 
 ### v0.4.0
 * Implemented complete Reminder Module.

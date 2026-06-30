@@ -32,6 +32,7 @@ import { LightColors, Typography, Spacing, Radius } from '@/constants';
 import { EmptyState } from '@/components';
 import { useMedicationStore, selectFilteredMedications } from '../store/useMedicationStore';
 import { MedicationCard } from '../components/MedicationCard';
+import { useExpirationStore } from '@/features/expiration';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -58,6 +59,11 @@ export function MedicationListScreen() {
       Alert.alert('Error', error, [{ text: 'OK', onPress: clearError }]);
     }
   }, [error, clearError]);
+
+  const { expiringSoonList, expiredList, refreshExpirationData } = useExpirationStore();
+  useEffect(() => {
+    refreshExpirationData();
+  }, [refreshExpirationData]);
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
@@ -139,6 +145,22 @@ export function MedicationListScreen() {
         />
       </View>
 
+      {/* ── Expiration Links ── */}
+      <View style={styles.expirationLinks}>
+        <TouchableOpacity 
+          style={styles.expirationLink}
+          onPress={() => router.push('/medications/expiring' as never)}
+        >
+          <Text style={styles.expirationLinkText}>Expiring Soon ({expiringSoonList.length})</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.expirationLink}
+          onPress={() => router.push('/medications/expired' as never)}
+        >
+          <Text style={styles.expirationLinkTextError}>Expired ({expiredList.length})</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* ── Loading Spinner (initial load only) ── */}
       {isLoading && filteredMedications.length === 0 && (
         <View style={styles.loadingContainer}>
@@ -218,6 +240,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     color: LightColors.textPrimary,
     ...Typography.bodyMD,
+  },
+
+  // Expiration Links
+  expirationLinks: {
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  expirationLink: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: LightColors.surface,
+    borderRadius: Radius.full,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: LightColors.border,
+  },
+  expirationLinkText: {
+    ...Typography.bodySM,
+    fontWeight: '600',
+    color: LightColors.warning,
+  },
+  expirationLinkTextError: {
+    ...Typography.bodySM,
+    fontWeight: '600',
+    color: LightColors.error,
   },
 
   // Loading

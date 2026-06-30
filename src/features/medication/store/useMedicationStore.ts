@@ -23,6 +23,8 @@ import {
   CreateMedicationDTO,
   UpdateMedicationDTO,
 } from '@/database';
+import { ExpirationService } from '@/features/expiration';
+import { NotificationService } from '@/services/NotificationService';
 
 // ─── State Interface ──────────────────────────────────────────────────────────
 
@@ -97,7 +99,9 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
   createMedication: async (data: CreateMedicationDTO) => {
     set({ isLoading: true, error: null });
     try {
-      await MedicationRepository.create(data);
+      const id = await MedicationRepository.create(data);
+      await ExpirationService.generateAlerts(id, data.expirationDate);
+      await NotificationService.syncExpirationAlerts();
       // Refresh the full list after creation
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
@@ -113,6 +117,12 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
     set({ isLoading: true, error: null });
     try {
       await MedicationRepository.update(id, data);
+      
+      if (data.expirationDate) {
+        await ExpirationService.generateAlerts(id, data.expirationDate);
+        await NotificationService.syncExpirationAlerts();
+      }
+
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
     } catch (e) {
