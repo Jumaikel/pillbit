@@ -362,6 +362,9 @@ Modified:
 **Findings & Fixes**:
 - **Finding**: `@hookform/resolvers` and latest `zod` versions had type incompatibilities.
 - **Fix**: Downgraded `zod` to `3.23.8`.
+- [X] **Week 5**: Inventory Management Module
+  - Status tracking, thresholds, empty states
+- [ ] **Week 6**: Medication Intake Module (Focus)
 - **Finding**: Jest types were not loaded globally, causing test file type errors.
 - **Fix**: Added `"types": ["jest"]` to `tsconfig.json`.
 - **Finding**: Linter warned about calling setState synchronously within useEffect in Detail and Edit screens.

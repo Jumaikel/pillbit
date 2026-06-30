@@ -95,6 +95,8 @@ export function EditMedicationScreen() {
           notes: medication.notes ?? '',
           quantityAvailable:
             medication.quantityAvailable !== null ? String(medication.quantityAvailable) : '',
+          lowStockThreshold:
+            medication.lowStockThreshold !== null ? String(medication.lowStockThreshold) : '',
           photoPath: medication.photoPath ?? '',
         });
         setFormReady(true);
@@ -116,6 +118,9 @@ export function EditMedicationScreen() {
           notes: values.notes.trim() || null,
           quantityAvailable: values.quantityAvailable.trim()
             ? Number(values.quantityAvailable)
+            : null,
+          lowStockThreshold: values.lowStockThreshold.trim()
+            ? Number(values.lowStockThreshold)
             : null,
           photoPath: values.photoPath.trim() || null,
         });
@@ -278,6 +283,24 @@ export function EditMedicationScreen() {
                   errorMessage={errors.quantityAvailable?.message}
                   keyboardType="numeric"
                   returnKeyType="next"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="lowStockThreshold"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Low Stock Threshold"
+                  placeholder="e.g. 10"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  errorMessage={errors.lowStockThreshold?.message}
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  accessibilityHint="Alert when quantity drops to or below this number"
                 />
               )}
             />

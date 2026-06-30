@@ -22,6 +22,7 @@ export default function MedicationsLayout() {
       <Stack.Screen name="[id]" />
       <Stack.Screen name="[id]/edit" />
       <Stack.Screen name="[id]/reminders" />
+      <Stack.Screen name="low-stock" />
     </Stack>
   );
 }

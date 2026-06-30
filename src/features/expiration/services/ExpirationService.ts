@@ -1,4 +1,4 @@
-import { ExpirationStatus } from './types';
+import { MedicationExpirationState, ExpirationStatus } from '../types';
 import { MedicationRepository } from '@/database/repositories/MedicationRepository';
 import { ExpirationAlertRepository } from '@/database/repositories/ExpirationAlertRepository';
 import { getDatabase } from '@/database/adapters/sqlite';

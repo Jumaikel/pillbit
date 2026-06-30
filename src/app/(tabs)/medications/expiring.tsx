@@ -37,9 +37,8 @@ export default function ExpiringSoonScreen() {
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
                             <EmptyState
-                                icon="checkmark-circle"
-                                title="All good!"
-                                message="None of your medications are expiring within the next 30 days."
+                                title="All good"
+                                description="No medications are expiring in the next 30 days."
                             />
                         </View>
                     }

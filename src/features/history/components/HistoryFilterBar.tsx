@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
         borderColor: LightColors.primary,
     },
     chipText: {
-        ...Typography.body2,
+        ...Typography.bodySM,
         color: LightColors.textSecondary,
     },
     chipTextSelected: {

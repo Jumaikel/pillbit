@@ -50,6 +50,8 @@ export function CreateMedicationScreen() {
           notes: values.notes.trim() || null,
           quantityAvailable:
             values.quantityAvailable.trim() ? Number(values.quantityAvailable) : null,
+          lowStockThreshold:
+            values.lowStockThreshold.trim() ? Number(values.lowStockThreshold) : null,
           photoPath: values.photoPath.trim() || null,
         });
         router.back();
@@ -191,6 +193,24 @@ export function CreateMedicationScreen() {
                   keyboardType="numeric"
                   returnKeyType="next"
                   accessibilityHint="Enter the number of units you currently have"
+                />
+              )}
+            />
+
+            <Controller
+              control={control}
+              name="lowStockThreshold"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  label="Low Stock Threshold"
+                  placeholder="e.g. 10"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  errorMessage={errors.lowStockThreshold?.message}
+                  keyboardType="numeric"
+                  returnKeyType="next"
+                  accessibilityHint="Alert when quantity drops to or below this number"
                 />
               )}
             />

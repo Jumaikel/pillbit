@@ -75,12 +75,12 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.sm,
     },
     medicationName: {
-        ...Typography.h4,
+        ...Typography.headingMD,
         color: LightColors.textPrimary,
         marginBottom: 2,
     },
     dosage: {
-        ...Typography.body2,
+        ...Typography.bodySM,
         color: LightColors.textSecondary,
     },
     badge: {

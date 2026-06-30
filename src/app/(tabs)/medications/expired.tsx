@@ -37,9 +37,8 @@ export default function ExpiredMedicationsScreen() {
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
                             <EmptyState
-                                icon="checkmark-circle"
-                                title="No expired medications"
-                                message="You don't have any expired medications in your inventory."
+                                title="All clear"
+                                description="You have no expired medications."
                             />
                         </View>
                     }

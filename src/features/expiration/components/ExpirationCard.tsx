@@ -66,12 +66,12 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     name: {
-        ...Typography.h4,
+        ...Typography.headingMD,
         color: LightColors.textPrimary,
-        marginBottom: 2,
+        marginBottom: Spacing.xxs,
     },
     dateText: {
-        ...Typography.body2,
+        ...Typography.bodySM,
         color: LightColors.textSecondary,
     },
     badge: {

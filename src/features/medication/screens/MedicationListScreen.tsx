@@ -33,6 +33,7 @@ import { EmptyState } from '@/components';
 import { useMedicationStore, selectFilteredMedications } from '../store/useMedicationStore';
 import { MedicationCard } from '../components/MedicationCard';
 import { useExpirationStore } from '@/features/expiration';
+import { useInventoryStore, selectLowStockCount } from '@/features/inventory';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -64,6 +65,12 @@ export function MedicationListScreen() {
   useEffect(() => {
     refreshExpirationData();
   }, [refreshExpirationData]);
+
+  const loadInventory = useInventoryStore((s) => s.loadInventory);
+  const lowStockCount = useInventoryStore(selectLowStockCount);
+  useEffect(() => {
+    loadInventory();
+  }, [loadInventory]);
 
   // ─── Handlers ────────────────────────────────────────────────────────────
 
@@ -145,13 +152,19 @@ export function MedicationListScreen() {
         />
       </View>
 
-      {/* ── Expiration Links ── */}
+      {/* ── Expiration & Inventory Links ── */}
       <View style={styles.expirationLinks}>
+        <TouchableOpacity 
+          style={styles.expirationLink}
+          onPress={() => router.push('/medications/low-stock' as never)}
+        >
+          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: LightColors.error }]}>Low Stock ({lowStockCount})</Text>
+        </TouchableOpacity>
         <TouchableOpacity 
           style={styles.expirationLink}
           onPress={() => router.push('/medications/expiring' as never)}
         >
-          <Text style={styles.expirationLinkText}>Expiring Soon ({expiringSoonList.length})</Text>
+          <Text style={styles.expirationLinkText}>Expiring ({expiringSoonList.length})</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.expirationLink}

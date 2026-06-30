@@ -102,6 +102,7 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
       const id = await MedicationRepository.create(data);
       await ExpirationService.generateAlerts(id, data.expirationDate);
       await NotificationService.syncExpirationAlerts();
+      await NotificationService.syncLowStockAlerts();
       // Refresh the full list after creation
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
@@ -122,6 +123,8 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
         await ExpirationService.generateAlerts(id, data.expirationDate);
         await NotificationService.syncExpirationAlerts();
       }
+      
+      await NotificationService.syncLowStockAlerts();
 
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });

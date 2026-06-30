@@ -31,6 +31,12 @@ export const medicationSchema = z.object({
       (val) => val === '' || (!isNaN(Number(val)) && Number(val) >= 0),
       'Must be a positive number',
     ),
+  lowStockThreshold: z
+    .string()
+    .refine(
+      (val) => val === '' || (!isNaN(Number(val)) && Number(val) > 0),
+      'Threshold must be a positive number greater than 0',
+    ),
   photoPath: z.string(),
 });
 
@@ -45,6 +51,7 @@ export const defaultMedicationFormValues: MedicationFormValues = {
   presentation: '',
   notes: '',
   quantityAvailable: '',
+  lowStockThreshold: '',
   photoPath: '',
 };
 

@@ -25,6 +25,7 @@ import { MedicationStatusBadge } from '../components/MedicationStatusBadge';
 import { formatExpirationDate } from '../utils/medicationUtils';
 import { useHistoryStore } from '@/features/history';
 import { ConsumptionStatus } from '@/database/models';
+import { useInventoryStore, InventoryIndicator, InventoryService } from '@/features/inventory';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -45,6 +46,13 @@ export function MedicationDetailScreen() {
   // Derive medication synchronously if available
   const storeMedication = medications.find((m) => m.id === medicationId) || null;
   const medication = storeMedication || fetchedMedication;
+  
+  const inventoryItems = useInventoryStore((s) => s.inventoryItems);
+  const enrichedInventoryState = inventoryItems.find((item) => item.id === medicationId);
+  // fallback if not yet loaded in inventory store
+  const inventoryStatus = enrichedInventoryState?.inventoryStatus ?? 
+    (medication ? InventoryService.calculateInventoryStatus(medication.quantityAvailable, medication.lowStockThreshold) : 'untracked');
+  const effectiveThreshold = enrichedInventoryState?.effectiveThreshold ?? medication?.lowStockThreshold ?? null;
 
   // ─── Resolve medication ───────────────────────────────────────────────────
 
@@ -161,6 +169,12 @@ export function MedicationDetailScreen() {
           <Text style={styles.dosage}>{medication.dosage}</Text>
           <View style={styles.badgeRow}>
             <MedicationStatusBadge expirationDate={medication.expirationDate} />
+            <View style={styles.badgeSpacer} />
+            <InventoryIndicator 
+               quantity={medication.quantityAvailable} 
+               status={inventoryStatus} 
+               threshold={effectiveThreshold} 
+            />
           </View>
         </View>
 
@@ -345,10 +359,15 @@ const styles = StyleSheet.create({
     color: LightColors.textSecondary,
   },
   badgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: Spacing.xxs,
   },
+  badgeSpacer: {
+    width: Spacing.sm,
+  },
   sectionTitle: {
-    ...Typography.h4,
+    ...Typography.headingMD,
     color: LightColors.textPrimary,
     marginBottom: Spacing.xs,
   },

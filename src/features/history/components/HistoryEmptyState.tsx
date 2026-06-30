@@ -6,9 +6,8 @@ export function HistoryEmptyState() {
     return (
         <View style={styles.container}>
             <EmptyState
-                icon="clock"
                 title="No history yet"
-                message="When you take, postpone, or skip medications, they will appear here."
+                description="When you take, postpone, or skip medications, they will appear here."
             />
         </View>
     );

@@ -31,7 +31,7 @@ export class HistoryService {
         // Handle auto stock reduction if the medication was taken
         if (status === 'taken') {
             try {
-                const settings = await ApplicationSettingRepository.getSettings();
+                const settings = await ApplicationSettingRepository.get();
                 if (settings && settings.autoReduceStock) {
                     const medication = await MedicationRepository.findById(medicationId);
                     if (medication && medication.quantityAvailable !== null) {
