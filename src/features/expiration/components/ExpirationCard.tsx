@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/Card';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { MedicationExpirationState } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ExpirationCardProps {
     medication: MedicationExpirationState;
@@ -9,6 +10,8 @@ interface ExpirationCardProps {
 }
 
 export function ExpirationCard({ medication, onPress }: ExpirationCardProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     const { name, expirationDate, expirationStatus, daysRemaining } = medication;
     
     const isExpired = expirationStatus === 'expired';
@@ -20,11 +23,11 @@ export function ExpirationCard({ medication, onPress }: ExpirationCardProps) {
     if (isExpired) {
         subtitleText = `Expired ${Math.abs(daysRemaining)} days ago`;
         badgeColor = '#FEE9E7';
-        badgeTextColor = LightColors.error;
+        badgeTextColor = colors.error;
     } else {
         subtitleText = `Expires in ${daysRemaining} day${daysRemaining !== 1 ? 's' : ''}`;
         badgeColor = '#FFF5E0';
-        badgeTextColor = LightColors.warning;
+        badgeTextColor = colors.warning;
     }
 
     const dateObj = new Date(expirationDate);
@@ -53,7 +56,7 @@ export function ExpirationCard({ medication, onPress }: ExpirationCardProps) {
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         marginBottom: Spacing.sm,
     },
@@ -66,13 +69,13 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     name: {
-        ...Typography.headingMD,
-        color: LightColors.textPrimary,
+        ...typography.headingMD,
+        color: colors.textPrimary,
         marginBottom: Spacing.xxs,
     },
     dateText: {
-        ...Typography.bodySM,
-        color: LightColors.textSecondary,
+        ...typography.bodySM,
+        color: colors.textSecondary,
     },
     badge: {
         borderRadius: Radius.full,
@@ -81,7 +84,7 @@ const styles = StyleSheet.create({
         marginTop: Spacing.xs,
     },
     badgeText: {
-        ...Typography.caption,
+        ...typography.caption,
         fontWeight: '600',
     },
 });

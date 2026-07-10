@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,6 +62,8 @@ export function Button({
   style,
   ...rest
 }: ButtonProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const isDisabled = disabled || loading;
 
   return (
@@ -83,7 +86,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'outline' ? LightColors.primary : '#FFFFFF'}
+          color={variant === 'outline' ? colors.primary : '#FFFFFF'}
           accessibilityLabel="Loading"
         />
       ) : (
@@ -95,7 +98,7 @@ export function Button({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   base: {
     minHeight: 48,
     borderRadius: Radius.md,
@@ -108,15 +111,15 @@ const styles = StyleSheet.create({
 
   // Variants
   primary: {
-    backgroundColor: LightColors.primary,
+    backgroundColor: colors.primary,
   },
   secondary: {
-    backgroundColor: LightColors.secondary,
+    backgroundColor: colors.secondary,
   },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: LightColors.primary,
+    borderColor: colors.primary,
   },
 
   // Disabled state
@@ -126,16 +129,16 @@ const styles = StyleSheet.create({
 
   // Labels
   label: {
-    ...Typography.bodyMD,
+    ...typography.bodyMD,
     fontWeight: '600',
   },
   primaryLabel: {
     color: '#FFFFFF',
   },
   secondaryLabel: {
-    color: LightColors.textPrimary,
+    color: colors.textPrimary,
   },
   outlineLabel: {
-    color: LightColors.primary,
+    color: colors.primary,
   },
 });

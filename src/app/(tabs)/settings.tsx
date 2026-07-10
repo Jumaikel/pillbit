@@ -1,46 +1,27 @@
 import { View, Text, StyleSheet, Switch, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState, useCallback } from 'react';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
-import { ApplicationSettingRepository, ApplicationSetting } from '@/database';
+import { useEffect, useState } from 'react';
+import { Spacing } from '@/constants';
+import { useConfigStore } from '@/store/useConfigStore';
 import { Input, Button, Card } from '@/components';
 import { useInventoryStore } from '@/features/inventory';
+import { useTheme } from '@/hooks/useTheme';
 
-/**
- * SettingsScreen
- *
- * Manages global application settings like global thresholds and notification preferences.
- * Route: /settings
- */
 export default function SettingsScreen() {
-  const [settings, setSettings] = useState<ApplicationSetting | null>(null);
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
+  
+  const { settings, isLoading, updateSettings } = useConfigStore();
   const [thresholdInput, setThresholdInput] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const loadSettings = useCallback(async () => {
-    try {
-      let currentSettings = await ApplicationSettingRepository.get();
-      if (!currentSettings) {
-        await ApplicationSettingRepository.initialize();
-        currentSettings = await ApplicationSettingRepository.get();
-      }
-      if (currentSettings) {
-        setSettings(currentSettings);
-        setThresholdInput(currentSettings.defaultLowStockThreshold?.toString() || '');
-      }
-    } catch (e) {
-      Alert.alert('Error', 'Failed to load settings');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
-    loadSettings();
-  }, [loadSettings]);
+    if (settings) {
+      setThresholdInput(settings.defaultLowStockThreshold?.toString() || '');
+    }
+  }, [settings]);
 
-  const handleSave = async () => {
+  const handleSaveInventory = async () => {
     if (!settings) return;
     setIsSaving(true);
     try {
@@ -50,17 +31,11 @@ export default function SettingsScreen() {
          setIsSaving(false);
          return;
       }
-
-      await ApplicationSettingRepository.update({
-        ...settings,
-        defaultLowStockThreshold: parsedThreshold === null ? undefined : parsedThreshold,
-      });
-
+      await updateSettings({ defaultLowStockThreshold: parsedThreshold === null ? undefined : parsedThreshold });
       // Refresh inventory because global threshold changed
       const { refreshAfterSettingsChange } = useInventoryStore.getState();
       await refreshAfterSettingsChange();
-
-      Alert.alert('Success', 'Settings saved successfully');
+      Alert.alert('Success', 'Inventory settings saved');
     } catch (e) {
       Alert.alert('Error', 'Failed to save settings');
     } finally {
@@ -68,33 +43,18 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleToggleAutoReduce = async (value: boolean) => {
+
+
+  const handleToggle = async (key: keyof import('@/database/models').ApplicationSetting, value: boolean | string) => {
     if (!settings) return;
     try {
-      await ApplicationSettingRepository.update({
-        ...settings,
-        autoReduceStock: value,
-      });
-      setSettings({ ...settings, autoReduceStock: value });
+      await updateSettings({ [key]: value } as any);
     } catch (e) {
       Alert.alert('Error', 'Failed to update setting');
     }
   };
 
-  const handleToggleNotify = async (value: boolean) => {
-    if (!settings) return;
-    try {
-      await ApplicationSettingRepository.update({
-        ...settings,
-        notifyLowStock: value,
-      });
-      setSettings({ ...settings, notifyLowStock: value });
-    } catch (e) {
-      Alert.alert('Error', 'Failed to update setting');
-    }
-  };
-
-  if (isLoading) {
+  if (isLoading || !settings) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
          <View style={styles.centered}><Text style={styles.loadingText}>Loading settings...</Text></View>
@@ -110,28 +70,120 @@ export default function SettingsScreen() {
             <Text style={styles.title} accessibilityRole="header">Settings</Text>
           </View>
 
+          {/* Accessibility Settings */}
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>Inventory Tracking</Text>
+            <Text style={styles.sectionTitle}>Accessibility</Text>
             
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Auto-Reduce Stock</Text>
-                 <Text style={styles.settingDescription}>Automatically reduce available quantity when you mark a medication as taken.</Text>
+                 <Text style={styles.settingLabel}>High Contrast Mode</Text>
+                 <Text style={styles.settingDescription}>Increase color contrast for better visibility.</Text>
                </View>
                <Switch
-                 value={settings?.autoReduceStock ?? false}
-                 onValueChange={handleToggleAutoReduce}
-                 trackColor={{ false: LightColors.textDisabled, true: LightColors.primary }}
+                 value={settings.isHighContrastEnabled}
+                 onValueChange={(v) => handleToggle('isHighContrastEnabled', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
+                 thumbColor="#fff"
+               />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.settingRow}>
+               <View style={styles.settingText}>
+                 <Text style={styles.settingLabel}>Text Size</Text>
+                 <Text style={styles.settingDescription}>Scale global text size.</Text>
+               </View>
+            </View>
+            <View style={styles.buttonRow}>
+               <Button 
+                  label="Normal" 
+                  variant={settings.textSize === 'normal' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('textSize', 'normal')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label="Large" 
+                  variant={settings.textSize === 'large' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('textSize', 'large')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label="X-Large" 
+                  variant={settings.textSize === 'extra_large' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('textSize', 'extra_large')} 
+                  style={styles.flex1} 
+               />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.settingRow}>
+               <View style={styles.settingText}>
+                 <Text style={styles.settingLabel}>Voice Input</Text>
+                 <Text style={styles.settingDescription}>Enable voice dictation in input fields.</Text>
+               </View>
+               <Switch
+                 value={settings.isVoiceInputEnabled}
+                 onValueChange={(v) => handleToggle('isVoiceInputEnabled', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
+                 thumbColor="#fff"
+               />
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.settingRow}>
+               <View style={styles.settingText}>
+                 <Text style={styles.settingLabel}>Text To Speech</Text>
+                 <Text style={styles.settingDescription}>Enable voice reading for medication details.</Text>
+               </View>
+               <Switch
+                 value={settings.isTextToSpeechEnabled}
+                 onValueChange={(v) => handleToggle('isTextToSpeechEnabled', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
+                 thumbColor="#fff"
+               />
+            </View>
+          </Card>
+
+          {/* AI Settings */}
+          <Card padded style={styles.section}>
+            <Text style={styles.sectionTitle}>AI Features</Text>
+            
+            <View style={styles.settingRow}>
+               <View style={styles.settingText}>
+                 <Text style={styles.settingLabel}>Enable AI Info</Text>
+                 <Text style={styles.settingDescription}>Use AI to generate medication insights.</Text>
+               </View>
+               <Switch
+                 value={settings.isAiEnabled}
+                 onValueChange={(v) => handleToggle('isAiEnabled', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
                  thumbColor="#fff"
                />
             </View>
 
-            <View style={styles.divider} />
+            {settings.isAiEnabled && (
+              <>
+              </>
+            )}
+          </Card>
 
+          {/* General Settings */}
+          <Card padded style={styles.section}>
+            <Text style={styles.sectionTitle}>Inventory Tracking</Text>
+            <View style={styles.settingRow}>
+               <View style={styles.settingText}>
+                 <Text style={styles.settingLabel}>Auto-Reduce Stock</Text>
+               </View>
+               <Switch
+                 value={settings.autoReduceStock}
+                 onValueChange={(v) => handleToggle('autoReduceStock', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
+                 thumbColor="#fff"
+               />
+            </View>
+            <View style={styles.divider} />
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
                  <Text style={styles.settingLabel}>Global Low Stock Threshold</Text>
-                 <Text style={styles.settingDescription}>Default alert threshold for medications that don't have a specific one set.</Text>
                </View>
             </View>
             <View style={styles.inputContainer}>
@@ -144,7 +196,7 @@ export default function SettingsScreen() {
                />
                <Button 
                  label="Save" 
-                 onPress={handleSave} 
+                 onPress={handleSaveInventory} 
                  loading={isSaving}
                  disabled={isSaving}
                  style={styles.saveButton}
@@ -154,16 +206,14 @@ export default function SettingsScreen() {
 
           <Card padded style={styles.section}>
             <Text style={styles.sectionTitle}>Notifications</Text>
-            
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
                  <Text style={styles.settingLabel}>Low Stock Alerts</Text>
-                 <Text style={styles.settingDescription}>Receive notifications when a medication drops to or below its threshold.</Text>
                </View>
                <Switch
-                 value={settings?.notifyLowStock ?? true}
-                 onValueChange={handleToggleNotify}
-                 trackColor={{ false: LightColors.textDisabled, true: LightColors.primary }}
+                 value={settings.notifyLowStock}
+                 onValueChange={(v) => handleToggle('notifyLowStock', v)}
+                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
                  thumbColor="#fff"
                />
             </View>
@@ -175,12 +225,15 @@ export default function SettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
   flex: {
+    flex: 1,
+  },
+  flex1: {
     flex: 1,
   },
   centered: {
@@ -189,8 +242,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
   },
   scrollContent: {
     paddingHorizontal: Spacing.md,
@@ -201,15 +254,15 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   title: {
-    ...Typography.headingXL,
-    color: LightColors.textPrimary,
+    ...typography.headingXL,
+    color: colors.textPrimary,
   },
   section: {
     marginBottom: Spacing.md,
   },
   sectionTitle: {
-    ...Typography.headingMD,
-    color: LightColors.primary,
+    ...typography.headingMD,
+    color: colors.primary,
     marginBottom: Spacing.md,
   },
   settingRow: {
@@ -218,23 +271,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.xs,
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: Spacing.xs,
+  },
   settingText: {
     flex: 1,
     paddingRight: Spacing.md,
   },
   settingLabel: {
-    ...Typography.bodyMD,
+    ...typography.bodyMD,
     fontWeight: '600',
-    color: LightColors.textPrimary,
+    color: colors.textPrimary,
   },
   settingDescription: {
-    ...Typography.caption,
-    color: LightColors.textSecondary,
+    ...typography.caption,
+    color: colors.textSecondary,
     marginTop: 2,
   },
   divider: {
     height: 1,
-    backgroundColor: LightColors.border,
+    backgroundColor: colors.border,
     marginVertical: Spacing.md,
   },
   inputContainer: {
@@ -244,6 +303,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginLeft: Spacing.sm,
-    marginBottom: 4, // align with input field margin
+    marginBottom: 4,
   }
 });

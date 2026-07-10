@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { ConsumptionStatus } from '@/database/models';
+import { useTheme } from '@/hooks/useTheme';
 
 interface HistoryFilterBarProps {
     selectedStatus?: ConsumptionStatus;
@@ -15,6 +16,8 @@ const filters: { label: string; value: ConsumptionStatus | undefined }[] = [
 ];
 
 export function HistoryFilterBar({ selectedStatus, onSelectStatus }: HistoryFilterBarProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     return (
         <ScrollView 
             horizontal 
@@ -46,7 +49,7 @@ export function HistoryFilterBar({ selectedStatus, onSelectStatus }: HistoryFilt
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.sm,
@@ -56,20 +59,20 @@ const styles = StyleSheet.create({
         paddingHorizontal: Spacing.md,
         paddingVertical: Spacing.xs,
         borderRadius: Radius.full,
-        backgroundColor: LightColors.surface,
+        backgroundColor: colors.surface,
         borderWidth: 1,
-        borderColor: LightColors.border,
+        borderColor: colors.border,
     },
     chipSelected: {
-        backgroundColor: LightColors.primary,
-        borderColor: LightColors.primary,
+        backgroundColor: colors.primary,
+        borderColor: colors.primary,
     },
     chipText: {
-        ...Typography.bodySM,
-        color: LightColors.textSecondary,
+        ...typography.bodySM,
+        color: colors.textSecondary,
     },
     chipTextSelected: {
-        color: LightColors.surface,
+        color: colors.surface,
         fontWeight: '600',
     },
 });

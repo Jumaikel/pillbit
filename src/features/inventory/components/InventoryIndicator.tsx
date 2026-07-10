@@ -15,8 +15,9 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { InventoryStatus } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,12 +32,7 @@ interface InventoryIndicatorProps {
 
 // ─── Color map ────────────────────────────────────────────────────────────────
 
-const STATUS_DOT_COLOR: Record<InventoryStatus, string> = {
-    normal: LightColors.success,
-    low_stock: LightColors.warning,
-    empty: LightColors.error,
-    untracked: LightColors.textDisabled,
-};
+
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -46,6 +42,16 @@ export function InventoryIndicator({
     threshold,
     showThreshold = false,
 }: InventoryIndicatorProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
+
+    const STATUS_DOT_COLOR: Record<InventoryStatus, string> = {
+        normal: colors.success,
+        low_stock: colors.warning,
+        empty: colors.error,
+        untracked: colors.textDisabled,
+    };
+
     const dotColor = STATUS_DOT_COLOR[status];
 
     let quantityText = 'Not tracked';
@@ -66,7 +72,7 @@ export function InventoryIndicator({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -78,7 +84,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     text: {
-        ...Typography.bodySM,
-        color: LightColors.textSecondary,
+        ...typography.bodySM,
+        color: colors.textSecondary,
     },
 });

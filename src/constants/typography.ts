@@ -78,3 +78,16 @@ export const Typography = {
     letterSpacing: 0.2,
   },
 } as const satisfies Record<string, TypographyToken>;
+
+export function getScaledTypography(scale: number): typeof Typography {
+  if (scale === 1) return Typography;
+  const scaled: any = {};
+  for (const [key, value] of Object.entries(Typography)) {
+    scaled[key] = {
+      ...value,
+      fontSize: Math.round(value.fontSize * scale),
+      lineHeight: Math.round(value.lineHeight * scale)
+    };
+  }
+  return scaled as typeof Typography;
+}

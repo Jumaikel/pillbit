@@ -3,13 +3,6 @@
  *
  * Displays all available information for a single medication.
  * Route: /medications/[id]
- *
- * Responsibilities:
- *  - Read `id` from route params
- *  - Find the medication in the Zustand store (or fetch via repository as fallback)
- *  - Display all fields with graceful null handling
- *  - Provide Edit and Delete actions
- *  - Delete requires Alert confirmation before execution
  */
 
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -18,7 +11,7 @@ import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Medication, MedicationRepository } from '@/database';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Button, Card } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { MedicationStatusBadge } from '../components/MedicationStatusBadge';
@@ -26,47 +19,56 @@ import { formatExpirationDate } from '../utils/medicationUtils';
 import { useHistoryStore } from '@/features/history';
 import { ConsumptionStatus } from '@/database/models';
 import { useInventoryStore, InventoryIndicator, InventoryService } from '@/features/inventory';
-
-// ─── Component ────────────────────────────────────────────────────────────────
+import { useTheme } from '@/hooks/useTheme';
+import { useAIStore } from '@/features/ai/store/useAIStore';
+import { SpeechService } from '@/services/SpeechService';
+import { useConfigStore } from '@/store/useConfigStore';
 
 export function MedicationDetailScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const medicationId = Number(id);
+  const { settings } = useConfigStore();
 
-  // ─── Store ───────────────────────────────────────────────────────────────
+  // Stores
   const medications = useMedicationStore((s) => s.medications);
   const deleteMedication = useMedicationStore((s) => s.deleteMedication);
   const isLoading = useMedicationStore((s) => s.isLoading);
+  
+  const { 
+    cache: aiCache, 
+    isLoading: aiLoading, 
+    error: aiError, 
+    loadMedicationInfo, 
+    generateMedicationInfo 
+  } = useAIStore();
 
-  // ─── Local state (for fallback fetch if store is empty) ──────────────────
+  // Local state
   const [fetchedMedication, setFetchedMedication] = useState<Medication | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [isReading, setIsReading] = useState(false);
 
-  // Derive medication synchronously if available
   const storeMedication = medications.find((m) => m.id === medicationId) || null;
   const medication = storeMedication || fetchedMedication;
   
+  const aiInfo = aiCache[medicationId];
+  
   const inventoryItems = useInventoryStore((s) => s.inventoryItems);
   const enrichedInventoryState = inventoryItems.find((item) => item.id === medicationId);
-  // fallback if not yet loaded in inventory store
   const inventoryStatus = enrichedInventoryState?.inventoryStatus ?? 
     (medication ? InventoryService.calculateInventoryStatus(medication.quantityAvailable, medication.lowStockThreshold) : 'untracked');
   const effectiveThreshold = enrichedInventoryState?.effectiveThreshold ?? medication?.lowStockThreshold ?? null;
 
-  // ─── Resolve medication ───────────────────────────────────────────────────
-
+  // Resolve medication and AI info
   useEffect(() => {
-    // Only fetch if not found in store and not already fetched
     if (!storeMedication && !fetchedMedication) {
       (async () => {
         try {
           const fetched = await MedicationRepository.findById(medicationId);
-          if (fetched) {
-            setFetchedMedication(fetched);
-          } else {
-            setFetchError('Medication not found.');
-          }
+          if (fetched) setFetchedMedication(fetched);
+          else setFetchError('Medication not found.');
         } catch {
           setFetchError('Failed to load medication.');
         }
@@ -74,16 +76,19 @@ export function MedicationDetailScreen() {
     }
   }, [medicationId, storeMedication, fetchedMedication]);
 
-  // ─── Handlers ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (settings?.isAiEnabled) {
+      loadMedicationInfo(medicationId);
+    }
+  }, [medicationId, settings?.isAiEnabled, loadMedicationInfo]);
 
-  const handleEdit = useCallback(() => {
-    router.push(`/medications/${medicationId}/edit` as never);
-  }, [router, medicationId]);
+  // Handlers
+  const handleEdit = useCallback(() => router.push(`/medications/${medicationId}/edit` as never), [router, medicationId]);
 
   const handleDelete = useCallback(() => {
     Alert.alert(
       'Delete Medication',
-      `Are you sure you want to delete "${medication?.name ?? 'this medication'}"? This action cannot be undone.`,
+      `Are you sure you want to delete "${medication?.name ?? 'this medication'}"?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -94,7 +99,7 @@ export function MedicationDetailScreen() {
               await deleteMedication(medicationId);
               router.back();
             } catch {
-              Alert.alert('Error', 'Failed to delete medication. Please try again.');
+              Alert.alert('Error', 'Failed to delete medication.');
             }
           },
         },
@@ -106,12 +111,37 @@ export function MedicationDetailScreen() {
   const handleQuickLog = useCallback((status: ConsumptionStatus) => {
       registerConsumption(medicationId, status).then(() => {
           Alert.alert('Success', `Medication marked as ${status}.`);
-      }).catch((e) => {
-          Alert.alert('Error', 'Failed to log consumption.');
-      });
+      }).catch(() => Alert.alert('Error', 'Failed to log consumption.'));
   }, [medicationId, registerConsumption]);
 
-  // ─── Render: error ────────────────────────────────────────────────────────
+  const handleGenerateAI = () => {
+      if (medication) {
+          generateMedicationInfo(medicationId, medication.name, true);
+      }
+  };
+  
+  const handleReadAI = async () => {
+      if (isReading) {
+          await SpeechService.stop();
+          setIsReading(false);
+          return;
+      }
+      
+      if (aiInfo) {
+          setIsReading(true);
+          const textToRead = `
+            Description: ${aiInfo.description || 'none'}. 
+            Common Uses: ${aiInfo.commonUses || 'none'}. 
+            Contraindications: ${aiInfo.contraindications || 'none'}. 
+            Side Effects: ${aiInfo.sideEffects || 'none'}. 
+            Warnings: ${aiInfo.warnings || 'none'}. 
+            Interactions: ${aiInfo.interactions || 'none'}.
+          `;
+          await SpeechService.read(textToRead);
+          // Assuming we have to manually turn it off if we don't have event listeners setup
+          setTimeout(() => setIsReading(false), 5000); 
+      }
+  };
 
   if (fetchError) {
     return (
@@ -124,124 +154,103 @@ export function MedicationDetailScreen() {
     );
   }
 
-  // ─── Render: loading ──────────────────────────────────────────────────────
-
   if (!medication) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.centered}>
-          <Text style={styles.loadingText}>Loading…</Text>
-        </View>
+        <View style={styles.centered}><Text style={styles.loadingText}>Loading…</Text></View>
       </SafeAreaView>
     );
   }
 
-  // ─── Render: detail ───────────────────────────────────────────────────────
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* ── Navigation header ── */}
       <View style={styles.navHeader}>
         <Button label="← Back" onPress={() => router.back()} variant="outline" />
         <Button label="Edit" onPress={handleEdit} variant="secondary" />
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── Photo block ── */}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {medication.photoPath && (
           <View style={styles.photoContainer}>
-            <Image
-              source={{ uri: medication.photoPath }}
-              style={styles.photo}
-              contentFit="cover"
-            />
+            <Image source={{ uri: medication.photoPath }} style={styles.photo} contentFit="cover" />
           </View>
         )}
 
-        {/* ── Title block ── */}
         <View style={styles.titleBlock}>
-          <Text style={styles.title} accessibilityRole="header">
-            {medication.name}
-          </Text>
+          <Text style={styles.title} accessibilityRole="header">{medication.name}</Text>
           <Text style={styles.dosage}>{medication.dosage}</Text>
           <View style={styles.badgeRow}>
             <MedicationStatusBadge expirationDate={medication.expirationDate} />
             <View style={styles.badgeSpacer} />
-            <InventoryIndicator 
-               quantity={medication.quantityAvailable} 
-               status={inventoryStatus} 
-               threshold={effectiveThreshold} 
-            />
+            <InventoryIndicator quantity={medication.quantityAvailable} status={inventoryStatus} threshold={effectiveThreshold} />
           </View>
         </View>
 
-        {/* ── Quick Actions ── */}
         <View style={styles.quickActions}>
           <Text style={styles.sectionTitle}>Log Dose</Text>
           <View style={styles.logButtons}>
-            <Button 
-                label="Take" 
-                onPress={() => handleQuickLog('taken')} 
-                style={styles.flexButton}
-            />
-            <Button 
-                label="Skip" 
-                onPress={() => handleQuickLog('skipped')} 
-                variant="outline"
-                style={styles.flexButton}
-            />
-            <Button 
-                label="Postpone" 
-                onPress={() => handleQuickLog('postponed')} 
-                variant="outline"
-                style={styles.flexButton}
-            />
+            <Button label="Take" onPress={() => handleQuickLog('taken')} style={styles.flexButton} />
+            <Button label="Skip" onPress={() => handleQuickLog('skipped')} variant="outline" style={styles.flexButton} />
+            <Button label="Postpone" onPress={() => handleQuickLog('postponed')} variant="outline" style={styles.flexButton} />
           </View>
         </View>
 
         <View style={styles.quickActions}>
           <Text style={styles.sectionTitle}>Management</Text>
-          <Button 
-            label="Manage Reminders" 
-            onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} 
-            variant="secondary" 
-          />
+          <Button label="Manage Reminders" onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} variant="secondary" />
         </View>
 
-        {/* ── Info card ── */}
         <Card padded>
-          <DetailRow label="Dosage" value={medication.dosage} />
-          <Divider />
-          <DetailRow label="Presentation" value={medication.presentation} />
-          <Divider />
-          <DetailRow
-            label="Expiration Date"
-            value={formatExpirationDate(medication.expirationDate)}
-          />
-          <Divider />
-          <DetailRow
-            label="Quantity Available"
-            value={
-              medication.quantityAvailable !== null
-                ? `${medication.quantityAvailable} units`
-                : null
-            }
-          />
-          <Divider />
-          <DetailRow
-            label="Low Stock Threshold"
-            value={
-              medication.lowStockThreshold !== null
-                ? `${medication.lowStockThreshold} units`
-                : null
-            }
-          />
+          <DetailRow label="Dosage" value={medication.dosage} styles={styles} />
+          <Divider styles={styles} />
+          <DetailRow label="Presentation" value={medication.presentation} styles={styles} />
+          <Divider styles={styles} />
+          <DetailRow label="Expiration Date" value={formatExpirationDate(medication.expirationDate)} styles={styles} />
+          <Divider styles={styles} />
+          <DetailRow label="Quantity Available" value={medication.quantityAvailable !== null ? `${medication.quantityAvailable} units` : null} styles={styles} />
+          <Divider styles={styles} />
+          <DetailRow label="Low Stock Threshold" value={medication.lowStockThreshold !== null ? `${medication.lowStockThreshold} units` : null} styles={styles} />
         </Card>
 
-        {/* ── Notes card ── */}
+        {settings?.isAiEnabled && (
+          <View style={styles.aiSection}>
+            <View style={styles.aiHeader}>
+                <Text style={styles.sectionTitle}>AI Information</Text>
+                {aiInfo && settings.isTextToSpeechEnabled && (
+                   <Button label={isReading ? "Stop" : "Read Info"} onPress={handleReadAI} variant="outline" />
+                )}
+            </View>
+            <Card padded>
+                {aiLoading ? (
+                    <Text style={styles.loadingText}>Generating insights...</Text>
+                ) : aiError ? (
+                    <View>
+                       <Text style={styles.errorText}>{aiError}</Text>
+                       <Button label="Try Again" onPress={handleGenerateAI} style={{marginTop: 8}} />
+                    </View>
+                ) : aiInfo ? (
+                    <View style={styles.aiContent}>
+                        <DetailRow label="Description" value={aiInfo.description} styles={styles} vertical />
+                        <Divider styles={styles} />
+                        <DetailRow label="Common Uses" value={aiInfo.commonUses} styles={styles} vertical />
+                        <Divider styles={styles} />
+                        <DetailRow label="Side Effects" value={aiInfo.sideEffects} styles={styles} vertical />
+                        <Divider styles={styles} />
+                        <DetailRow label="Contraindications" value={aiInfo.contraindications} styles={styles} vertical />
+                        <Divider styles={styles} />
+                        <DetailRow label="Warnings" value={aiInfo.warnings} styles={styles} vertical />
+                        <Divider styles={styles} />
+                        <DetailRow label="Interactions" value={aiInfo.interactions} styles={styles} vertical />
+                        
+                        <Button label="Regenerate" onPress={handleGenerateAI} variant="outline" style={{marginTop: 16}} />
+                    </View>
+                ) : (
+                    <Button label="Generate AI Info" onPress={handleGenerateAI} variant="secondary" />
+                )}
+            </Card>
+          </View>
+        )}
+
         {medication.notes && (
           <Card padded style={styles.notesCard}>
             <Text style={styles.notesLabel}>Notes</Text>
@@ -249,183 +258,72 @@ export function MedicationDetailScreen() {
           </Card>
         )}
 
-        {/* ── Metadata card ── */}
-        <Card padded style={styles.metaCard}>
-          <DetailRow
-            label="Added"
-            value={formatExpirationDate(medication.createdDatetime.split('T')[0])}
-          />
-          <Divider />
-          <DetailRow
-            label="Last Updated"
-            value={formatExpirationDate(medication.updatedDatetime.split('T')[0])}
-          />
+        <Card padded>
+          <DetailRow label="Added" value={formatExpirationDate(medication.createdDatetime.split('T')[0])} styles={styles} />
+          <Divider styles={styles} />
+          <DetailRow label="Last Updated" value={formatExpirationDate(medication.updatedDatetime.split('T')[0])} styles={styles} />
         </Card>
 
-        {/* ── Delete action ── */}
         <View style={styles.deleteSection}>
-          <Button
-            label="Delete Medication"
-            onPress={handleDelete}
-            variant="outline"
-            loading={isLoading}
-            accessibilityHint="Deletes this medication after confirmation"
-          />
+          <Button label="Delete Medication" onPress={handleDelete} variant="outline" loading={isLoading} />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
+// Sub-components
+function DetailRow({ label, value, styles, vertical }: { label: string; value: string | null | undefined, styles: any, vertical?: boolean }) {
+  if (vertical) {
+      return (
+        <View style={styles.detailRowVertical}>
+          <Text style={styles.detailLabel}>{label}</Text>
+          <Text style={styles.detailValueVertical}>{value ?? '—'}</Text>
+        </View>
+      );
+  }
   return (
-    <View style={detailStyles.row}>
-      <Text style={detailStyles.label}>{label}</Text>
-      <Text style={detailStyles.value}>{value ?? '—'}</Text>
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailValue}>{value ?? '—'}</Text>
     </View>
   );
 }
 
-function Divider() {
-  return <View style={detailStyles.divider} />;
+function Divider({ styles }: { styles: any }) {
+  return <View style={styles.divider} />;
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: LightColors.background,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.md,
-    paddingHorizontal: Spacing.xl,
-  },
-  loadingText: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
-  },
-  errorText: {
-    ...Typography.bodyMD,
-    color: LightColors.error,
-    textAlign: 'center',
-  },
-
-  // Nav header
-  navHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
-  },
-
-  // Scroll
-  scrollContent: {
-    paddingHorizontal: Spacing.md,
-    paddingBottom: Spacing.xxxl,
-    gap: Spacing.md,
-  },
-
-  // Photo
-  photoContainer: {
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  photo: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 2,
-    borderColor: LightColors.border,
-  },
-
-  // Title block
-  titleBlock: {
-    gap: Spacing.xs,
-    marginBottom: Spacing.xs,
-  },
-  title: {
-    ...Typography.headingXL,
-    color: LightColors.textPrimary,
-  },
-  dosage: {
-    ...Typography.bodyLG,
-    color: LightColors.textSecondary,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: Spacing.xxs,
-  },
-  badgeSpacer: {
-    width: Spacing.sm,
-  },
-  sectionTitle: {
-    ...Typography.headingMD,
-    color: LightColors.textPrimary,
-    marginBottom: Spacing.xs,
-  },
-  quickActions: {
-    marginBottom: Spacing.sm,
-  },
-  logButtons: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  flexButton: {
-    flex: 1,
-  },
-
-  // Notes
-  notesCard: {
-    gap: Spacing.xs,
-  },
-  notesLabel: {
-    ...Typography.bodySM,
-    fontWeight: '600',
-    color: LightColors.textSecondary,
-  },
-  notesText: {
-    ...Typography.bodyMD,
-    color: LightColors.textPrimary,
-  },
-
-  // Meta
-  metaCard: {},
-
-  // Delete
-  deleteSection: {
-    marginTop: Spacing.sm,
-  },
+// Styles
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.background },
+  centered: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Spacing.md, paddingHorizontal: Spacing.xl },
+  loadingText: { ...typography.bodyMD, color: colors.textSecondary },
+  errorText: { ...typography.bodyMD, color: colors.error, textAlign: 'center' },
+  navHeader: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.sm },
+  scrollContent: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xxxl, gap: Spacing.md },
+  photoContainer: { alignItems: 'center', marginBottom: Spacing.md },
+  photo: { width: 160, height: 160, borderRadius: 80, borderWidth: 2, borderColor: colors.border },
+  titleBlock: { gap: Spacing.xs, marginBottom: Spacing.xs },
+  title: { ...typography.headingXL, color: colors.textPrimary },
+  dosage: { ...typography.bodyLG, color: colors.textSecondary },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.xxs },
+  badgeSpacer: { width: Spacing.sm },
+  sectionTitle: { ...typography.headingMD, color: colors.textPrimary, marginBottom: Spacing.xs },
+  quickActions: { marginBottom: Spacing.sm },
+  logButtons: { flexDirection: 'row', gap: Spacing.xs },
+  flexButton: { flex: 1 },
+  notesCard: { gap: Spacing.xs },
+  notesLabel: { ...typography.bodySM, fontWeight: '600', color: colors.textSecondary },
+  notesText: { ...typography.bodyMD, color: colors.textPrimary },
+  deleteSection: { marginTop: Spacing.sm },
+  detailRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: Spacing.xs },
+  detailRowVertical: { flexDirection: 'column', alignItems: 'flex-start', paddingVertical: Spacing.xs, gap: 4 },
+  detailLabel: { ...typography.bodySM, color: colors.textSecondary, flex: 1 },
+  detailValue: { ...typography.bodyMD, color: colors.textPrimary, flex: 2, textAlign: 'right' },
+  detailValueVertical: { ...typography.bodyMD, color: colors.textPrimary },
+  divider: { height: 1, backgroundColor: colors.border },
+  aiSection: { marginTop: Spacing.sm },
+  aiHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xs },
+  aiContent: { gap: 4 }
 });
-
-const detailStyles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Spacing.xs,
-  },
-  label: {
-    ...Typography.bodySM,
-    color: LightColors.textSecondary,
-    flex: 1,
-  },
-  value: {
-    ...Typography.bodyMD,
-    color: LightColors.textPrimary,
-    flex: 2,
-    textAlign: 'right',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: LightColors.border,
-  },
-});
-

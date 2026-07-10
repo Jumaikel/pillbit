@@ -8,9 +8,10 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { ExpirationStatus } from '@/features/medication/types';
 import { getExpirationLabel, getExpirationStatus } from '@/features/medication/utils/medicationUtils';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,11 +22,7 @@ interface MedicationStatusBadgeProps {
 
 // ─── Status → Style Map ───────────────────────────────────────────────────────
 
-const badgeColorMap: Record<ExpirationStatus, { background: string; text: string }> = {
-  valid: { background: '#E8F8ED', text: LightColors.success },
-  expiring: { background: '#FFF5E0', text: LightColors.warning },
-  expired: { background: '#FEE9E7', text: LightColors.error },
-};
+
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -40,23 +37,32 @@ const badgeColorMap: Record<ExpirationStatus, { background: string; text: string
  * ```
  */
 export function MedicationStatusBadge({ expirationDate }: MedicationStatusBadgeProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const status = getExpirationStatus(expirationDate);
   const label = getExpirationLabel(expirationDate);
-  const colors = badgeColorMap[status];
+  
+  const badgeColorMap: Record<ExpirationStatus, { background: string; text: string }> = {
+    valid: { background: '#E8F8ED', text: colors.success },
+    expiring: { background: '#FFF5E0', text: colors.warning },
+    expired: { background: '#FEE9E7', text: colors.error },
+  };
+
+  const statusColors = badgeColorMap[status];
 
   return (
     <View
-      style={[styles.badge, { backgroundColor: colors.background }]}
+      style={[styles.badge, { backgroundColor: statusColors.background }]}
       accessibilityLabel={`Expiration status: ${label}`}
     >
-      <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
+      <Text style={[styles.label, { color: statusColors.text }]}>{label}</Text>
     </View>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   badge: {
     borderRadius: Radius.full,
     paddingHorizontal: Spacing.sm,
@@ -64,7 +70,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   label: {
-    ...Typography.caption,
+    ...typography.caption,
     fontWeight: '600',
   },
 });

@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { LightColors, Radius, Spacing, Typography } from '@/constants';
+import { Radius, Spacing } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ImagePickerInputProps {
   value?: string | null;
@@ -18,6 +19,8 @@ export function ImagePickerInput({
   label = 'Medication Photo',
   errorMessage,
 }: ImagePickerInputProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const [loading, setLoading] = useState(false);
 
   const handlePress = () => {
@@ -102,7 +105,7 @@ export function ImagePickerInput({
             <Image source={{ uri: value }} style={styles.avatar} contentFit="cover" />
           ) : (
             <View style={styles.placeholder}>
-              <Ionicons name="camera" size={32} color={LightColors.textSecondary} />
+              <Ionicons name="camera" size={32} color={colors.textSecondary} />
               <Text style={styles.placeholderText}>Add Photo</Text>
             </View>
           )}
@@ -116,14 +119,14 @@ export function ImagePickerInput({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     marginBottom: Spacing.md,
   },
   label: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
-    color: LightColors.textSecondary,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
@@ -136,9 +139,9 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: LightColors.surface,
+    backgroundColor: colors.surface,
     borderWidth: 1.5,
-    borderColor: LightColors.border,
+    borderColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -158,8 +161,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholderText: {
-    ...Typography.caption,
-    color: LightColors.textSecondary,
+    ...typography.caption,
+    color: colors.textSecondary,
     marginTop: Spacing.xxs,
   },
   editBadge: {
@@ -171,8 +174,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   errorText: {
-    ...Typography.caption,
-    color: LightColors.error,
+    ...typography.caption,
+    color: colors.error,
     marginTop: Spacing.xxs,
   },
 });

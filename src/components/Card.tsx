@@ -5,7 +5,8 @@ import {
   View,
   ViewProps,
 } from 'react-native';
-import { LightColors, Spacing, Radius, getShadowStyle } from '@/constants';
+import { Spacing, Radius, getShadowStyle } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -58,6 +59,8 @@ type CardProps = StaticCardProps | PressableCardProps;
  *  - Supports accessibilityLabel and accessibilityHint on pressable cards
  */
 export function Card({ children, padded = true, ...rest }: CardProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const paddingStyle = padded ? styles.padded : undefined;
 
   if ('onPress' in rest && rest.onPress != null) {
@@ -90,9 +93,9 @@ export function Card({ children, padded = true, ...rest }: CardProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   card: {
-    backgroundColor: LightColors.cardBackground,
+    backgroundColor: colors.cardBackground,
     borderRadius: Radius.lg,
     ...getShadowStyle('card'),
   },

@@ -99,6 +99,46 @@ export const DarkColors: ColorScheme = {
   border: '#1B6F83',
 };
 
+export const HighContrastLightColors: ColorScheme = {
+  primary: '#005D74',
+  primaryLight: '#0085A1',
+  primaryContainer: '#003A4A',
+  secondary: '#3D4699',
+  accent: '#A50059',
+  background: '#FFFFFF',
+  surface: '#FFFFFF',
+  surfaceVariant: '#E0E0E0',
+  cardBackground: '#FFFFFF',
+  textPrimary: '#000000',
+  textSecondary: '#1C1C1C',
+  textDisabled: '#4A4A4A',
+  success: '#006611',
+  warning: '#995B00',
+  error: '#990000',
+  info: '#005D74',
+  border: '#000000',
+};
+
+export const HighContrastDarkColors: ColorScheme = {
+  primary: '#7DE5FF',
+  primaryLight: '#B3F0FF',
+  primaryContainer: '#0095BA',
+  secondary: '#E6E9FF',
+  accent: '#FFB3E6',
+  background: '#000000',
+  surface: '#000000',
+  surfaceVariant: '#1A1A1A',
+  cardBackground: '#000000',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#E0E0E0',
+  textDisabled: '#A3A3A3',
+  success: '#66FF7A',
+  warning: '#FFD166',
+  error: '#FF6666',
+  info: '#7DE5FF',
+  border: '#FFFFFF',
+};
+
 export const Colors = {
   light: LightColors,
   dark: DarkColors,

@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 import { 
     useHistoryStore, 
     HistoryCard, 
@@ -10,6 +11,8 @@ import {
 } from '@/features/history';
 
 export default function HistoryScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     const { records, filters, isLoading, loadHistory, setFilters } = useHistoryStore();
 
     useEffect(() => {
@@ -33,7 +36,7 @@ export default function HistoryScreen() {
 
             {isLoading && records.length === 0 ? (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={LightColors.primary} />
+                    <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             ) : (
                 <FlatList
@@ -48,10 +51,10 @@ export default function HistoryScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: LightColors.background,
+        backgroundColor: colors.background,
     },
     header: {
         paddingHorizontal: Spacing.md,
@@ -59,8 +62,8 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.sm,
     },
     title: {
-        ...Typography.headingXL,
-        color: LightColors.textPrimary,
+        ...typography.headingXL,
+        color: colors.textPrimary,
     },
     filterContainer: {
         marginBottom: Spacing.xs,

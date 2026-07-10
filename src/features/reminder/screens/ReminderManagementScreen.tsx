@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, EmptyState } from '@/components';
-import { LightColors, Spacing, Typography } from '@/constants';
+import { Spacing } from '@/constants';
 import { useReminderStore } from '../store/useReminderStore';
 import { ReminderItem } from '../components/ReminderItem';
 import { ReminderForm, ReminderFormValues } from '../components/ReminderForm';
 import { MedicationReminder } from '@/database';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ReminderManagementScreenProps {
   medicationId: number;
 }
 
 export function ReminderManagementScreen({ medicationId }: ReminderManagementScreenProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const { 
     reminders, 
     isLoading, 
@@ -161,10 +164,10 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: Spacing.md,
@@ -177,8 +180,8 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   title: {
-    ...Typography.headingLG,
-    color: LightColors.textPrimary,
+    ...typography.headingLG,
+    color: colors.textPrimary,
   },
   list: {
     gap: Spacing.sm,
@@ -187,8 +190,8 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   formTitle: {
-    ...Typography.headingLG,
-    color: LightColors.textPrimary,
+    ...typography.headingLG,
+    color: colors.textPrimary,
     marginBottom: Spacing.sm,
   },
   cancelButton: {

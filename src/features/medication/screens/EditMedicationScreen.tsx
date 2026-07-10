@@ -27,15 +27,18 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useCallback, useEffect, useState } from 'react';
 import { Medication, MedicationRepository } from '@/database';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Button, Input, DateInput, ImagePickerInput } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function EditMedicationScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const medicationId = Number(id);
@@ -343,10 +346,10 @@ export function EditMedicationScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
   flex: {
     flex: 1,
@@ -359,12 +362,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   loadingText: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
   },
   errorText: {
-    ...Typography.bodyMD,
-    color: LightColors.error,
+    ...typography.bodyMD,
+    color: colors.error,
     textAlign: 'center',
   },
 
@@ -385,13 +388,13 @@ const styles = StyleSheet.create({
 
   // Screen title
   screenTitle: {
-    ...Typography.headingXL,
-    color: LightColors.textPrimary,
+    ...typography.headingXL,
+    color: colors.textPrimary,
     marginBottom: Spacing.xxs,
   },
   screenSubtitle: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
   },
 
@@ -404,9 +407,9 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   sectionLabel: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
-    color: LightColors.textSecondary,
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },

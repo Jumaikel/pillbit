@@ -55,26 +55,23 @@ interface InventoryActions {
 /** Returns medications with 'low_stock' or 'empty' status, ordered by urgency */
 export const selectLowStockMedications = (
     state: InventoryState,
-): MedicationInventoryState[] =>
-    state.inventoryItems
-        .filter(
-            (item) =>
-                item.inventoryStatus === 'low_stock' || item.inventoryStatus === 'empty',
-        )
-        .sort((a, b) => {
-            // Empty first
-            if (a.inventoryStatus === 'empty' && b.inventoryStatus !== 'empty') return -1;
-            if (b.inventoryStatus === 'empty' && a.inventoryStatus !== 'empty') return 1;
-            const qa = a.quantityAvailable ?? 0;
-            const qb = b.quantityAvailable ?? 0;
-            return qa - qb;
-        });
+): MedicationInventoryState[] => state.lowStockItems;
 
 /** Returns the count of low-stock + empty medications */
 export const selectLowStockCount = (state: InventoryState): number =>
-    state.inventoryItems.filter(
-        (item) => item.inventoryStatus === 'low_stock' || item.inventoryStatus === 'empty',
-    ).length;
+    state.lowStockItems.length;
+
+// ─── Helper for sorting low stock items ───────────────────────────────────────
+const sortLowStock = (items: MedicationInventoryState[]) => {
+    return [...items].sort((a, b) => {
+        // Empty first
+        if (a.inventoryStatus === 'empty' && b.inventoryStatus !== 'empty') return -1;
+        if (b.inventoryStatus === 'empty' && a.inventoryStatus !== 'empty') return 1;
+        const qa = a.quantityAvailable ?? 0;
+        const qb = b.quantityAvailable ?? 0;
+        return qa - qb;
+    });
+};
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -91,10 +88,10 @@ export const useInventoryStore = create<InventoryState & InventoryActions>((set,
         set({ isLoading: true, error: null });
         try {
             const inventoryItems = await InventoryService.getAllWithInventoryState();
-            const lowStockItems = inventoryItems.filter(
+            const lowStockItems = sortLowStock(inventoryItems.filter(
                 (item) =>
                     item.inventoryStatus === 'low_stock' || item.inventoryStatus === 'empty',
-            );
+            ));
             set({ inventoryItems, lowStockItems, isLoading: false });
         } catch (e) {
             const message = e instanceof Error ? e.message : 'Failed to load inventory';
@@ -106,10 +103,10 @@ export const useInventoryStore = create<InventoryState & InventoryActions>((set,
         // Lightweight refresh — no loading spinner needed for background sync
         try {
             const inventoryItems = await InventoryService.getAllWithInventoryState();
-            const lowStockItems = inventoryItems.filter(
+            const lowStockItems = sortLowStock(inventoryItems.filter(
                 (item) =>
                     item.inventoryStatus === 'low_stock' || item.inventoryStatus === 'empty',
-            );
+            ));
             set({ inventoryItems, lowStockItems });
         } catch (e) {
             const message = e instanceof Error ? e.message : 'Failed to refresh inventory';

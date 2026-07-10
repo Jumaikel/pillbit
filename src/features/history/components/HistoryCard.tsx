@@ -1,27 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/Card';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { ConsumptionHistoryItem } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
-// ─── Status Map ───────────────────────────────────────────────────────────────
 
-const statusConfig = {
-    taken: {
-        label: 'Taken',
-        background: '#E8F8ED',
-        text: LightColors.success,
-    },
-    postponed: {
-        label: 'Postponed',
-        background: '#FFF5E0',
-        text: LightColors.warning,
-    },
-    skipped: {
-        label: 'Skipped',
-        background: '#FEE9E7',
-        text: LightColors.error,
-    },
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -30,6 +13,27 @@ interface HistoryCardProps {
 }
 
 export function HistoryCard({ item }: HistoryCardProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
+  
+    const statusConfig = {
+        taken: {
+            label: 'Taken',
+            background: '#E8F8ED',
+            text: colors.success,
+        },
+        postponed: {
+            label: 'Postponed',
+            background: '#FFF5E0',
+            text: colors.warning,
+        },
+        skipped: {
+            label: 'Skipped',
+            background: '#FEE9E7',
+            text: colors.error,
+        },
+    };
+    
     const config = statusConfig[item.status];
     const dateObj = new Date(item.actionDatetime);
     const dateStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -64,7 +68,7 @@ export function HistoryCard({ item }: HistoryCardProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         marginBottom: Spacing.sm,
     },
@@ -75,13 +79,13 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.sm,
     },
     medicationName: {
-        ...Typography.headingMD,
-        color: LightColors.textPrimary,
+        ...typography.headingMD,
+        color: colors.textPrimary,
         marginBottom: 2,
     },
     dosage: {
-        ...Typography.bodySM,
-        color: LightColors.textSecondary,
+        ...typography.bodySM,
+        color: colors.textSecondary,
     },
     badge: {
         borderRadius: Radius.full,
@@ -89,7 +93,7 @@ const styles = StyleSheet.create({
         paddingVertical: Spacing.xxs,
     },
     badgeText: {
-        ...Typography.caption,
+        ...typography.caption,
         fontWeight: '600',
     },
     footer: {
@@ -98,15 +102,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingTop: Spacing.xs,
         borderTopWidth: 1,
-        borderTopColor: LightColors.surfaceVariant,
+        borderTopColor: colors.surfaceVariant,
     },
     datetime: {
-        ...Typography.caption,
-        color: LightColors.textSecondary,
+        ...typography.caption,
+        color: colors.textSecondary,
     },
     quantity: {
-        ...Typography.caption,
-        color: LightColors.textPrimary,
+        ...typography.caption,
+        color: colors.textPrimary,
         fontWeight: '500',
     },
 });

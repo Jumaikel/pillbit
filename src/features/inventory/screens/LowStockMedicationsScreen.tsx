@@ -18,15 +18,18 @@ import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Button, EmptyState } from '@/components';
 import { useInventoryStore, selectLowStockMedications } from '../store/useInventoryStore';
 import { InventoryStatusCard } from '../components/InventoryStatusCard';
 import { MedicationInventoryState } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function LowStockMedicationsScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     const router = useRouter();
 
     const isLoading = useInventoryStore((s) => s.isLoading);
@@ -94,7 +97,7 @@ export function LowStockMedicationsScreen() {
                     <RefreshControl
                         refreshing={isLoading}
                         onRefresh={handleRefresh}
-                        tintColor={LightColors.primary}
+                        tintColor={colors.primary}
                     />
                 }
                 ListEmptyComponent={
@@ -112,10 +115,10 @@ export function LowStockMedicationsScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: LightColors.background,
+        backgroundColor: colors.background,
     },
     navHeader: {
         paddingHorizontal: Spacing.md,
@@ -128,12 +131,12 @@ const styles = StyleSheet.create({
         paddingBottom: Spacing.md,
     },
     title: {
-        ...Typography.headingXL,
-        color: LightColors.textPrimary,
+        ...typography.headingXL,
+        color: colors.textPrimary,
     },
     subtitle: {
-        ...Typography.bodyMD,
-        color: LightColors.textSecondary,
+        ...typography.bodyMD,
+        color: colors.textSecondary,
         marginTop: Spacing.xxs,
     },
     listContent: {

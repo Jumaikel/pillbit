@@ -3,9 +3,12 @@ import { ReminderManagementScreen } from '@/features/reminder/screens/ReminderMa
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components';
-import { LightColors, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function RemindersRoute() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
@@ -19,10 +22,10 @@ export default function RemindersRoute() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
   navHeader: {
     paddingHorizontal: Spacing.md,

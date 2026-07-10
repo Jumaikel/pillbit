@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect } from 'react';
 import { initDatabase } from '@/database';
+import { useConfigStore } from '@/store/useConfigStore';
 
 import { NotificationService } from '@/services/NotificationService';
 
@@ -30,6 +31,7 @@ export default function RootLayout() {
     const initApp = async () => {
       try {
         await initDatabase();
+        await useConfigStore.getState().loadSettings();
         await NotificationService.syncReminders();
         await NotificationService.syncExpirationAlerts();
         await NotificationService.syncLowStockAlerts();

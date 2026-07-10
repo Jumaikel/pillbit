@@ -10,7 +10,8 @@
  */
 
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -26,10 +27,12 @@ interface LowStockBannerProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function LowStockBanner({ count, hasEmpty = false, onPress }: LowStockBannerProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     if (count === 0) return null;
 
     const bgColor = hasEmpty ? '#FEE9E7' : '#FFF5E0';
-    const borderColor = hasEmpty ? LightColors.error : LightColors.warning;
+    const borderColor = hasEmpty ? colors.error : colors.warning;
     const iconText = hasEmpty ? '🚨' : '⚠️';
     const titleText = hasEmpty
         ? count === 1
@@ -52,14 +55,14 @@ export function LowStockBanner({ count, hasEmpty = false, onPress }: LowStockBan
                     <Text
                         style={[
                             styles.title,
-                            { color: hasEmpty ? LightColors.error : LightColors.warning },
+                            { color: hasEmpty ? colors.error : colors.warning },
                         ]}
                     >
                         {titleText}
                     </Text>
                     <Text style={styles.subtitle}>Tap to manage inventory</Text>
                 </View>
-                <Text style={[styles.arrow, { color: hasEmpty ? LightColors.error : LightColors.warning }]}>
+                <Text style={[styles.arrow, { color: hasEmpty ? colors.error : colors.warning }]}>
                     →
                 </Text>
             </View>
@@ -69,7 +72,7 @@ export function LowStockBanner({ count, hasEmpty = false, onPress }: LowStockBan
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     banner: {
         borderRadius: Radius.md,
         borderWidth: 1,
@@ -89,16 +92,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        ...Typography.bodySM,
+        ...typography.bodySM,
         fontWeight: '700',
     },
     subtitle: {
-        ...Typography.caption,
-        color: LightColors.textSecondary,
+        ...typography.caption,
+        color: colors.textSecondary,
         marginTop: 2,
     },
     arrow: {
-        ...Typography.bodyMD,
+        ...typography.bodyMD,
         fontWeight: '700',
     },
 });

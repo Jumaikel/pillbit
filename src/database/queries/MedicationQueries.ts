@@ -123,4 +123,26 @@ export class MedicationQueries {
             notes: row.csr_notes
         }));
     }
+
+    static async getTodaySchedule(): Promise<any[]> {
+        const db = getDatabase();
+        const rows = await db.getAllAsync<any>(
+            `SELECT 
+                r.mdr_id as reminderId,
+                r.mdr_reminder_time as reminderTime,
+                m.mdc_id as medicationId,
+                m.mdc_name as medicationName,
+                m.mdc_dosage as dosage,
+                c.csr_status as status,
+                c.csr_id as consumptionId
+             FROM pbt_medication_reminder r
+             JOIN pbt_medication m ON r.mdc_id = m.mdc_id
+             LEFT JOIN pbt_consumption_record c 
+                ON r.mdr_id = c.mdr_id AND date(c.csr_scheduled_datetime) = date('now', 'localtime')
+             WHERE r.mdr_is_active = 1 
+             AND m.mdc_deleted_datetime IS NULL
+             ORDER BY r.mdr_reminder_time ASC`
+        );
+        return rows;
+    }
 }

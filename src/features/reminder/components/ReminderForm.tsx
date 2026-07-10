@@ -5,7 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Button, Card } from '@/components';
-import { Typography, Spacing, LightColors } from '@/constants';
+import { Spacing } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 const reminderSchema = z.object({
   reminderTime: z.date(),
@@ -27,6 +28,8 @@ export function ReminderForm({
   isLoading = false,
   submitLabel = 'Save Reminder',
 }: ReminderFormProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const [showPicker, setShowPicker] = useState(false);
 
   // Default to 08:00 AM if no initial value is provided
@@ -87,7 +90,7 @@ export function ReminderForm({
           name="isActive"
           render={({ field: { onChange, value } }) => (
             <Switch
-              trackColor={{ false: LightColors.border, true: LightColors.primary }}
+              trackColor={{ false: colors.border, true: colors.primary }}
               thumbColor="#f4f3f4"
               onValueChange={onChange}
               value={value}
@@ -106,7 +109,7 @@ export function ReminderForm({
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     gap: Spacing.md,
   },
@@ -114,9 +117,9 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   label: {
-    ...Typography.bodyMD,
+    ...typography.bodyMD,
     fontWeight: '600',
-    color: LightColors.textPrimary,
+    color: colors.textPrimary,
   },
   switchContainer: {
     flexDirection: 'row',

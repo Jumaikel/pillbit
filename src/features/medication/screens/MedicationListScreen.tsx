@@ -28,16 +28,19 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect } from 'react';
 import { Medication } from '@/database';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { EmptyState } from '@/components';
 import { useMedicationStore, selectFilteredMedications } from '../store/useMedicationStore';
 import { MedicationCard } from '../components/MedicationCard';
 import { useExpirationStore } from '@/features/expiration';
 import { useInventoryStore, selectLowStockCount } from '@/features/inventory';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function MedicationListScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const router = useRouter();
 
   // ─── Store selectors (always select only what you need) ──────────────────
@@ -142,7 +145,7 @@ export function MedicationListScreen() {
         <TextInput
           style={styles.searchInput}
           placeholder="Search medications…"
-          placeholderTextColor={LightColors.textDisabled}
+          placeholderTextColor={colors.textDisabled}
           value={searchQuery}
           onChangeText={setSearchQuery}
           returnKeyType="search"
@@ -158,7 +161,7 @@ export function MedicationListScreen() {
           style={styles.expirationLink}
           onPress={() => router.push('/medications/low-stock' as never)}
         >
-          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: LightColors.error }]}>Low Stock ({lowStockCount})</Text>
+          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: colors.error }]}>Low Stock ({lowStockCount})</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.expirationLink}
@@ -177,7 +180,7 @@ export function MedicationListScreen() {
       {/* ── Loading Spinner (initial load only) ── */}
       {isLoading && filteredMedications.length === 0 && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={LightColors.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading medications…</Text>
         </View>
       )}
@@ -205,10 +208,10 @@ export function MedicationListScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
 
   // Header
@@ -221,11 +224,11 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.sm,
   },
   headerTitle: {
-    ...Typography.headingXL,
-    color: LightColors.textPrimary,
+    ...typography.headingXL,
+    color: colors.textPrimary,
   },
   addButton: {
-    backgroundColor: LightColors.primary,
+    backgroundColor: colors.primary,
     borderRadius: Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
@@ -234,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addButtonText: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
     color: '#FFFFFF',
   },
@@ -248,11 +251,11 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: Radius.sm,
     borderWidth: 1.5,
-    borderColor: LightColors.border,
-    backgroundColor: LightColors.surface,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     paddingHorizontal: Spacing.md,
-    color: LightColors.textPrimary,
-    ...Typography.bodyMD,
+    color: colors.textPrimary,
+    ...typography.bodyMD,
   },
 
   // Expiration Links
@@ -266,21 +269,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    backgroundColor: LightColors.surface,
+    backgroundColor: colors.surface,
     borderRadius: Radius.full,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: LightColors.border,
+    borderColor: colors.border,
   },
   expirationLinkText: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
-    color: LightColors.warning,
+    color: colors.warning,
   },
   expirationLinkTextError: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
-    color: LightColors.error,
+    color: colors.error,
   },
 
   // Loading
@@ -291,8 +294,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   loadingText: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
   },
 
   // List

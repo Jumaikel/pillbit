@@ -44,8 +44,8 @@ interface MedicationState {
 interface MedicationActions {
   /** Load all non-deleted medications from the database into state */
   loadMedications: () => Promise<void>;
-  /** Create a new medication, persist it, and refresh state */
-  createMedication: (data: CreateMedicationDTO) => Promise<void>;
+  /** Create a new medication, persist it, and refresh state. Returns the new ID. */
+  createMedication: (data: CreateMedicationDTO) => Promise<number>;
   /** Update an existing medication, persist changes, and refresh state */
   updateMedication: (id: number, data: UpdateMedicationDTO) => Promise<void>;
   /** Soft-delete a medication and refresh state */
@@ -106,6 +106,7 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
       // Refresh the full list after creation
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
+      return id;
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to create medication';
       set({ error: message, isLoading: false });

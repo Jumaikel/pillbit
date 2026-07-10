@@ -22,6 +22,8 @@ export class ApplicationSettingRepository {
             autoReduceStock: row.ast_auto_reduce_stock === 1,
             aiInfoAutoGenerate: row.ast_ai_info_auto_generate === 1,
             showMedicalDisclaimer: row.ast_show_medical_disclaimer === 1,
+            isAiEnabled: row.ast_is_ai_enabled === 1,
+            aiModel: row.ast_ai_model,
             createdDatetime: row.ast_created_datetime,
             updatedDatetime: row.ast_updated_datetime
         };
@@ -76,6 +78,8 @@ export class ApplicationSettingRepository {
                 ast_auto_reduce_stock = ?,
                 ast_ai_info_auto_generate = ?,
                 ast_show_medical_disclaimer = ?,
+                ast_is_ai_enabled = ?,
+                ast_ai_model = ?,
                 ast_updated_datetime = ?
              WHERE ast_id = 1`,
             [
@@ -95,6 +99,8 @@ export class ApplicationSettingRepository {
                 data.autoReduceStock !== undefined ? (data.autoReduceStock ? 1 : 0) : (current.autoReduceStock ? 1 : 0),
                 data.aiInfoAutoGenerate !== undefined ? (data.aiInfoAutoGenerate ? 1 : 0) : (current.aiInfoAutoGenerate ? 1 : 0),
                 data.showMedicalDisclaimer !== undefined ? (data.showMedicalDisclaimer ? 1 : 0) : (current.showMedicalDisclaimer ? 1 : 0),
+                data.isAiEnabled !== undefined ? (data.isAiEnabled ? 1 : 0) : (current.isAiEnabled ? 1 : 0),
+                data.aiModel !== undefined ? data.aiModel : current.aiModel,
                 now
             ]
         );

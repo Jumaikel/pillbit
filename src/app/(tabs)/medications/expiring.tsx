@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import { StyleSheet, View, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { LightColors, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { useExpirationStore, ExpirationCard } from '@/features/expiration';
 import { EmptyState } from '@/components/EmptyState';
+import { useTheme } from '@/hooks/useTheme';
 
 export default function ExpiringSoonScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     const { expiringSoonList, isLoading, refreshExpirationData } = useExpirationStore();
     const router = useRouter();
 
@@ -21,7 +24,7 @@ export default function ExpiringSoonScreen() {
         <View style={styles.container}>
             {isLoading && expiringSoonList.length === 0 ? (
                 <View style={styles.centerContainer}>
-                    <ActivityIndicator size="large" color={LightColors.primary} />
+                    <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             ) : (
                 <FlatList
@@ -48,10 +51,10 @@ export default function ExpiringSoonScreen() {
     );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: LightColors.background,
+        backgroundColor: colors.background,
     },
     listContent: {
         padding: Spacing.md,

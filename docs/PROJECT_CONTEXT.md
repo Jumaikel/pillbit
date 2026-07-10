@@ -60,6 +60,18 @@ PillBit is a React Native / Expo application for managing medications, schedulin
 * Add `expo_notification_id` to `pbt_medication_reminder`
 **Status:** Accepted
 
+### Decision: Dynamic Theming and Scaling via Custom Hook
+**Date:** 2026-07-09
+**Reason:** We need global High Contrast and Text Scaling support without requiring application restarts. We created a `useTheme` hook that pulls active configuration from SQLite/Zustand and computes `Typography` scales and color palettes on the fly.
+**Alternatives:**
+* App restart + NativeWind custom configuration
+**Status:** Accepted
+
+### Decision: Anthropic/OpenRouter AI Architecture
+**Date:** 2026-07-09
+**Reason:** We integrated OpenRouter for structured AI Medication Information generation using prompt engineering for JSON output. API logic is isolated in `OpenRouterService`, state in `useAIStore`, and persistence in `MedicationAiInformationRepository` to act as a local cache and minimize network overhead.
+**Status:** Accepted
+
 ---
 
 ## Database
@@ -390,6 +402,15 @@ Modified:
 ---
 
 ## Changelog
+
+### v0.6.0 (Week 6 Scope)
+* Implemented **Settings & Configuration Module** with a centralized `useConfigStore` and SQLite schema migration (`002_ai_settings.ts`).
+* Developed **Theme & Accessibility Architecture**, refactoring the app to use a `useTheme` hook for dynamic Text Scaling (Normal, Large, Extra Large) and High Contrast mode colors.
+* Added **AI Integration** via OpenRouter/Anthropic to generate medication insights (Contraindications, Side Effects, Interactions).
+* Added **Local AI Cache** leveraging `pbt_medication_ai_information` to eliminate redundant API calls.
+* Integrated **Text-To-Speech (TTS)** using `expo-speech` to read medication insights dynamically.
+* Scaffolding for **Voice Input** provided via `expo-speech-recognition` in `VoiceInputService`.
+* Upgraded `/settings` tab with Accessibility and AI Configuration sections.
 
 ### v0.5.0 (Week 4 Scope)
 * Implemented Consumption History Module (`features/history`).

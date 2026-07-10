@@ -94,6 +94,8 @@ export interface ApplicationSetting {
     autoReduceStock: boolean;
     aiInfoAutoGenerate: boolean;
     showMedicalDisclaimer: boolean;
+    isAiEnabled: boolean;
+    aiModel: string;
     createdDatetime: string;
     updatedDatetime: string;
 }

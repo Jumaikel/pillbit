@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Platform, Pressable, View, Modal, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { Input } from './Input';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 interface DateInputProps {
   label: string;
@@ -12,6 +13,8 @@ interface DateInputProps {
 }
 
 export function DateInput({ label, value, onChange, errorMessage }: DateInputProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const [show, setShow] = useState(false);
 
   // Parse YYYY-MM-DD, default to today if empty
@@ -92,14 +95,14 @@ export function DateInput({ label, value, onChange, errorMessage }: DateInputPro
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
     backgroundColor: 'rgba(0,0,0,0.4)',
   },
   modalContent: {
-    backgroundColor: LightColors.surface,
+    backgroundColor: colors.surface,
     paddingBottom: Spacing.xl,
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
@@ -109,14 +112,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     padding: Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: LightColors.border,
+    borderBottomColor: colors.border,
   },
   doneButton: {
-    ...Typography.bodyLG,
+    ...typography.bodyLG,
     fontWeight: '600',
-    color: LightColors.primary,
+    color: colors.primary,
   },
   iosPicker: {
-    backgroundColor: LightColors.surface,
+    backgroundColor: colors.surface,
   },
 });

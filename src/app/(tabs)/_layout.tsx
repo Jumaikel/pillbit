@@ -1,43 +1,30 @@
 import { Tabs } from 'expo-router';
-import { useColorScheme, View, Platform } from 'react-native';
+import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { LightColors, DarkColors, Shadows, getShadowStyle, Radius, Spacing } from '@/constants';
+import { Radius } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 /**
  * TabsLayout
  *
  * Bottom Tab Navigator for PillBit.
- *
- * Tabs:
- *  - Home         → (tabs)/index.tsx         → /
- *  - Medications  → (tabs)/medications.tsx    → /medications
- *  - History      → (tabs)/history.tsx        → /history
- *  - Settings     → (tabs)/settings.tsx       → /settings
- *
- * Design decisions:
- * - Uses Ionicons for robust cross-platform icons.
- * - Active tint: primary (#24C9EA).
- * - Inactive tint: textDisabled.
- * - Tab bar background: surface color per theme with shadow.
- * - Pill-shaped active state background for a premium feel.
  */
 
 interface TabIconProps {
   name: React.ComponentProps<typeof Ionicons>['name'];
   focused: boolean;
-  colorScheme: 'light' | 'dark';
+  color: string;
 }
 
-function TabIcon({ name, focused, colorScheme }: TabIconProps) {
-  const colors = colorScheme === 'dark' ? DarkColors : LightColors;
-  const iconColor = focused ? '#FFFFFF' : colors.textDisabled;
+function TabIcon({ name, focused, color }: TabIconProps) {
+  const { colors } = useTheme();
 
   return (
     <View
       style={{
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        borderRadius: Radius.full,
+        width: 60,
+        height: 32,
+        borderRadius: 16,
         backgroundColor: focused ? colors.primary : 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -45,17 +32,15 @@ function TabIcon({ name, focused, colorScheme }: TabIconProps) {
     >
       <Ionicons
         name={name}
-        size={22}
-        color={iconColor}
+        size={20}
+        color={focused ? '#FFFFFF' : color}
       />
     </View>
   );
 }
 
 export default function TabsLayout() {
-  const rawScheme = useColorScheme();
-  const colorScheme: 'light' | 'dark' = rawScheme === 'dark' ? 'dark' : 'light';
-  const colors = colorScheme === 'dark' ? DarkColors : LightColors;
+  const { colors } = useTheme();
 
   return (
     <Tabs
@@ -83,8 +68,8 @@ export default function TabsLayout() {
         options={{
           title: 'Home',
           tabBarAccessibilityLabel: 'Home tab',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'home' : 'home-outline'} focused={focused} colorScheme={colorScheme} />
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? 'home' : 'home-outline'} focused={focused} color={color} />
           ),
         }}
       />
@@ -93,8 +78,8 @@ export default function TabsLayout() {
         options={{
           title: 'Meds',
           tabBarAccessibilityLabel: 'Medications tab',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'medkit' : 'medkit-outline'} focused={focused} colorScheme={colorScheme} />
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? 'medkit' : 'medkit-outline'} focused={focused} color={color} />
           ),
         }}
       />
@@ -103,8 +88,8 @@ export default function TabsLayout() {
         options={{
           title: 'History',
           tabBarAccessibilityLabel: 'History tab',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} colorScheme={colorScheme} />
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} color={color} />
           ),
         }}
       />
@@ -113,8 +98,8 @@ export default function TabsLayout() {
         options={{
           title: 'Settings',
           tabBarAccessibilityLabel: 'Settings tab',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} colorScheme={colorScheme} />
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} color={color} />
           ),
         }}
       />

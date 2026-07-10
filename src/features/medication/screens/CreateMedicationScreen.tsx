@@ -18,15 +18,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useCallback } from 'react';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Button, Input, DateInput, ImagePickerInput } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function CreateMedicationScreen() {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const router = useRouter();
   const isLoading = useMedicationStore((s) => s.isLoading);
   const createMedication = useMedicationStore((s) => s.createMedication);
@@ -42,7 +45,7 @@ export function CreateMedicationScreen() {
   const onSubmit = useCallback(
     async (values: MedicationFormValues) => {
       try {
-        await createMedication({
+        const id = await createMedication({
           name: values.name.trim(),
           dosage: values.dosage.trim(),
           expirationDate: values.expirationDate.trim(),
@@ -54,7 +57,10 @@ export function CreateMedicationScreen() {
             values.lowStockThreshold.trim() ? Number(values.lowStockThreshold) : null,
           photoPath: values.photoPath.trim() || null,
         });
-        router.back();
+        
+        // Navigate to the newly created medication details screen
+        // Use replace instead of push so the back button from details doesn't go to the form again
+        router.replace(`/medications/${id}` as any);
       } catch {
         Alert.alert('Error', 'Failed to save medication. Please try again.');
       }
@@ -254,10 +260,10 @@ export function CreateMedicationScreen() {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: LightColors.background,
+    backgroundColor: colors.background,
   },
   flex: {
     flex: 1,
@@ -280,13 +286,13 @@ const styles = StyleSheet.create({
 
   // Screen title
   screenTitle: {
-    ...Typography.headingXL,
-    color: LightColors.textPrimary,
+    ...typography.headingXL,
+    color: colors.textPrimary,
     marginBottom: Spacing.xxs,
   },
   screenSubtitle: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
     marginBottom: Spacing.xs,
   },
 
@@ -299,9 +305,9 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   sectionLabel: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '600',
-    color: LightColors.textSecondary,
+    color: colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },

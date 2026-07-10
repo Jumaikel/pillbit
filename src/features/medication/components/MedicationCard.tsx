@@ -12,9 +12,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Medication } from '@/database';
 import { MedicationStatusBadge } from './MedicationStatusBadge';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,8 @@ interface MedicationCardProps {
  * ```
  */
 export function MedicationCard({ medication, onPress }: MedicationCardProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   return (
     <Card
       onPress={onPress}
@@ -55,7 +58,7 @@ export function MedicationCard({ medication, onPress }: MedicationCardProps) {
             <Image source={{ uri: medication.photoPath }} style={styles.thumbnail} contentFit="cover" />
           ) : (
             <View style={styles.thumbnailPlaceholder}>
-              <Ionicons name="medical" size={24} color={LightColors.primary} />
+              <Ionicons name="medical" size={24} color={colors.primary} />
             </View>
           )}
         </View>
@@ -90,7 +93,7 @@ export function MedicationCard({ medication, onPress }: MedicationCardProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -118,24 +121,24 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.xs,
   },
   name: {
-    ...Typography.headingMD,
-    color: LightColors.textPrimary,
+    ...typography.headingMD,
+    color: colors.textPrimary,
   },
   dosage: {
-    ...Typography.bodySM,
-    color: LightColors.textSecondary,
+    ...typography.bodySM,
+    color: colors.textSecondary,
   },
   quantity: {
     alignItems: 'center',
     minWidth: 40,
   },
   quantityNumber: {
-    ...Typography.headingMD,
-    color: LightColors.primary,
+    ...typography.headingMD,
+    color: colors.primary,
   },
   quantityLabel: {
-    ...Typography.caption,
-    color: LightColors.textSecondary,
+    ...typography.caption,
+    color: colors.textSecondary,
   },
   badgeRow: {
     marginTop: Spacing.xs,

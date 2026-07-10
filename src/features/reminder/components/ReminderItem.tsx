@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from 'react-native';
 import { MedicationReminder } from '@/database';
 import { Card } from '@/components';
-import { Typography, Spacing, LightColors } from '@/constants';
+import { Spacing } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ReminderItemProps {
   reminder: MedicationReminder;
@@ -20,6 +21,8 @@ export function ReminderItem({
   onDelete,
   disabled = false,
 }: ReminderItemProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   // Format HH:MM to user-friendly time
   const formattedTime = (() => {
     const [hoursStr, minutesStr] = reminder.reminderTime.split(':');
@@ -34,13 +37,13 @@ export function ReminderItem({
     <Card padded style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.timeContainer}>
-          <Ionicons name="time-outline" size={24} color={LightColors.primary} />
+          <Ionicons name="time-outline" size={24} color={colors.primary} />
           <Text style={[styles.timeText, !reminder.isActive && styles.inactiveText]}>
             {formattedTime}
           </Text>
         </View>
         <Switch
-          trackColor={{ false: LightColors.border, true: LightColors.primary }}
+          trackColor={{ false: colors.border, true: colors.primary }}
           thumbColor="#f4f3f4"
           onValueChange={(val) => onToggle(reminder.id, val)}
           value={reminder.isActive}
@@ -54,7 +57,7 @@ export function ReminderItem({
           onPress={() => onEdit(reminder)}
           disabled={disabled}
         >
-          <Ionicons name="pencil-outline" size={20} color={LightColors.textSecondary} />
+          <Ionicons name="pencil-outline" size={20} color={colors.textSecondary} />
           <Text style={styles.actionText}>Edit</Text>
         </TouchableOpacity>
         
@@ -63,15 +66,15 @@ export function ReminderItem({
           onPress={() => onDelete(reminder.id)}
           disabled={disabled}
         >
-          <Ionicons name="trash-outline" size={20} color={LightColors.error} />
-          <Text style={[styles.actionText, { color: LightColors.error }]}>Delete</Text>
+          <Ionicons name="trash-outline" size={20} color={colors.error} />
+          <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
         </TouchableOpacity>
       </View>
     </Card>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   card: {
     gap: Spacing.md,
   },
@@ -86,11 +89,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   timeText: {
-    ...Typography.headingLG,
-    color: LightColors.textPrimary,
+    ...typography.headingLG,
+    color: colors.textPrimary,
   },
   inactiveText: {
-    color: LightColors.textSecondary,
+    color: colors.textSecondary,
     textDecorationLine: 'line-through',
   },
   actionRow: {
@@ -98,7 +101,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: LightColors.border,
+    borderTopColor: colors.border,
     paddingTop: Spacing.sm,
   },
   actionButton: {
@@ -107,7 +110,7 @@ const styles = StyleSheet.create({
     gap: Spacing.xxs,
   },
   actionText: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
   },
 });

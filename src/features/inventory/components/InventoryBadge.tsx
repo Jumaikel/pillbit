@@ -12,8 +12,9 @@
  */
 
 import { StyleSheet, Text, View } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
 import { InventoryStatus } from '../types';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,31 +28,7 @@ interface InventoryBadgeProps {
 
 // ─── Status → Style Map ───────────────────────────────────────────────────────
 
-const STATUS_CONFIG: Record<
-    InventoryStatus,
-    { label: string; background: string; text: string }
-> = {
-    normal: {
-        label: 'In Stock',
-        background: '#E8F8ED',
-        text: LightColors.success,
-    },
-    low_stock: {
-        label: 'Low Stock',
-        background: '#FFF5E0',
-        text: LightColors.warning,
-    },
-    empty: {
-        label: 'Empty',
-        background: '#FEE9E7',
-        text: LightColors.error,
-    },
-    untracked: {
-        label: 'Not Tracked',
-        background: LightColors.surfaceVariant,
-        text: LightColors.textSecondary,
-    },
-};
+
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -60,6 +37,35 @@ export function InventoryBadge({
     quantity,
     showQuantity = false,
 }: InventoryBadgeProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
+
+    const STATUS_CONFIG: Record<
+        InventoryStatus,
+        { label: string; background: string; text: string }
+    > = {
+        normal: {
+            label: 'In Stock',
+            background: '#E8F8ED',
+            text: colors.success,
+        },
+        low_stock: {
+            label: 'Low Stock',
+            background: '#FFF5E0',
+            text: colors.warning,
+        },
+        empty: {
+            label: 'Empty',
+            background: '#FEE9E7',
+            text: colors.error,
+        },
+        untracked: {
+            label: 'Not Tracked',
+            background: colors.surfaceVariant,
+            text: colors.textSecondary,
+        },
+    };
+
     const config = STATUS_CONFIG[status];
 
     const label =
@@ -79,7 +85,7 @@ export function InventoryBadge({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     badge: {
         borderRadius: Radius.full,
         paddingHorizontal: Spacing.sm,
@@ -87,7 +93,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
     },
     label: {
-        ...Typography.caption,
+        ...typography.caption,
         fontWeight: '600',
     },
 });

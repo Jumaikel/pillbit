@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
-import { LightColors, Typography, Spacing, Radius } from '@/constants';
+import { Spacing, Radius } from '@/constants';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -61,6 +62,8 @@ export function Input({
   accessibilityHint,
   ...textInputProps
 }: InputProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   const hasError = Boolean(errorMessage);
 
   return (
@@ -71,7 +74,7 @@ export function Input({
 
       <TextInput
         placeholder={placeholder}
-        placeholderTextColor={LightColors.textDisabled}
+        placeholderTextColor={colors.textDisabled}
         editable={!disabled}
         accessibilityLabel={accessibilityLabel ?? label}
         accessibilityHint={accessibilityHint}
@@ -99,41 +102,41 @@ export function Input({
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   wrapper: {
     gap: Spacing.xs,
   },
 
   label: {
-    ...Typography.bodySM,
+    ...typography.bodySM,
     fontWeight: '500',
-    color: LightColors.textPrimary,
+    color: colors.textPrimary,
   },
   labelDisabled: {
-    color: LightColors.textDisabled,
+    color: colors.textDisabled,
   },
 
   input: {
     minHeight: 48,
     borderWidth: 1.5,
-    borderColor: LightColors.border,
+    borderColor: colors.border,
     borderRadius: Radius.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: LightColors.surface,
-    color: LightColors.textPrimary,
-    ...Typography.bodyMD,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+    ...typography.bodyMD,
   },
   inputError: {
-    borderColor: LightColors.error,
+    borderColor: colors.error,
   },
   inputDisabled: {
-    backgroundColor: LightColors.surfaceVariant,
-    color: LightColors.textDisabled,
+    backgroundColor: colors.surfaceVariant,
+    color: colors.textDisabled,
   },
 
   errorText: {
-    ...Typography.caption,
-    color: LightColors.error,
+    ...typography.caption,
+    color: colors.error,
   },
 });

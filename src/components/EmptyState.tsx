@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { Button } from './Button';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,6 +50,8 @@ interface EmptyStateProps {
  *  - Container has accessibilityRole="none" to avoid redundant announcements
  */
 export function EmptyState({ title, description, action }: EmptyStateProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
   return (
     <View style={styles.container} accessibilityRole="none">
       <Text style={styles.title} accessibilityRole="header">
@@ -75,7 +78,7 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
@@ -85,14 +88,14 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    ...Typography.headingMD,
-    color: LightColors.textPrimary,
+    ...typography.headingMD,
+    color: colors.textPrimary,
     textAlign: 'center',
   },
 
   description: {
-    ...Typography.bodyMD,
-    color: LightColors.textSecondary,
+    ...typography.bodyMD,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
 

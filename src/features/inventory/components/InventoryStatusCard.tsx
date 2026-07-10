@@ -10,9 +10,10 @@
 
 import { StyleSheet, Text, View } from 'react-native';
 import { Card } from '@/components/Card';
-import { LightColors, Typography, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { MedicationInventoryState } from '../types';
 import { InventoryBadge } from './InventoryBadge';
+import { useTheme } from '@/hooks/useTheme';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,8 @@ interface InventoryStatusCardProps {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function InventoryStatusCard({ medication, onPress }: InventoryStatusCardProps) {
+  const { colors, typography } = useTheme();
+  const styles = getStyles(colors, typography);
     const { name, quantityAvailable, effectiveThreshold, inventoryStatus } = medication;
 
     const cardProps = onPress
@@ -50,8 +53,8 @@ export function InventoryStatusCard({ medication, onPress }: InventoryStatusCard
                     <Text
                         style={[
                             styles.detailValue,
-                            inventoryStatus === 'empty' && { color: LightColors.error },
-                            inventoryStatus === 'low_stock' && { color: LightColors.warning },
+                            inventoryStatus === 'empty' && { color: colors.error },
+                            inventoryStatus === 'low_stock' && { color: colors.warning },
                         ]}
                     >
                         {quantityLabel}
@@ -71,7 +74,7 @@ export function InventoryStatusCard({ medication, onPress }: InventoryStatusCard
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         marginBottom: Spacing.sm,
     },
@@ -82,8 +85,8 @@ const styles = StyleSheet.create({
         marginBottom: Spacing.sm,
     },
     name: {
-        ...Typography.headingMD,
-        color: LightColors.textPrimary,
+        ...typography.headingMD,
+        color: colors.textPrimary,
         flex: 1,
         marginRight: Spacing.sm,
     },
@@ -95,19 +98,19 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     detailLabel: {
-        ...Typography.caption,
-        color: LightColors.textSecondary,
+        ...typography.caption,
+        color: colors.textSecondary,
         marginBottom: 2,
     },
     detailValue: {
-        ...Typography.bodyMD,
+        ...typography.bodyMD,
         fontWeight: '600',
-        color: LightColors.textPrimary,
+        color: colors.textPrimary,
     },
     divider: {
         width: 1,
         height: 32,
-        backgroundColor: LightColors.border,
+        backgroundColor: colors.border,
         marginHorizontal: Spacing.md,
     },
 });

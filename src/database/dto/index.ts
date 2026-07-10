@@ -105,4 +105,6 @@ export interface UpdateApplicationSettingDTO {
     autoReduceStock?: boolean;
     aiInfoAutoGenerate?: boolean;
     showMedicalDisclaimer?: boolean;
+    isAiEnabled?: boolean;
+    aiModel?: string;
 }
