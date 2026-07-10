@@ -1,0 +1,32 @@
+{
+  "dashboard": {
+    "title": "Hello, your summary today",
+    "todayDoses": "Today's Doses",
+    "noDoses": "You have no scheduled doses for today.",
+    "addMedication": "Add Medication"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "language_system": "System Default",
+    "language_es": "Spanish (Español)",
+    "language_en": "English",
+    "appearance": "Appearance",
+    "notifications": "Notifications"
+  },
+  "tabs": {
+    "home": "Home",
+    "meds": "Meds",
+    "history": "History",
+    "settings": "Settings"
+  }
+}

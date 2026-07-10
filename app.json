@@ -42,7 +42,8 @@
           "photosPermission": "Permitir a PillBit acceder a tus fotos para elegir imágenes de medicamentos.",
           "cameraPermission": "Permitir a PillBit acceder a tu cámara para fotografiar tus medicamentos."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true,

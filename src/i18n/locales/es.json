@@ -1,0 +1,32 @@
+{
+  "dashboard": {
+    "title": "Hola, tu resumen de hoy",
+    "todayDoses": "Dosis de Hoy",
+    "noDoses": "No tienes dosis programadas para hoy.",
+    "addMedication": "Añadir Medicamento"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "loading": "Cargando...",
+    "error": "Ocurrió un error",
+    "success": "¡Éxito!"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "language": "Idioma",
+    "language_system": "Por defecto del sistema",
+    "language_es": "Español",
+    "language_en": "Inglés (English)",
+    "appearance": "Apariencia",
+    "notifications": "Notificaciones"
+  },
+  "tabs": {
+    "home": "Inicio",
+    "meds": "Medicamentos",
+    "history": "Historial",
+    "settings": "Ajustes"
+  }
+}

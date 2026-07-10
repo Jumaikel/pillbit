@@ -8,6 +8,7 @@ import { useInventoryStore, selectLowStockMedications, LowStockBanner } from '@/
 import { useExpirationStore, ExpirationBanner } from '@/features/expiration';
 import { useDashboardStore, TodayDoseCard } from '@/features/dashboard';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 /**
  * HomeScreen
@@ -19,6 +20,7 @@ export default function HomeScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const router = useRouter();
+  const { t } = useTranslation();
   
   const loadInventory = useInventoryStore((s) => s.loadInventory);
   const lowStockItems = useInventoryStore(selectLowStockMedications);
@@ -46,7 +48,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <Text style={styles.title} accessibilityRole="header">
-          Hola, tu resumen de hoy
+          {t('dashboard.title')}
         </Text>
       </View>
       
@@ -64,7 +66,7 @@ export default function HomeScreen() {
         />
         
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Dosis de Hoy</Text>
+          <Text style={styles.sectionTitle}>{t('dashboard.todayDoses')}</Text>
         </View>
 
         {todayDoses.length > 0 ? (
@@ -73,9 +75,9 @@ export default function HomeScreen() {
           ))
         ) : (
           <View style={styles.placeholder}>
-             <Text style={styles.placeholderText}>No tienes dosis programadas para hoy.</Text>
+             <Text style={styles.placeholderText}>{t('dashboard.noDoses')}</Text>
              <Button 
-                label="Añadir Medicamento" 
+                label={t('dashboard.addMedication')} 
                 onPress={() => router.push('/medications/create' as never)} 
                 style={{ marginTop: Spacing.md }}
              />

@@ -6,10 +6,13 @@ import { useConfigStore } from '@/store/useConfigStore';
 import { Input, Button, Card } from '@/components';
 import { useInventoryStore } from '@/features/inventory';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 
 export default function SettingsScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
   
   const { settings, isLoading, updateSettings } = useConfigStore();
   const [thresholdInput, setThresholdInput] = useState('');
@@ -49,8 +52,11 @@ export default function SettingsScreen() {
     if (!settings) return;
     try {
       await updateSettings({ [key]: value } as any);
+      if (key === 'language') {
+         i18n.changeLanguage(value === 'system' ? undefined : (value as string));
+      }
     } catch (e) {
-      Alert.alert('Error', 'Failed to update setting');
+      Alert.alert(t('common.error'), 'Failed to update setting');
     }
   };
 
@@ -67,8 +73,35 @@ export default function SettingsScreen() {
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
-            <Text style={styles.title} accessibilityRole="header">Settings</Text>
+            <Text style={styles.title} accessibilityRole="header">{t('settings.title')}</Text>
           </View>
+
+          {/* Language Settings */}
+          <Card padded style={styles.section}>
+            <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
+            <View style={styles.buttonRow}>
+               <Button 
+                  label={t('settings.language_system')} 
+                  variant={settings.language === 'system' || !settings.language ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('language', 'system')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label={t('settings.language_es')} 
+                  variant={settings.language === 'es' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('language', 'es')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label={t('settings.language_en')} 
+                  variant={settings.language === 'en' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('language', 'en')} 
+                  style={styles.flex1} 
+               />
+            </View>
+          </Card>
 
           {/* Accessibility Settings */}
           <Card padded style={styles.section}>

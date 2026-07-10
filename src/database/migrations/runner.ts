@@ -2,6 +2,7 @@ import * as SQLite from 'expo-sqlite';
 import { getDatabase } from '../adapters/sqlite';
 import { initialSchema } from './001_initial_schema';
 import { addAiSettingsMigration } from './002_ai_settings';
+import { addLanguageSettingMigration } from './003_language_setting';
 
 const migrations = [
   {
@@ -24,6 +25,18 @@ const migrations = [
             await db.execAsync(addAiSettingsMigration);
         } catch (e) {
              console.error("Migration 2 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 3,
+    name: '003_language_setting',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(addLanguageSettingMigration);
+        } catch (e) {
+             console.error("Migration 3 Failed", e);
              throw e;
         }
     }

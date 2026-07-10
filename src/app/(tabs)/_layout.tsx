@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Radius } from '@/constants';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 /**
  * TabsLayout
@@ -41,6 +42,7 @@ function TabIcon({ name, focused, color }: TabIconProps) {
 
 export default function TabsLayout() {
   const { colors } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Tabs
@@ -66,7 +68,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('tabs.home'),
           tabBarAccessibilityLabel: 'Home tab',
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={focused ? 'home' : 'home-outline'} focused={focused} color={color} />
@@ -76,7 +78,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="medications"
         options={{
-          title: 'Meds',
+          title: t('tabs.meds'),
           tabBarAccessibilityLabel: 'Medications tab',
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={focused ? 'medkit' : 'medkit-outline'} focused={focused} color={color} />
@@ -86,7 +88,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="history"
         options={{
-          title: 'History',
+          title: t('tabs.history'),
           tabBarAccessibilityLabel: 'History tab',
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={focused ? 'time' : 'time-outline'} focused={focused} color={color} />
@@ -96,7 +98,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t('tabs.settings'),
           tabBarAccessibilityLabel: 'Settings tab',
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={focused ? 'settings' : 'settings-outline'} focused={focused} color={color} />

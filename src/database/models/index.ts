@@ -96,6 +96,7 @@ export interface ApplicationSetting {
     showMedicalDisclaimer: boolean;
     isAiEnabled: boolean;
     aiModel: string;
+    language: string;
     createdDatetime: string;
     updatedDatetime: string;
 }

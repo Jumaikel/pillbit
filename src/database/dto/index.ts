@@ -107,4 +107,5 @@ export interface UpdateApplicationSettingDTO {
     showMedicalDisclaimer?: boolean;
     isAiEnabled?: boolean;
     aiModel?: string;
+    language?: string;
 }

@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect } from 'react';
 import { initDatabase } from '@/database';
 import { useConfigStore } from '@/store/useConfigStore';
+import { initI18n } from '@/i18n';
 
 import { NotificationService } from '@/services/NotificationService';
 
@@ -32,6 +33,10 @@ export default function RootLayout() {
       try {
         await initDatabase();
         await useConfigStore.getState().loadSettings();
+        
+        const settings = useConfigStore.getState().settings;
+        initI18n(settings?.language || 'system');
+
         await NotificationService.syncReminders();
         await NotificationService.syncExpirationAlerts();
         await NotificationService.syncLowStockAlerts();
