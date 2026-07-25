@@ -133,6 +133,7 @@ export function MedicationDetailScreen() {
           setIsReading(true);
           const textToRead = `
             Description: ${aiInfo.description || 'none'}. 
+            Dosage and Administration: ${aiInfo.dosageAdministration || 'none'}.
             Common Uses: ${aiInfo.commonUses || 'none'}. 
             Contraindications: ${aiInfo.contraindications || 'none'}. 
             Side Effects: ${aiInfo.sideEffects || 'none'}. 
@@ -234,6 +235,8 @@ export function MedicationDetailScreen() {
                     <View style={styles.aiContent}>
                         <DetailRow label={t('medications.details.lblDescription')} value={aiInfo.description} styles={styles} vertical />
                         <Divider styles={styles} />
+                        <DetailRow label={t('medications.details.lblDosageAdministration')} value={aiInfo.dosageAdministration} styles={styles} vertical />
+                        <Divider styles={styles} />
                         <DetailRow label={t('medications.details.lblCommonUses')} value={aiInfo.commonUses} styles={styles} vertical />
                         <Divider styles={styles} />
                         <DetailRow label={t('medications.details.lblSideEffects')} value={aiInfo.sideEffects} styles={styles} vertical />
@@ -243,6 +246,8 @@ export function MedicationDetailScreen() {
                         <DetailRow label={t('medications.details.lblWarnings')} value={aiInfo.warnings} styles={styles} vertical />
                         <Divider styles={styles} />
                         <DetailRow label={t('medications.details.lblInteractions')} value={aiInfo.interactions} styles={styles} vertical />
+                        
+                        <Text style={styles.disclaimerText}>{t('medications.details.disclaimerMedical')}</Text>
                         
                         <Button label={t('medications.details.btnRegenerate')} onPress={handleGenerateAI} variant="outline" style={{marginTop: 16}} />
                     </View>
@@ -327,5 +332,6 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
   divider: { height: 1, backgroundColor: colors.border },
   aiSection: { marginTop: Spacing.sm },
   aiHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xs },
-  aiContent: { gap: 4 }
+  aiContent: { gap: 4 },
+  disclaimerText: { ...typography.bodySM, fontStyle: 'italic', color: colors.textSecondary, marginTop: Spacing.sm }
 });

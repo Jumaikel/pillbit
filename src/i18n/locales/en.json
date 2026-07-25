@@ -165,11 +165,13 @@
       "lblGenerating": "Generating insights...",
       "btnTryAgain": "Try Again",
       "lblDescription": "Description",
+      "lblDosageAdministration": "Dosage & Administration",
       "lblCommonUses": "Common Uses",
       "lblSideEffects": "Side Effects",
       "lblContraindications": "Contraindications",
       "lblWarnings": "Warnings",
       "lblInteractions": "Interactions",
+      "disclaimerMedical": "Warning: AI-generated information is for guidance only and does not replace professional medical advice. Consult your doctor.",
       "btnRegenerate": "Regenerate",
       "btnGenerateAI": "Generate AI Info",
       "lblNotes": "Notes",
@@ -236,6 +238,14 @@
       "inactive": "Inactive",
       "btnEdit": "Edit",
       "btnDelete": "Delete"
+    }
+  },
+  "ai": {
+    "notification": {
+      "successTitle": "AI Analysis Complete",
+      "successBody": "Information for {{medicationName}} is ready.",
+      "errorTitle": "AI Analysis Failed",
+      "errorBody": "Could not generate information for {{medicationName}}."
     }
   }
 }

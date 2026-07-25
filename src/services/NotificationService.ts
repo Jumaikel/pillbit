@@ -332,4 +332,25 @@ export class NotificationService {
       // Fail gracefully — do not throw, notifications are non-critical
     }
   }
+
+  /**
+   * Send an immediate local notification (e.g. for background tasks completing)
+   */
+  static async sendImmediateNotification(title: string, body: string, data?: any): Promise<void> {
+    try {
+      const hasPermission = await this.requestPermissionsAsync();
+      if (!hasPermission) return;
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title,
+          body,
+          data: data || {},
+        },
+        trigger: null, // immediate
+      });
+    } catch (e) {
+      console.error('[NotificationService] sendImmediateNotification failed:', e);
+    }
+  }
 }

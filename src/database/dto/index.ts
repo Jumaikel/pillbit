@@ -38,6 +38,7 @@ export interface CreateMedicationAiInformationDTO {
     medicationId: number;
     description?: string | null;
     commonUses?: string | null;
+    dosageAdministration?: string | null;
     contraindications?: string | null;
     sideEffects?: string | null;
     warnings?: string | null;

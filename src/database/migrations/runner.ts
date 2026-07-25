@@ -3,6 +3,7 @@ import { getDatabase } from '../adapters/sqlite';
 import { initialSchema } from './001_initial_schema';
 import { addAiSettingsMigration } from './002_ai_settings';
 import { addLanguageSettingMigration } from './003_language_setting';
+import { addAiDosageAdministrationMigration } from './004_ai_dosage_administration';
 
 const migrations = [
   {
@@ -37,6 +38,18 @@ const migrations = [
             await db.execAsync(addLanguageSettingMigration);
         } catch (e) {
              console.error("Migration 3 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 4,
+    name: '004_ai_dosage_administration',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(addAiDosageAdministrationMigration);
+        } catch (e) {
+             console.error("Migration 4 Failed", e);
              throw e;
         }
     }

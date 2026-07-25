@@ -10,6 +10,7 @@ export class MedicationAiInformationRepository {
             medicationId: row.mdc_id,
             description: row.mai_description,
             commonUses: row.mai_common_uses,
+            dosageAdministration: row.mai_dosage_administration,
             contraindications: row.mai_contraindications,
             sideEffects: row.mai_side_effects,
             warnings: row.mai_warnings,
@@ -24,13 +25,14 @@ export class MedicationAiInformationRepository {
 
         const result = await db.runAsync(
             `INSERT INTO pbt_medication_ai_information (
-                mdc_id, mai_description, mai_common_uses, mai_contraindications,
+                mdc_id, mai_description, mai_common_uses, mai_dosage_administration, mai_contraindications,
                 mai_side_effects, mai_warnings, mai_interactions, mai_generated_datetime
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.medicationId,
                 data.description ?? null,
                 data.commonUses ?? null,
+                data.dosageAdministration ?? null,
                 data.contraindications ?? null,
                 data.sideEffects ?? null,
                 data.warnings ?? null,
@@ -60,6 +62,7 @@ export class MedicationAiInformationRepository {
             `UPDATE pbt_medication_ai_information SET
                 mai_description = ?,
                 mai_common_uses = ?,
+                mai_dosage_administration = ?,
                 mai_contraindications = ?,
                 mai_side_effects = ?,
                 mai_warnings = ?,
@@ -68,6 +71,7 @@ export class MedicationAiInformationRepository {
             [
                 data.description !== undefined ? data.description : current.description,
                 data.commonUses !== undefined ? data.commonUses : current.commonUses,
+                data.dosageAdministration !== undefined ? data.dosageAdministration : current.dosageAdministration,
                 data.contraindications !== undefined ? data.contraindications : current.contraindications,
                 data.sideEffects !== undefined ? data.sideEffects : current.sideEffects,
                 data.warnings !== undefined ? data.warnings : current.warnings,

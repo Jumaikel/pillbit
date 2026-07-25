@@ -20,7 +20,8 @@ export class OpenRouterService {
   }
 
   static async generateMedicationInfo(
-    medicationName: string
+    medicationName: string,
+    language: string = "es"
   ): Promise<Omit<CreateMedicationAiInformationDTO, "medicationId">> {
     const config = this.getConfig();
 
@@ -28,12 +29,16 @@ export class OpenRouterService {
       throw new Error("OPENROUTER_API_KEY is not configured");
     }
 
+    const languageName = language.startsWith("es") ? "Spanish" : "English";
+
     const prompt = `You are a medical assistant providing factual, educational information about medications.
 Generate information for the medication: "${medicationName}".
+The response MUST be written in the following language: ${languageName}.
 Provide the output strictly in valid JSON format with exactly these keys:
 {
   "description": "string",
   "commonUses": "string",
+  "dosageAdministration": "string (include possible doses and method of administration)",
   "contraindications": "string",
   "sideEffects": "string",
   "warnings": "string",
@@ -86,6 +91,7 @@ Do not include any markdown, backticks, or extra text. Just the JSON object.`;
         return {
           description: parsed.description || null,
           commonUses: parsed.commonUses || null,
+          dosageAdministration: parsed.dosageAdministration || null,
           contraindications: parsed.contraindications || null,
           sideEffects: parsed.sideEffects || null,
           warnings: parsed.warnings || null,

@@ -2,7 +2,9 @@ import { create } from 'zustand';
 import { MedicationAiInformation } from '@/database/models';
 import { MedicationAiInformationRepository } from '@/database/repositories/MedicationAiInformationRepository';
 import { OpenRouterService } from '../services/OpenRouterService';
+import { NotificationService } from '@/services/NotificationService';
 import { useConfigStore } from '@/store/useConfigStore';
+import i18n from '@/i18n';
 
 interface AIStoreState {
     isLoading: boolean;
@@ -53,7 +55,8 @@ export const useAIStore = create<AIStoreState>((set, get) => ({
         
         try {
             const generatedData = await OpenRouterService.generateMedicationInfo(
-                medicationName
+                medicationName,
+                i18n.language
             );
 
             // Check if it exists in db
@@ -76,8 +79,19 @@ export const useAIStore = create<AIStoreState>((set, get) => ({
                     isLoading: false
                 }));
             }
+
+            // Notify success
+            const title = i18n.t('ai.notification.successTitle', { defaultValue: 'AI Analysis Complete' });
+            const body = i18n.t('ai.notification.successBody', { defaultValue: `Information for ${medicationName} is ready.`, medicationName });
+            NotificationService.sendImmediateNotification(title, body, { medicationId, type: 'ai_generation' });
+
         } catch (error: any) {
             set({ error: error.message || 'Failed to generate AI information', isLoading: false });
+            
+            // Notify failure
+            const title = i18n.t('ai.notification.errorTitle', { defaultValue: 'AI Analysis Failed' });
+            const body = i18n.t('ai.notification.errorBody', { defaultValue: `Could not generate information for ${medicationName}.`, medicationName });
+            NotificationService.sendImmediateNotification(title, body, { medicationId, type: 'ai_generation' });
         }
     }
 }));
