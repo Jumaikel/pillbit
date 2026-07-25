@@ -108,6 +108,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 ## Changelog
 
 ### v0.6.0
+- Application Branding & Asset Structure (`assets/icons/`: icon, adaptive-icon, monochrome-icon, notification-icon, splash-icon, favicon)
 - Settings & Configuration Module (`useConfigStore`, migración `002_ai_settings.ts`)
 - Theme & Accessibility Architecture (`useTheme` hook: escalado de texto, alto contraste, Theme toggle en Ajustes)
 - AI Integration (OpenRouter/Anthropic) con cache local en `pbt_medication_ai_information`
