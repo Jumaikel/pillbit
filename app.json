@@ -2,13 +2,14 @@
   "expo": {
     "name": "pillbit",
     "slug": "pillbit",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "scheme": "pillbit",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/icons/icon.png"
+      "icon": "./assets/icons/icon.png",
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +25,8 @@
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.jumaikel.pillbit"
+      "package": "com.jumaikel.pillbit",
+      "versionCode": 2
     },
     "web": {
       "output": "static",

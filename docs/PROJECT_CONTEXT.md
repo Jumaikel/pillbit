@@ -107,6 +107,11 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 
 ## Changelog
 
+### v0.2.0
+- Application Branding: configured application icons and splash assets in app.json.
+- Settings: added theme selection and fixed dark mode contrast.
+- I18n: implemented full internationalization for medications, history, reminders, and settings modules.
+
 ### v0.6.0
 - Application Branding & Asset Structure (`assets/icons/`: icon, adaptive-icon, monochrome-icon, notification-icon, splash-icon, favicon)
 - Settings & Configuration Module (`useConfigStore`, migración `002_ai_settings.ts`)

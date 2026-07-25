@@ -1,7 +1,7 @@
 {
   "name": "pillbit",
   "main": "expo-router/entry",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "dependencies": {
     "@expo/ui": "~56.0.23",
     "@expo/vector-icons": "^15.1.1",
