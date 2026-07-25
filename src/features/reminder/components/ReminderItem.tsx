@@ -5,6 +5,7 @@ import { Card } from '@/components';
 import { Spacing } from '@/constants';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface ReminderItemProps {
   reminder: MedicationReminder;
@@ -23,6 +24,7 @@ export function ReminderItem({
 }: ReminderItemProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
   // Format HH:MM to user-friendly time
   const formattedTime = (() => {
     const [hoursStr, minutesStr] = reminder.reminderTime.split(':');
@@ -58,7 +60,7 @@ export function ReminderItem({
           disabled={disabled}
         >
           <Ionicons name="pencil-outline" size={20} color={colors.textSecondary} />
-          <Text style={styles.actionText}>Edit</Text>
+          <Text style={styles.actionText}>{t('reminders.item.btnEdit')}</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -67,7 +69,7 @@ export function ReminderItem({
           disabled={disabled}
         >
           <Ionicons name="trash-outline" size={20} color={colors.error} />
-          <Text style={[styles.actionText, { color: colors.error }]}>Delete</Text>
+          <Text style={[styles.actionText, { color: colors.error }]}>{t('reminders.item.btnDelete')}</Text>
         </TouchableOpacity>
       </View>
     </Card>

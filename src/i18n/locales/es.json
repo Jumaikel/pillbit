@@ -3,7 +3,28 @@
     "title": "Hola, tu resumen de hoy",
     "todayDoses": "Dosis de Hoy",
     "noDoses": "No tienes dosis programadas para hoy.",
-    "addMedication": "Añadir Medicamento"
+    "addMedication": "Añadir Medicamento",
+    "lowStock": {
+      "outOfStock_one": "1 medicamento agotado",
+      "outOfStock_other": "{{count}} medicamentos necesitan atención",
+      "runningLow_one": "1 medicamento se está agotando",
+      "runningLow_other": "{{count}} medicamentos se están agotando",
+      "tapToManage": "Toca para gestionar el inventario",
+      "tapToView": "{{title}}. Toca para ver."
+    },
+    "expiration": {
+      "title": "Atención de Vencimiento",
+      "subtitle_expired_one": "Tienes 1 medicamento vencido o próximo a vencer.",
+      "subtitle_expired_other": "Tienes {{count}} medicamentos vencidos o próximos a vencer.",
+      "subtitle_soon_one": "Tienes 1 medicamento próximo a vencer.",
+      "subtitle_soon_other": "Tienes {{count}} medicamentos próximos a vencer."
+    },
+    "doseCard": {
+      "taken": "Tomado",
+      "skipped": "Omitido",
+      "take": "Tomar",
+      "skip": "Omitir"
+    }
   },
   "common": {
     "save": "Guardar",
@@ -20,13 +41,196 @@
     "language_system": "Por defecto del sistema",
     "language_es": "Español",
     "language_en": "Inglés (English)",
-    "appearance": "Apariencia",
-    "notifications": "Notificaciones"
+    "loading": "Cargando ajustes...",
+    "errorTitle": "Error",
+    "errorSave": "Error al guardar ajustes",
+    "errorUpdate": "Error al actualizar ajuste",
+    "successTitle": "Éxito",
+    "successSave": "Ajustes de inventario guardados",
+    "invalidThresholdTitle": "Umbral Inválido",
+    "invalidThresholdDesc": "Por favor ingresa un número positivo válido",
+    "accessibility": {
+      "title": "Accesibilidad",
+      "highContrast": "Modo Alto Contraste",
+      "highContrastDesc": "Aumentar contraste para mejor visibilidad.",
+      "textSize": "Tamaño de Texto",
+      "textSizeDesc": "Escalar tamaño de texto global.",
+      "sizeNormal": "Normal",
+      "sizeLarge": "Grande",
+      "sizeXLarge": "X-Grande",
+      "voiceInput": "Entrada por Voz",
+      "voiceInputDesc": "Habilitar dictado por voz en los campos de entrada.",
+      "tts": "Texto a Voz",
+      "ttsDesc": "Habilitar lectura por voz para detalles de medicamentos."
+    },
+    "ai": {
+      "title": "Funciones AI",
+      "enable": "Habilitar Info AI",
+      "enableDesc": "Usar IA para generar análisis de medicamentos."
+    },
+    "inventory": {
+      "title": "Control de Inventario",
+      "autoReduce": "Reducir Stock Automáticamente",
+      "globalThreshold": "Umbral de Stock Bajo Global",
+      "placeholderThreshold": "ej. 10",
+      "btnSave": "Guardar"
+    },
+    "notifications": {
+      "title": "Notificaciones",
+      "lowStock": "Alertas de Stock Bajo"
+    }
   },
   "tabs": {
     "home": "Inicio",
     "meds": "Medicamentos",
     "history": "Historial",
     "settings": "Ajustes"
+  },
+  "medications": {
+    "list": {
+      "title": "Medicamentos",
+      "add": "+ Añadir",
+      "searchPlaceholder": "Buscar medicamentos…",
+      "lowStock": "Stock Bajo ({{count}})",
+      "expiring": "Próximos a Vencer ({{count}})",
+      "expired": "Vencidos ({{count}})",
+      "loading": "Cargando medicamentos…",
+      "noResultsTitle": "No hay resultados",
+      "noResultsDesc": "Ningún medicamento coincide con \"{{query}}\".",
+      "emptyTitle": "Sin medicamentos aún",
+      "emptyDesc": "Añade tu primer medicamento para comenzar a hacer seguimiento.",
+      "addMedication": "Añadir Medicamento",
+      "errorLoading": "Error al cargar los medicamentos.",
+      "errorTitle": "Error",
+      "ok": "OK"
+    },
+    "common": {
+      "units": "unidades",
+      "expiresToday": "Vence hoy",
+      "expiresTomorrow": "Vence mañana",
+      "expiresInDays": "Vence en {{days}} d",
+      "expiresOnDate": "Vence el {{date}}",
+      "expired": "Vencido",
+      "na": "N/A"
+    },
+    "form": {
+      "titleAdd": "Añadir Medicamento",
+      "subtitleAdd": "Rellena los detalles a continuación para añadir un medicamento.",
+      "titleEdit": "Editar Medicamento",
+      "subtitleEdit": "Actualiza la información de tu medicamento a continuación.",
+      "sectionRequired": "Obligatorio",
+      "sectionOptional": "Opcional",
+      "labelName": "Nombre del Medicamento",
+      "placeholderName": "ej. Aspirina",
+      "labelDosage": "Dosis",
+      "placeholderDosage": "ej. 500mg",
+      "labelExpiration": "Fecha de Vencimiento",
+      "labelPresentation": "Presentación",
+      "placeholderPresentation": "ej. Tableta, Cápsula",
+      "labelQuantity": "Cantidad Disponible",
+      "placeholderQuantity": "ej. 30",
+      "labelThreshold": "Alerta de Stock Bajo",
+      "placeholderThreshold": "ej. 10",
+      "labelNotes": "Notas",
+      "placeholderNotes": "ej. Tomar con comida",
+      "btnCancel": "← Cancelar",
+      "btnSave": "Guardar Medicamento",
+      "btnSaving": "Guardando…",
+      "btnUpdate": "Actualizar Medicamento",
+      "btnUpdating": "Actualizando…",
+      "errorSave": "Error al guardar el medicamento. Por favor, inténtalo de nuevo."
+    },
+    "details": {
+      "btnBack": "← Atrás",
+      "btnEdit": "Editar",
+      "logDose": "Registrar Dosis",
+      "btnTake": "Tomar",
+      "btnSkip": "Omitir",
+      "btnPostpone": "Posponer",
+      "management": "Gestión",
+      "btnManageReminders": "Gestionar Recordatorios",
+      "lblDosage": "Dosis",
+      "lblPresentation": "Presentación",
+      "lblExpiration": "Fecha de Vencimiento",
+      "lblQuantity": "Cantidad Disponible",
+      "lblThreshold": "Alerta de Stock Bajo",
+      "aiTitle": "Información AI",
+      "btnReadInfo": "Leer Info",
+      "btnStopReading": "Detener",
+      "lblGenerating": "Generando análisis...",
+      "btnTryAgain": "Intentar de nuevo",
+      "lblDescription": "Descripción",
+      "lblCommonUses": "Usos Comunes",
+      "lblSideEffects": "Efectos Secundarios",
+      "lblContraindications": "Contraindicaciones",
+      "lblWarnings": "Advertencias",
+      "lblInteractions": "Interacciones",
+      "btnRegenerate": "Regenerar",
+      "btnGenerateAI": "Generar Info AI",
+      "lblNotes": "Notas",
+      "lblAdded": "Añadido",
+      "lblLastUpdated": "Última Actualización",
+      "btnDelete": "Eliminar Medicamento",
+      "alertDeleteTitle": "Eliminar Medicamento",
+      "alertDeleteDesc": "¿Estás seguro de que quieres eliminar \"{{name}}\"?",
+      "alertDeleteBtnCancel": "Cancelar",
+      "alertDeleteBtnConfirm": "Eliminar",
+      "alertDeleteError": "Error al eliminar el medicamento.",
+      "alertLogSuccess": "Medicamento marcado como {{status}}.",
+      "alertLogError": "Error al registrar el consumo.",
+      "statusTaken": "tomado",
+      "statusSkipped": "omitido",
+      "statusPostponed": "pospuesto",
+      "notFound": "Medicamento no encontrado.",
+      "loadError": "Error al cargar el medicamento.",
+      "btnGoBack": "Volver"
+    }
+  },
+  "history": {
+    "title": "Historial",
+    "filters": {
+      "all": "Todos",
+      "taken": "Tomados",
+      "skipped": "Omitidos",
+      "postponed": "Pospuestos"
+    },
+    "status": {
+      "taken": "Tomado",
+      "skipped": "Omitido",
+      "postponed": "Pospuesto"
+    },
+    "qty": "Cant: {{count}}",
+    "emptyTitle": "Aún no hay historial",
+    "emptyDesc": "Tu historial de medicamentos aparecerá aquí una vez que registres una dosis."
+  },
+  "reminders": {
+    "title": "Recordatorios",
+    "editTitle": "Editar Recordatorio",
+    "newTitle": "Nuevo Recordatorio",
+    "btnCancel": "Cancelar",
+    "btnAdd": "+ Añadir",
+    "emptyTitle": "Aún no hay recordatorios",
+    "emptyDesc": "Añade un recordatorio para que te avisemos cuando sea hora de tu medicamento.",
+    "errorTitle": "Error",
+    "errorToggle": "Error al cambiar el estado del recordatorio.",
+    "errorDelete": "Error al eliminar el recordatorio.",
+    "errorSave": "Error al guardar el recordatorio.",
+    "alertDeleteTitle": "Eliminar Recordatorio",
+    "alertDeleteDesc": "¿Estás seguro de que quieres eliminar este recordatorio?",
+    "alertDeleteBtnCancel": "Cancelar",
+    "alertDeleteBtnConfirm": "Eliminar",
+    "form": {
+      "timeLabel": "Hora del Recordatorio",
+      "activeLabel": "Activo",
+      "btnSave": "Guardar Recordatorio",
+      "btnUpdate": "Actualizar",
+      "btnCreate": "Crear"
+    },
+    "item": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "btnEdit": "Editar",
+      "btnDelete": "Eliminar"
+    }
   }
 }

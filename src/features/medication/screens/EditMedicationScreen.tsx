@@ -33,6 +33,7 @@ import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -40,6 +41,7 @@ export function EditMedicationScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const router = useRouter();
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const medicationId = Number(id);
 
@@ -76,10 +78,10 @@ export function EditMedicationScreen() {
           if (fetched) {
             setFetchedMedication(fetched);
           } else {
-            setFetchError('Medication not found.');
+            setFetchError(t('medications.details.notFound'));
           }
         } catch {
-          setFetchError('Failed to load medication.');
+          setFetchError(t('medications.details.loadError'));
         }
       })();
     }
@@ -129,7 +131,7 @@ export function EditMedicationScreen() {
         });
         router.back();
       } catch {
-        Alert.alert('Error', 'Failed to update medication. Please try again.');
+        Alert.alert(t('medications.list.errorTitle'), t('medications.form.errorSave'));
       }
     },
     [updateMedication, medicationId, router],
@@ -144,7 +146,7 @@ export function EditMedicationScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{fetchError}</Text>
-          <Button label="Go Back" onPress={() => router.back()} variant="outline" />
+          <Button label={t('medications.details.btnGoBack')} onPress={() => router.back()} variant="outline" />
         </View>
       </SafeAreaView>
     );
@@ -156,7 +158,7 @@ export function EditMedicationScreen() {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centered}>
-          <Text style={styles.loadingText}>Loading…</Text>
+          <Text style={styles.loadingText}>{t('medications.list.loading')}</Text>
         </View>
       </SafeAreaView>
     );
@@ -168,7 +170,7 @@ export function EditMedicationScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* ── Navigation header ── */}
       <View style={styles.navHeader}>
-        <Button label="← Cancel" onPress={() => router.back()} variant="outline" />
+        <Button label={t('medications.form.btnCancel')} onPress={() => router.back()} variant="outline" />
       </View>
 
       <KeyboardAvoidingView
@@ -181,10 +183,10 @@ export function EditMedicationScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text style={styles.screenTitle} accessibilityRole="header">
-            Edit Medication
+            {t('medications.form.titleEdit')}
           </Text>
           <Text style={styles.screenSubtitle}>
-            Update the details for {medication.name}.
+            {t('medications.form.subtitleEdit')}
           </Text>
 
           <View style={styles.photoSection}>
@@ -203,15 +205,15 @@ export function EditMedicationScreen() {
 
           {/* ── Required fields ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Required</Text>
+            <Text style={styles.sectionLabel}>{t('medications.form.sectionRequired')}</Text>
 
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Medication Name"
-                  placeholder="e.g. Aspirin"
+                  label={t('medications.form.labelName')}
+                  placeholder={t('medications.form.placeholderName')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -227,8 +229,8 @@ export function EditMedicationScreen() {
               name="dosage"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Dosage"
-                  placeholder="e.g. 500mg"
+                  label={t('medications.form.labelDosage')}
+                  placeholder={t('medications.form.placeholderDosage')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -243,7 +245,7 @@ export function EditMedicationScreen() {
               name="expirationDate"
               render={({ field: { onChange, value } }) => (
                 <DateInput
-                  label="Expiration Date"
+                  label={t('medications.form.labelExpiration')}
                   value={value}
                   onChange={onChange}
                   errorMessage={errors.expirationDate?.message}
@@ -254,15 +256,15 @@ export function EditMedicationScreen() {
 
           {/* ── Optional fields ── */}
           <View style={styles.section}>
-            <Text style={styles.sectionLabel}>Optional</Text>
+            <Text style={styles.sectionLabel}>{t('medications.form.sectionOptional')}</Text>
 
             <Controller
               control={control}
               name="presentation"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Presentation"
-                  placeholder="e.g. Tablet, Capsule, Syrup"
+                  label={t('medications.form.labelPresentation')}
+                  placeholder={t('medications.form.placeholderPresentation')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -278,8 +280,8 @@ export function EditMedicationScreen() {
               name="quantityAvailable"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Quantity Available"
-                  placeholder="e.g. 30"
+                  label={t('medications.form.labelQuantity')}
+                  placeholder={t('medications.form.placeholderQuantity')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -295,15 +297,14 @@ export function EditMedicationScreen() {
               name="lowStockThreshold"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Low Stock Threshold"
-                  placeholder="e.g. 10"
+                  label={t('medications.form.labelThreshold')}
+                  placeholder={t('medications.form.placeholderThreshold')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   errorMessage={errors.lowStockThreshold?.message}
                   keyboardType="numeric"
                   returnKeyType="next"
-                  accessibilityHint="Alert when quantity drops to or below this number"
                 />
               )}
             />
@@ -313,8 +314,8 @@ export function EditMedicationScreen() {
               name="notes"
               render={({ field: { onChange, onBlur, value } }) => (
                 <Input
-                  label="Notes"
-                  placeholder="e.g. Take with food"
+                  label={t('medications.form.labelNotes')}
+                  placeholder={t('medications.form.placeholderNotes')}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -330,12 +331,11 @@ export function EditMedicationScreen() {
           {/* ── Submit ── */}
           <View style={styles.submitSection}>
             <Button
-              label={isBusy ? 'Saving…' : 'Save Changes'}
+              label={isBusy ? t('medications.form.btnUpdating') : t('medications.form.btnUpdate')}
               onPress={handleSubmit(onSubmit)}
               variant="primary"
               loading={isBusy}
               disabled={isBusy}
-              accessibilityHint="Save the updated medication information"
             />
           </View>
         </ScrollView>

@@ -51,15 +51,15 @@ export function getExpirationStatus(isoDate: string): ExpirationStatus {
 }
 
 /**
- * Returns a user-facing label for the expiration status.
+ * Returns translation key and params for the expiration status.
  */
-export function getExpirationLabel(isoDate: string): string {
+export function getExpirationLabel(isoDate: string): { key: string, params?: any } {
   const days = daysUntilExpiration(isoDate);
-  if (days < 0) return 'Expired';
-  if (days === 0) return 'Expires today';
-  if (days === 1) return 'Expires tomorrow';
-  if (days <= 30) return `Expires in ${days}d`;
-  return `Expires ${formatExpirationDate(isoDate)}`;
+  if (days < 0) return { key: 'medications.common.expired' };
+  if (days === 0) return { key: 'medications.common.expiresToday' };
+  if (days === 1) return { key: 'medications.common.expiresTomorrow' };
+  if (days <= 30) return { key: 'medications.common.expiresInDays', params: { days } };
+  return { key: 'medications.common.expiresOnDate', params: { date: formatExpirationDate(isoDate) } };
 }
 
 /**

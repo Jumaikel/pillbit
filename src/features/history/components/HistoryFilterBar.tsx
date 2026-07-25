@@ -2,22 +2,24 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Spacing, Radius } from '@/constants';
 import { ConsumptionStatus } from '@/database/models';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface HistoryFilterBarProps {
     selectedStatus?: ConsumptionStatus;
     onSelectStatus: (status?: ConsumptionStatus) => void;
 }
 
-const filters: { label: string; value: ConsumptionStatus | undefined }[] = [
-    { label: 'All', value: undefined },
-    { label: 'Taken', value: 'taken' },
-    { label: 'Skipped', value: 'skipped' },
-    { label: 'Postponed', value: 'postponed' },
+const filters: { labelKey: string; value: ConsumptionStatus | undefined }[] = [
+    { labelKey: 'history.filters.all', value: undefined },
+    { labelKey: 'history.filters.taken', value: 'taken' },
+    { labelKey: 'history.filters.skipped', value: 'skipped' },
+    { labelKey: 'history.filters.postponed', value: 'postponed' },
 ];
 
 export function HistoryFilterBar({ selectedStatus, onSelectStatus }: HistoryFilterBarProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
     return (
         <ScrollView 
             horizontal 
@@ -40,7 +42,7 @@ export function HistoryFilterBar({ selectedStatus, onSelectStatus }: HistoryFilt
                             styles.chipText,
                             isSelected && styles.chipTextSelected
                         ]}>
-                            {filter.label}
+                            {t(filter.labelKey)}
                         </Text>
                     </TouchableOpacity>
                 );

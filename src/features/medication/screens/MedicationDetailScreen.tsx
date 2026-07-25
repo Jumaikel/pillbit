@@ -23,6 +23,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAIStore } from '@/features/ai/store/useAIStore';
 import { SpeechService } from '@/services/SpeechService';
 import { useConfigStore } from '@/store/useConfigStore';
+import { useTranslation } from 'react-i18next';
 
 export function MedicationDetailScreen() {
   const { colors, typography } = useTheme();
@@ -31,6 +32,7 @@ export function MedicationDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const medicationId = Number(id);
   const { settings } = useConfigStore();
+  const { t } = useTranslation();
 
   // Stores
   const medications = useMedicationStore((s) => s.medications);
@@ -68,9 +70,9 @@ export function MedicationDetailScreen() {
         try {
           const fetched = await MedicationRepository.findById(medicationId);
           if (fetched) setFetchedMedication(fetched);
-          else setFetchError('Medication not found.');
+          else setFetchError(t('medications.details.notFound'));
         } catch {
-          setFetchError('Failed to load medication.');
+          setFetchError(t('medications.details.loadError'));
         }
       })();
     }
@@ -87,19 +89,19 @@ export function MedicationDetailScreen() {
 
   const handleDelete = useCallback(() => {
     Alert.alert(
-      'Delete Medication',
-      `Are you sure you want to delete "${medication?.name ?? 'this medication'}"?`,
+      t('medications.details.alertDeleteTitle'),
+      t('medications.details.alertDeleteDesc', { name: medication?.name ?? '' }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('medications.details.alertDeleteBtnCancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('medications.details.alertDeleteBtnConfirm'),
           style: 'destructive',
           onPress: async () => {
             try {
               await deleteMedication(medicationId);
               router.back();
             } catch {
-              Alert.alert('Error', 'Failed to delete medication.');
+              Alert.alert(t('medications.list.errorTitle'), t('medications.details.alertDeleteError'));
             }
           },
         },
@@ -110,9 +112,9 @@ export function MedicationDetailScreen() {
   const { registerConsumption } = useHistoryStore();
   const handleQuickLog = useCallback((status: ConsumptionStatus) => {
       registerConsumption(medicationId, status).then(() => {
-          Alert.alert('Success', `Medication marked as ${status}.`);
-      }).catch(() => Alert.alert('Error', 'Failed to log consumption.'));
-  }, [medicationId, registerConsumption]);
+          Alert.alert(t('common.success'), t('medications.details.alertLogSuccess', { status: t(`medications.details.status${status.charAt(0).toUpperCase() + status.slice(1)}`) }));
+      }).catch(() => Alert.alert(t('medications.list.errorTitle'), t('medications.details.alertLogError')));
+  }, [medicationId, registerConsumption, t]);
 
   const handleGenerateAI = () => {
       if (medication) {
@@ -148,7 +150,7 @@ export function MedicationDetailScreen() {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{fetchError}</Text>
-          <Button label="Go Back" onPress={() => router.back()} variant="outline" />
+          <Button label={t('medications.details.btnGoBack')} onPress={() => router.back()} variant="outline" />
         </View>
       </SafeAreaView>
     );
@@ -157,7 +159,7 @@ export function MedicationDetailScreen() {
   if (!medication) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.centered}><Text style={styles.loadingText}>Loading…</Text></View>
+        <View style={styles.centered}><Text style={styles.loadingText}>{t('medications.list.loading')}</Text></View>
       </SafeAreaView>
     );
   }
@@ -165,8 +167,8 @@ export function MedicationDetailScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.navHeader}>
-        <Button label="← Back" onPress={() => router.back()} variant="outline" />
-        <Button label="Edit" onPress={handleEdit} variant="secondary" />
+        <Button label={t('medications.details.btnBack')} onPress={() => router.back()} variant="outline" />
+        <Button label={t('medications.details.btnEdit')} onPress={handleEdit} variant="secondary" />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -187,65 +189,65 @@ export function MedicationDetailScreen() {
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Log Dose</Text>
+          <Text style={styles.sectionTitle}>{t('medications.details.logDose')}</Text>
           <View style={styles.logButtons}>
-            <Button label="Take" onPress={() => handleQuickLog('taken')} style={styles.flexButton} />
-            <Button label="Skip" onPress={() => handleQuickLog('skipped')} variant="outline" style={styles.flexButton} />
-            <Button label="Postpone" onPress={() => handleQuickLog('postponed')} variant="outline" style={styles.flexButton} />
+            <Button label={t('medications.details.btnTake')} onPress={() => handleQuickLog('taken')} style={styles.flexButton} />
+            <Button label={t('medications.details.btnSkip')} onPress={() => handleQuickLog('skipped')} variant="outline" style={styles.flexButton} />
+            <Button label={t('medications.details.btnPostpone')} onPress={() => handleQuickLog('postponed')} variant="outline" style={styles.flexButton} />
           </View>
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Management</Text>
-          <Button label="Manage Reminders" onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} variant="secondary" />
+          <Text style={styles.sectionTitle}>{t('medications.details.management')}</Text>
+          <Button label={t('medications.details.btnManageReminders')} onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} variant="secondary" />
         </View>
 
         <Card padded>
-          <DetailRow label="Dosage" value={medication.dosage} styles={styles} />
+          <DetailRow label={t('medications.details.lblDosage')} value={medication.dosage} styles={styles} />
           <Divider styles={styles} />
-          <DetailRow label="Presentation" value={medication.presentation} styles={styles} />
+          <DetailRow label={t('medications.details.lblPresentation')} value={medication.presentation} styles={styles} />
           <Divider styles={styles} />
-          <DetailRow label="Expiration Date" value={formatExpirationDate(medication.expirationDate)} styles={styles} />
+          <DetailRow label={t('medications.details.lblExpiration')} value={formatExpirationDate(medication.expirationDate)} styles={styles} />
           <Divider styles={styles} />
-          <DetailRow label="Quantity Available" value={medication.quantityAvailable !== null ? `${medication.quantityAvailable} units` : null} styles={styles} />
+          <DetailRow label={t('medications.details.lblQuantity')} value={medication.quantityAvailable !== null ? `${medication.quantityAvailable} ${t('medications.common.units')}` : null} styles={styles} />
           <Divider styles={styles} />
-          <DetailRow label="Low Stock Threshold" value={medication.lowStockThreshold !== null ? `${medication.lowStockThreshold} units` : null} styles={styles} />
+          <DetailRow label={t('medications.details.lblThreshold')} value={medication.lowStockThreshold !== null ? `${medication.lowStockThreshold} ${t('medications.common.units')}` : null} styles={styles} />
         </Card>
 
         {settings?.isAiEnabled && (
           <View style={styles.aiSection}>
             <View style={styles.aiHeader}>
-                <Text style={styles.sectionTitle}>AI Information</Text>
+                <Text style={styles.sectionTitle}>{t('medications.details.aiTitle')}</Text>
                 {aiInfo && settings.isTextToSpeechEnabled && (
-                   <Button label={isReading ? "Stop" : "Read Info"} onPress={handleReadAI} variant="outline" />
+                   <Button label={isReading ? t('medications.details.btnStopReading') : t('medications.details.btnReadInfo')} onPress={handleReadAI} variant="outline" />
                 )}
             </View>
             <Card padded>
                 {aiLoading ? (
-                    <Text style={styles.loadingText}>Generating insights...</Text>
+                    <Text style={styles.loadingText}>{t('medications.details.lblGenerating')}</Text>
                 ) : aiError ? (
                     <View>
                        <Text style={styles.errorText}>{aiError}</Text>
-                       <Button label="Try Again" onPress={handleGenerateAI} style={{marginTop: 8}} />
+                       <Button label={t('medications.details.btnTryAgain')} onPress={handleGenerateAI} style={{marginTop: 8}} />
                     </View>
                 ) : aiInfo ? (
                     <View style={styles.aiContent}>
-                        <DetailRow label="Description" value={aiInfo.description} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblDescription')} value={aiInfo.description} styles={styles} vertical />
                         <Divider styles={styles} />
-                        <DetailRow label="Common Uses" value={aiInfo.commonUses} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblCommonUses')} value={aiInfo.commonUses} styles={styles} vertical />
                         <Divider styles={styles} />
-                        <DetailRow label="Side Effects" value={aiInfo.sideEffects} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblSideEffects')} value={aiInfo.sideEffects} styles={styles} vertical />
                         <Divider styles={styles} />
-                        <DetailRow label="Contraindications" value={aiInfo.contraindications} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblContraindications')} value={aiInfo.contraindications} styles={styles} vertical />
                         <Divider styles={styles} />
-                        <DetailRow label="Warnings" value={aiInfo.warnings} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblWarnings')} value={aiInfo.warnings} styles={styles} vertical />
                         <Divider styles={styles} />
-                        <DetailRow label="Interactions" value={aiInfo.interactions} styles={styles} vertical />
+                        <DetailRow label={t('medications.details.lblInteractions')} value={aiInfo.interactions} styles={styles} vertical />
                         
-                        <Button label="Regenerate" onPress={handleGenerateAI} variant="outline" style={{marginTop: 16}} />
+                        <Button label={t('medications.details.btnRegenerate')} onPress={handleGenerateAI} variant="outline" style={{marginTop: 16}} />
                     </View>
                 ) : (
-                    <Button label="Generate AI Info" onPress={handleGenerateAI} variant="secondary" />
+                    <Button label={t('medications.details.btnGenerateAI')} onPress={handleGenerateAI} variant="secondary" />
                 )}
             </Card>
           </View>
@@ -253,19 +255,19 @@ export function MedicationDetailScreen() {
 
         {medication.notes && (
           <Card padded style={styles.notesCard}>
-            <Text style={styles.notesLabel}>Notes</Text>
+            <Text style={styles.notesLabel}>{t('medications.details.lblNotes')}</Text>
             <Text style={styles.notesText}>{medication.notes}</Text>
           </Card>
         )}
 
         <Card padded>
-          <DetailRow label="Added" value={formatExpirationDate(medication.createdDatetime.split('T')[0])} styles={styles} />
+          <DetailRow label={t('medications.details.lblAdded')} value={formatExpirationDate(medication.createdDatetime.split('T')[0])} styles={styles} />
           <Divider styles={styles} />
-          <DetailRow label="Last Updated" value={formatExpirationDate(medication.updatedDatetime.split('T')[0])} styles={styles} />
+          <DetailRow label={t('medications.details.lblLastUpdated')} value={formatExpirationDate(medication.updatedDatetime.split('T')[0])} styles={styles} />
         </Card>
 
         <View style={styles.deleteSection}>
-          <Button label="Delete Medication" onPress={handleDelete} variant="outline" loading={isLoading} />
+          <Button label={t('medications.details.btnDelete')} onPress={handleDelete} variant="outline" loading={isLoading} />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -16,6 +16,7 @@ import { Spacing } from '@/constants';
 import { Medication } from '@/database';
 import { MedicationStatusBadge } from './MedicationStatusBadge';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,10 +46,11 @@ interface MedicationCardProps {
 export function MedicationCard({ medication, onPress }: MedicationCardProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
   return (
     <Card
       onPress={onPress}
-      accessibilityLabel={`${medication.name}, ${medication.dosage}. Tap to view details.`}
+      accessibilityLabel={`${medication.name}, ${medication.dosage}`}
       padded
     >
       <View style={styles.row}>
@@ -78,7 +80,7 @@ export function MedicationCard({ medication, onPress }: MedicationCardProps) {
         {medication.quantityAvailable !== null && (
           <View style={styles.quantity}>
             <Text style={styles.quantityNumber}>{medication.quantityAvailable}</Text>
-            <Text style={styles.quantityLabel}>units</Text>
+            <Text style={styles.quantityLabel}>{t('medications.common.units')}</Text>
           </View>
         )}
       </View>

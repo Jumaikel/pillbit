@@ -12,6 +12,7 @@ import { Spacing, Radius } from '@/constants';
 import { ExpirationStatus } from '@/features/medication/types';
 import { getExpirationLabel, getExpirationStatus } from '@/features/medication/utils/medicationUtils';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,8 +40,11 @@ interface MedicationStatusBadgeProps {
 export function MedicationStatusBadge({ expirationDate }: MedicationStatusBadgeProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
+  
   const status = getExpirationStatus(expirationDate);
-  const label = getExpirationLabel(expirationDate);
+  const labelData = getExpirationLabel(expirationDate);
+  const label = t(labelData.key, labelData.params);
   
   const badgeColorMap: Record<ExpirationStatus, { background: string; text: string }> = {
     valid: { background: '#E8F8ED', text: colors.success },

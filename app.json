@@ -20,7 +20,8 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "package": "com.jumaikel.pillbit"
     },
     "web": {
       "output": "static",
@@ -46,7 +47,8 @@
           "cameraPermission": "Permitir a PillBit acceder a tu cámara para fotografiar tus medicamentos."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

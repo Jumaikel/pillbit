@@ -8,6 +8,7 @@ import { ReminderItem } from '../components/ReminderItem';
 import { ReminderForm, ReminderFormValues } from '../components/ReminderForm';
 import { MedicationReminder } from '@/database';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface ReminderManagementScreenProps {
   medicationId: number;
@@ -25,6 +26,7 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
     deleteReminder, 
     toggleReminder 
   } = useReminderStore();
+  const { t } = useTranslation();
 
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [editingReminder, setEditingReminder] = useState<MedicationReminder | null>(null);
@@ -37,24 +39,24 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
     try {
       await toggleReminder(id, isActive);
     } catch (e) {
-      Alert.alert('Error', 'Failed to toggle reminder.');
+      Alert.alert(t('reminders.errorTitle'), t('reminders.errorToggle'));
     }
   };
 
   const handleDelete = (id: number) => {
     Alert.alert(
-      'Delete Reminder',
-      'Are you sure you want to delete this reminder?',
+      t('reminders.alertDeleteTitle'),
+      t('reminders.alertDeleteDesc'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('reminders.alertDeleteBtnCancel'), style: 'cancel' },
         { 
-          text: 'Delete', 
+          text: t('reminders.alertDeleteBtnConfirm'), 
           style: 'destructive',
           onPress: async () => {
             try {
               await deleteReminder(id);
             } catch (e) {
-              Alert.alert('Error', 'Failed to delete reminder.');
+              Alert.alert(t('reminders.errorTitle'), t('reminders.errorDelete'));
             }
           }
         }
@@ -89,7 +91,7 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
       setIsFormVisible(false);
       setEditingReminder(null);
     } catch (e) {
-      Alert.alert('Error', 'Failed to save reminder.');
+      Alert.alert(t('reminders.errorTitle'), t('reminders.errorSave'));
     }
   };
 
@@ -114,16 +116,16 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
         {isFormVisible ? (
           <View style={styles.formContainer}>
             <Text style={styles.formTitle}>
-              {editingReminder ? 'Edit Reminder' : 'New Reminder'}
+              {editingReminder ? t('reminders.editTitle') : t('reminders.newTitle')}
             </Text>
             <ReminderForm 
               initialValues={getInitialFormValues()}
               onSubmit={handleSubmitForm}
               isLoading={isLoading}
-              submitLabel={editingReminder ? "Update" : "Create"}
+              submitLabel={editingReminder ? t('reminders.form.btnUpdate') : t('reminders.form.btnCreate')}
             />
             <Button 
-              label="Cancel" 
+              label={t('reminders.btnCancel')} 
               variant="outline" 
               onPress={handleCancelForm} 
               style={styles.cancelButton}
@@ -133,14 +135,14 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
         ) : (
           <>
             <View style={styles.header}>
-              <Text style={styles.title}>Reminders</Text>
-              <Button label="+ Add" onPress={handleAddNew} />
+              <Text style={styles.title}>{t('reminders.title')}</Text>
+              <Button label={t('reminders.btnAdd')} onPress={handleAddNew} />
             </View>
 
             {reminders.length === 0 ? (
               <EmptyState 
-                title="No reminders yet" 
-                description="Add a reminder to get notified when it's time for your medication."
+                title={t('reminders.emptyTitle')} 
+                description={t('reminders.emptyDesc')}
               />
             ) : (
               <View style={styles.list}>

@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useHistoryStore } from '@/features/history/store/useHistoryStore';
 import { useDashboardStore } from '../store/useDashboardStore';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 interface TodayDoseCardProps {
     dose: TodayDose;
@@ -15,6 +16,7 @@ interface TodayDoseCardProps {
 export function TodayDoseCard({ dose }: TodayDoseCardProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
     const { reminderId, reminderTime, medicationId, medicationName, dosage, status } = dose;
     const registerConsumption = useHistoryStore((s) => s.registerConsumption);
     const loadDashboard = useDashboardStore((s) => s.loadDashboard);
@@ -56,7 +58,7 @@ export function TodayDoseCard({ dose }: TodayDoseCardProps) {
                 {!isPending && (
                     <View style={[styles.statusBadge, isTaken ? styles.statusTaken : styles.statusSkipped]}>
                         <Text style={[styles.statusText, isTaken ? styles.statusTextTaken : styles.statusTextSkipped]}>
-                            {isTaken ? 'Tomado' : 'Omitido'}
+                            {isTaken ? t('dashboard.doseCard.taken') : t('dashboard.doseCard.skipped')}
                         </Text>
                     </View>
                 )}
@@ -70,12 +72,12 @@ export function TodayDoseCard({ dose }: TodayDoseCardProps) {
             {isPending && (
                 <View style={styles.actionsContainer}>
                     <Button
-                        label="Tomar"
+                        label={t('dashboard.doseCard.take')}
                         onPress={handleTake}
                         style={styles.actionButton}
                     />
                     <Button
-                        label="Omitir"
+                        label={t('dashboard.doseCard.skip')}
                         onPress={handleSkip}
                         variant="outline"
                         style={styles.actionButton}

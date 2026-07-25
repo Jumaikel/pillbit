@@ -12,6 +12,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Spacing, Radius } from '@/constants';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,25 +30,23 @@ interface LowStockBannerProps {
 export function LowStockBanner({ count, hasEmpty = false, onPress }: LowStockBannerProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
+
     if (count === 0) return null;
 
     const bgColor = hasEmpty ? '#FEE9E7' : '#FFF5E0';
     const borderColor = hasEmpty ? colors.error : colors.warning;
     const iconText = hasEmpty ? '🚨' : '⚠️';
     const titleText = hasEmpty
-        ? count === 1
-            ? '1 medication is out of stock'
-            : `${count} medications need attention`
-        : count === 1
-            ? '1 medication is running low'
-            : `${count} medications are running low`;
+        ? t('dashboard.lowStock.outOfStock', { count })
+        : t('dashboard.lowStock.runningLow', { count });
 
     return (
         <TouchableOpacity
             style={[styles.banner, { backgroundColor: bgColor, borderColor }]}
             onPress={onPress}
             accessibilityRole="button"
-            accessibilityLabel={`${titleText}. Tap to view.`}
+            accessibilityLabel={t('dashboard.lowStock.tapToView', { title: titleText })}
         >
             <View style={styles.content}>
                 <Text style={styles.icon}>{iconText}</Text>
@@ -60,7 +59,7 @@ export function LowStockBanner({ count, hasEmpty = false, onPress }: LowStockBan
                     >
                         {titleText}
                     </Text>
-                    <Text style={styles.subtitle}>Tap to manage inventory</Text>
+                    <Text style={styles.subtitle}>{t('dashboard.lowStock.tapToManage')}</Text>
                 </View>
                 <Text style={[styles.arrow, { color: hasEmpty ? colors.error : colors.warning }]}>
                     →

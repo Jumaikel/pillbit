@@ -35,6 +35,7 @@ import { MedicationCard } from '../components/MedicationCard';
 import { useExpirationStore } from '@/features/expiration';
 import { useInventoryStore, selectLowStockCount } from '@/features/inventory';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,7 @@ export function MedicationListScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const router = useRouter();
+  const { t } = useTranslation();
 
   // ─── Store selectors (always select only what you need) ──────────────────
   const isLoading = useMedicationStore((s) => s.isLoading);
@@ -60,9 +62,9 @@ export function MedicationListScreen() {
 
   useEffect(() => {
     if (error) {
-      Alert.alert('Error', error, [{ text: 'OK', onPress: clearError }]);
+      Alert.alert(t('medications.list.errorTitle'), t('medications.list.errorLoading'), [{ text: t('medications.list.ok'), onPress: clearError }]);
     }
-  }, [error, clearError]);
+  }, [error, clearError, t]);
 
   const { expiringSoonList, expiredList, refreshExpirationData } = useExpirationStore();
   useEffect(() => {
@@ -106,16 +108,16 @@ export function MedicationListScreen() {
     if (searchQuery.trim()) {
       return (
         <EmptyState
-          title="No results found"
-          description={`No medications match "${searchQuery}".`}
+          title={t('medications.list.noResultsTitle')}
+          description={t('medications.list.noResultsDesc', { query: searchQuery })}
         />
       );
     }
     return (
       <EmptyState
-        title="No medications yet"
-        description="Add your first medication to start tracking your prescriptions."
-        action={{ label: 'Add Medication', onPress: handleCreate }}
+        title={t('medications.list.emptyTitle')}
+        description={t('medications.list.emptyDesc')}
+        action={{ label: t('medications.list.addMedication'), onPress: handleCreate }}
       />
     );
   };
@@ -127,16 +129,16 @@ export function MedicationListScreen() {
       {/* ── Header ── */}
       <View style={styles.header}>
         <Text style={styles.headerTitle} accessibilityRole="header">
-          Medications
+          {t('medications.list.title')}
         </Text>
         <TouchableOpacity
           style={styles.addButton}
           onPress={handleCreate}
           accessibilityRole="button"
-          accessibilityLabel="Add medication"
+          accessibilityLabel={t('medications.list.addMedication')}
           accessibilityHint="Navigate to the create medication screen"
         >
-          <Text style={styles.addButtonText}>+ Add</Text>
+          <Text style={styles.addButtonText}>{t('medications.list.add')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -144,13 +146,13 @@ export function MedicationListScreen() {
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
-          placeholder="Search medications…"
+          placeholder={t('medications.list.searchPlaceholder')}
           placeholderTextColor={colors.textDisabled}
           value={searchQuery}
           onChangeText={setSearchQuery}
           returnKeyType="search"
           clearButtonMode="while-editing"
-          accessibilityLabel="Search medications"
+          accessibilityLabel={t('medications.list.searchPlaceholder')}
           accessibilityHint="Filter the list by medication name, dosage, or presentation"
         />
       </View>
@@ -161,19 +163,25 @@ export function MedicationListScreen() {
           style={styles.expirationLink}
           onPress={() => router.push('/medications/low-stock' as never)}
         >
-          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: colors.error }]}>Low Stock ({lowStockCount})</Text>
+          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: colors.error }]}>
+            {t('medications.list.lowStock', { count: lowStockCount })}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.expirationLink}
           onPress={() => router.push('/medications/expiring' as never)}
         >
-          <Text style={styles.expirationLinkText}>Expiring ({expiringSoonList.length})</Text>
+          <Text style={styles.expirationLinkText}>
+            {t('medications.list.expiring', { count: expiringSoonList.length })}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.expirationLink}
           onPress={() => router.push('/medications/expired' as never)}
         >
-          <Text style={styles.expirationLinkTextError}>Expired ({expiredList.length})</Text>
+          <Text style={styles.expirationLinkTextError}>
+            {t('medications.list.expired', { count: expiredList.length })}
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -181,7 +189,7 @@ export function MedicationListScreen() {
       {isLoading && filteredMedications.length === 0 && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Loading medications…</Text>
+          <Text style={styles.loadingText}>{t('medications.list.loading')}</Text>
         </View>
       )}
 

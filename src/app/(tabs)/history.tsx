@@ -9,10 +9,12 @@ import {
     HistoryFilterBar, 
     HistoryEmptyState 
 } from '@/features/history';
+import { useTranslation } from 'react-i18next';
 
 export default function HistoryScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
     const { records, filters, isLoading, loadHistory, setFilters } = useHistoryStore();
 
     useEffect(() => {
@@ -23,7 +25,7 @@ export default function HistoryScreen() {
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <Text style={styles.title} accessibilityRole="header">
-                    History
+                    {t('history.title')}
                 </Text>
             </View>
 

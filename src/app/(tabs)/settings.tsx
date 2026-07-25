@@ -30,7 +30,7 @@ export default function SettingsScreen() {
     try {
       const parsedThreshold = thresholdInput.trim() === '' ? null : parseInt(thresholdInput, 10);
       if (parsedThreshold !== null && (isNaN(parsedThreshold) || parsedThreshold < 0)) {
-         Alert.alert('Invalid Threshold', 'Please enter a valid positive number');
+         Alert.alert(t('settings.invalidThresholdTitle'), t('settings.invalidThresholdDesc'));
          setIsSaving(false);
          return;
       }
@@ -38,9 +38,9 @@ export default function SettingsScreen() {
       // Refresh inventory because global threshold changed
       const { refreshAfterSettingsChange } = useInventoryStore.getState();
       await refreshAfterSettingsChange();
-      Alert.alert('Success', 'Inventory settings saved');
+      Alert.alert(t('settings.successTitle'), t('settings.successSave'));
     } catch (e) {
-      Alert.alert('Error', 'Failed to save settings');
+      Alert.alert(t('settings.errorTitle'), t('settings.errorSave'));
     } finally {
       setIsSaving(false);
     }
@@ -56,14 +56,14 @@ export default function SettingsScreen() {
          i18n.changeLanguage(value === 'system' ? undefined : (value as string));
       }
     } catch (e) {
-      Alert.alert(t('common.error'), 'Failed to update setting');
+      Alert.alert(t('settings.errorTitle'), t('settings.errorUpdate'));
     }
   };
 
   if (isLoading || !settings) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-         <View style={styles.centered}><Text style={styles.loadingText}>Loading settings...</Text></View>
+         <View style={styles.centered}><Text style={styles.loadingText}>{t('settings.loading')}</Text></View>
       </SafeAreaView>
     );
   }
@@ -105,12 +105,12 @@ export default function SettingsScreen() {
 
           {/* Accessibility Settings */}
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>Accessibility</Text>
+            <Text style={styles.sectionTitle}>{t('settings.accessibility.title')}</Text>
             
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>High Contrast Mode</Text>
-                 <Text style={styles.settingDescription}>Increase color contrast for better visibility.</Text>
+                 <Text style={styles.settingLabel}>{t('settings.accessibility.highContrast')}</Text>
+                 <Text style={styles.settingDescription}>{t('settings.accessibility.highContrastDesc')}</Text>
                </View>
                <Switch
                  value={settings.isHighContrastEnabled}
@@ -122,27 +122,27 @@ export default function SettingsScreen() {
             <View style={styles.divider} />
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Text Size</Text>
-                 <Text style={styles.settingDescription}>Scale global text size.</Text>
+                 <Text style={styles.settingLabel}>{t('settings.accessibility.textSize')}</Text>
+                 <Text style={styles.settingDescription}>{t('settings.accessibility.textSizeDesc')}</Text>
                </View>
             </View>
             <View style={styles.buttonRow}>
                <Button 
-                  label="Normal" 
+                  label={t('settings.accessibility.sizeNormal')} 
                   variant={settings.textSize === 'normal' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'normal')} 
                   style={styles.flex1} 
                />
                <View style={{ width: 8 }} />
                <Button 
-                  label="Large" 
+                  label={t('settings.accessibility.sizeLarge')} 
                   variant={settings.textSize === 'large' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'large')} 
                   style={styles.flex1} 
                />
                <View style={{ width: 8 }} />
                <Button 
-                  label="X-Large" 
+                  label={t('settings.accessibility.sizeXLarge')} 
                   variant={settings.textSize === 'extra_large' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'extra_large')} 
                   style={styles.flex1} 
@@ -151,8 +151,8 @@ export default function SettingsScreen() {
             <View style={styles.divider} />
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Voice Input</Text>
-                 <Text style={styles.settingDescription}>Enable voice dictation in input fields.</Text>
+                 <Text style={styles.settingLabel}>{t('settings.accessibility.voiceInput')}</Text>
+                 <Text style={styles.settingDescription}>{t('settings.accessibility.voiceInputDesc')}</Text>
                </View>
                <Switch
                  value={settings.isVoiceInputEnabled}
@@ -164,8 +164,8 @@ export default function SettingsScreen() {
             <View style={styles.divider} />
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Text To Speech</Text>
-                 <Text style={styles.settingDescription}>Enable voice reading for medication details.</Text>
+                 <Text style={styles.settingLabel}>{t('settings.accessibility.tts')}</Text>
+                 <Text style={styles.settingDescription}>{t('settings.accessibility.ttsDesc')}</Text>
                </View>
                <Switch
                  value={settings.isTextToSpeechEnabled}
@@ -178,12 +178,12 @@ export default function SettingsScreen() {
 
           {/* AI Settings */}
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>AI Features</Text>
+            <Text style={styles.sectionTitle}>{t('settings.ai.title')}</Text>
             
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Enable AI Info</Text>
-                 <Text style={styles.settingDescription}>Use AI to generate medication insights.</Text>
+                 <Text style={styles.settingLabel}>{t('settings.ai.enable')}</Text>
+                 <Text style={styles.settingDescription}>{t('settings.ai.enableDesc')}</Text>
                </View>
                <Switch
                  value={settings.isAiEnabled}
@@ -201,10 +201,10 @@ export default function SettingsScreen() {
 
           {/* General Settings */}
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>Inventory Tracking</Text>
+            <Text style={styles.sectionTitle}>{t('settings.inventory.title')}</Text>
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Auto-Reduce Stock</Text>
+                 <Text style={styles.settingLabel}>{t('settings.inventory.autoReduce')}</Text>
                </View>
                <Switch
                  value={settings.autoReduceStock}
@@ -216,19 +216,19 @@ export default function SettingsScreen() {
             <View style={styles.divider} />
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Global Low Stock Threshold</Text>
+                 <Text style={styles.settingLabel}>{t('settings.inventory.globalThreshold')}</Text>
                </View>
             </View>
             <View style={styles.inputContainer}>
                <Input
-                 placeholder="e.g. 10"
+                 placeholder={t('settings.inventory.placeholderThreshold')}
                  value={thresholdInput}
                  onChangeText={setThresholdInput}
                  keyboardType="numeric"
                  returnKeyType="done"
                />
                <Button 
-                 label="Save" 
+                 label={t('settings.inventory.btnSave')} 
                  onPress={handleSaveInventory} 
                  loading={isSaving}
                  disabled={isSaving}
@@ -238,10 +238,10 @@ export default function SettingsScreen() {
           </Card>
 
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>Notifications</Text>
+            <Text style={styles.sectionTitle}>{t('settings.notifications.title')}</Text>
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>Low Stock Alerts</Text>
+                 <Text style={styles.settingLabel}>{t('settings.notifications.lowStock')}</Text>
                </View>
                <Switch
                  value={settings.notifyLowStock}

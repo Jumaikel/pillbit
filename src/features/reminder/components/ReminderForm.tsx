@@ -7,6 +7,7 @@ import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/dat
 import { Button, Card } from '@/components';
 import { Spacing } from '@/constants';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 const reminderSchema = z.object({
   reminderTime: z.date(),
@@ -26,11 +27,12 @@ export function ReminderForm({
   initialValues,
   onSubmit,
   isLoading = false,
-  submitLabel = 'Save Reminder',
+  submitLabel,
 }: ReminderFormProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const [showPicker, setShowPicker] = useState(false);
+  const { t } = useTranslation();
 
   // Default to 08:00 AM if no initial value is provided
   const defaultTime = new Date();
@@ -65,7 +67,7 @@ export function ReminderForm({
   return (
     <Card padded style={styles.container}>
       <View style={styles.fieldContainer}>
-        <Text style={styles.label}>Reminder Time</Text>
+        <Text style={styles.label}>{t('reminders.form.timeLabel')}</Text>
         <Button 
           variant="outline" 
           label={formatTime(reminderTime)} 
@@ -84,7 +86,7 @@ export function ReminderForm({
       </View>
 
       <View style={styles.switchContainer}>
-        <Text style={styles.label}>Active</Text>
+        <Text style={styles.label}>{t('reminders.form.activeLabel')}</Text>
         <Controller
           control={control}
           name="isActive"
@@ -100,7 +102,7 @@ export function ReminderForm({
       </View>
 
       <Button
-        label={submitLabel}
+        label={submitLabel || t('reminders.form.btnSave')}
         onPress={handleSubmit(onSubmit)}
         loading={isLoading}
         style={styles.submitButton}

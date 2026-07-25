@@ -2,12 +2,15 @@ import { StyleSheet, View } from 'react-native';
 import { EmptyState } from '@/components/EmptyState';
 import { Spacing } from '@/constants';
 
+import { useTranslation } from 'react-i18next';
+
 export function HistoryEmptyState() {
+    const { t } = useTranslation();
     return (
         <View style={styles.container}>
             <EmptyState
-                title="No history yet"
-                description="When you take, postpone, or skip medications, they will appear here."
+                title={t('history.emptyTitle')}
+                description={t('history.emptyDesc')}
             />
         </View>
     );

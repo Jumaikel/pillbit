@@ -3,7 +3,28 @@
     "title": "Hello, your summary today",
     "todayDoses": "Today's Doses",
     "noDoses": "You have no scheduled doses for today.",
-    "addMedication": "Add Medication"
+    "addMedication": "Add Medication",
+    "lowStock": {
+      "outOfStock_one": "1 medication is out of stock",
+      "outOfStock_other": "{{count}} medications need attention",
+      "runningLow_one": "1 medication is running low",
+      "runningLow_other": "{{count}} medications are running low",
+      "tapToManage": "Tap to manage inventory",
+      "tapToView": "{{title}}. Tap to view."
+    },
+    "expiration": {
+      "title": "Expiration Attention",
+      "subtitle_expired_one": "You have 1 medication expired or expiring soon.",
+      "subtitle_expired_other": "You have {{count}} medications expired or expiring soon.",
+      "subtitle_soon_one": "You have 1 medication expiring soon.",
+      "subtitle_soon_other": "You have {{count}} medications expiring soon."
+    },
+    "doseCard": {
+      "taken": "Taken",
+      "skipped": "Skipped",
+      "take": "Take",
+      "skip": "Skip"
+    }
   },
   "common": {
     "save": "Save",
@@ -20,13 +41,196 @@
     "language_system": "System Default",
     "language_es": "Spanish (Español)",
     "language_en": "English",
-    "appearance": "Appearance",
-    "notifications": "Notifications"
+    "loading": "Loading settings...",
+    "errorTitle": "Error",
+    "errorSave": "Failed to save settings",
+    "errorUpdate": "Failed to update setting",
+    "successTitle": "Success",
+    "successSave": "Inventory settings saved",
+    "invalidThresholdTitle": "Invalid Threshold",
+    "invalidThresholdDesc": "Please enter a valid positive number",
+    "accessibility": {
+      "title": "Accessibility",
+      "highContrast": "High Contrast Mode",
+      "highContrastDesc": "Increase color contrast for better visibility.",
+      "textSize": "Text Size",
+      "textSizeDesc": "Scale global text size.",
+      "sizeNormal": "Normal",
+      "sizeLarge": "Large",
+      "sizeXLarge": "X-Large",
+      "voiceInput": "Voice Input",
+      "voiceInputDesc": "Enable voice dictation in input fields.",
+      "tts": "Text To Speech",
+      "ttsDesc": "Enable voice reading for medication details."
+    },
+    "ai": {
+      "title": "AI Features",
+      "enable": "Enable AI Info",
+      "enableDesc": "Use AI to generate medication insights."
+    },
+    "inventory": {
+      "title": "Inventory Tracking",
+      "autoReduce": "Auto-Reduce Stock",
+      "globalThreshold": "Global Low Stock Threshold",
+      "placeholderThreshold": "e.g. 10",
+      "btnSave": "Save"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "lowStock": "Low Stock Alerts"
+    }
   },
   "tabs": {
     "home": "Home",
     "meds": "Meds",
     "history": "History",
     "settings": "Settings"
+  },
+  "medications": {
+    "list": {
+      "title": "Medications",
+      "add": "+ Add",
+      "searchPlaceholder": "Search medications…",
+      "lowStock": "Low Stock ({{count}})",
+      "expiring": "Expiring ({{count}})",
+      "expired": "Expired ({{count}})",
+      "loading": "Loading medications…",
+      "noResultsTitle": "No results found",
+      "noResultsDesc": "No medications match \"{{query}}\".",
+      "emptyTitle": "No medications yet",
+      "emptyDesc": "Add your first medication to start tracking your prescriptions.",
+      "addMedication": "Add Medication",
+      "errorLoading": "Failed to load medications.",
+      "errorTitle": "Error",
+      "ok": "OK"
+    },
+    "common": {
+      "units": "units",
+      "expiresToday": "Expires today",
+      "expiresTomorrow": "Expires tomorrow",
+      "expiresInDays": "Expires in {{days}}d",
+      "expiresOnDate": "Expires {{date}}",
+      "expired": "Expired",
+      "na": "N/A"
+    },
+    "form": {
+      "titleAdd": "Add Medication",
+      "subtitleAdd": "Fill in the details below to add a new medication.",
+      "titleEdit": "Edit Medication",
+      "subtitleEdit": "Update your medication details below.",
+      "sectionRequired": "Required",
+      "sectionOptional": "Optional",
+      "labelName": "Medication Name",
+      "placeholderName": "e.g. Aspirin",
+      "labelDosage": "Dosage",
+      "placeholderDosage": "e.g. 500mg",
+      "labelExpiration": "Expiration Date",
+      "labelPresentation": "Presentation",
+      "placeholderPresentation": "e.g. Tablet, Capsule",
+      "labelQuantity": "Quantity Available",
+      "placeholderQuantity": "e.g. 30",
+      "labelThreshold": "Low Stock Threshold",
+      "placeholderThreshold": "e.g. 10",
+      "labelNotes": "Notes",
+      "placeholderNotes": "e.g. Take with food",
+      "btnCancel": "← Cancel",
+      "btnSave": "Save Medication",
+      "btnSaving": "Saving…",
+      "btnUpdate": "Update Medication",
+      "btnUpdating": "Updating…",
+      "errorSave": "Failed to save medication. Please try again."
+    },
+    "details": {
+      "btnBack": "← Back",
+      "btnEdit": "Edit",
+      "logDose": "Log Dose",
+      "btnTake": "Take",
+      "btnSkip": "Skip",
+      "btnPostpone": "Postpone",
+      "management": "Management",
+      "btnManageReminders": "Manage Reminders",
+      "lblDosage": "Dosage",
+      "lblPresentation": "Presentation",
+      "lblExpiration": "Expiration Date",
+      "lblQuantity": "Quantity Available",
+      "lblThreshold": "Low Stock Threshold",
+      "aiTitle": "AI Information",
+      "btnReadInfo": "Read Info",
+      "btnStopReading": "Stop",
+      "lblGenerating": "Generating insights...",
+      "btnTryAgain": "Try Again",
+      "lblDescription": "Description",
+      "lblCommonUses": "Common Uses",
+      "lblSideEffects": "Side Effects",
+      "lblContraindications": "Contraindications",
+      "lblWarnings": "Warnings",
+      "lblInteractions": "Interactions",
+      "btnRegenerate": "Regenerate",
+      "btnGenerateAI": "Generate AI Info",
+      "lblNotes": "Notes",
+      "lblAdded": "Added",
+      "lblLastUpdated": "Last Updated",
+      "btnDelete": "Delete Medication",
+      "alertDeleteTitle": "Delete Medication",
+      "alertDeleteDesc": "Are you sure you want to delete \"{{name}}\"?",
+      "alertDeleteBtnCancel": "Cancel",
+      "alertDeleteBtnConfirm": "Delete",
+      "alertDeleteError": "Failed to delete medication.",
+      "alertLogSuccess": "Medication marked as {{status}}.",
+      "alertLogError": "Failed to log consumption.",
+      "statusTaken": "taken",
+      "statusSkipped": "skipped",
+      "statusPostponed": "postponed",
+      "notFound": "Medication not found.",
+      "loadError": "Failed to load medication.",
+      "btnGoBack": "Go Back"
+    }
+  },
+  "history": {
+    "title": "History",
+    "filters": {
+      "all": "All",
+      "taken": "Taken",
+      "skipped": "Skipped",
+      "postponed": "Postponed"
+    },
+    "status": {
+      "taken": "Taken",
+      "skipped": "Skipped",
+      "postponed": "Postponed"
+    },
+    "qty": "Qty: {{count}}",
+    "emptyTitle": "No history yet",
+    "emptyDesc": "Your medication history will appear here once you log a dose."
+  },
+  "reminders": {
+    "title": "Reminders",
+    "editTitle": "Edit Reminder",
+    "newTitle": "New Reminder",
+    "btnCancel": "Cancel",
+    "btnAdd": "+ Add",
+    "emptyTitle": "No reminders yet",
+    "emptyDesc": "Add a reminder to get notified when it's time for your medication.",
+    "errorTitle": "Error",
+    "errorToggle": "Failed to toggle reminder.",
+    "errorDelete": "Failed to delete reminder.",
+    "errorSave": "Failed to save reminder.",
+    "alertDeleteTitle": "Delete Reminder",
+    "alertDeleteDesc": "Are you sure you want to delete this reminder?",
+    "alertDeleteBtnCancel": "Cancel",
+    "alertDeleteBtnConfirm": "Delete",
+    "form": {
+      "timeLabel": "Reminder Time",
+      "activeLabel": "Active",
+      "btnSave": "Save Reminder",
+      "btnUpdate": "Update",
+      "btnCreate": "Create"
+    },
+    "item": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "btnEdit": "Edit",
+      "btnDelete": "Delete"
+    }
   }
 }
