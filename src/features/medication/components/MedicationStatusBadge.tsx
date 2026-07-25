@@ -38,7 +38,7 @@ interface MedicationStatusBadgeProps {
  * ```
  */
 export function MedicationStatusBadge({ expirationDate }: MedicationStatusBadgeProps) {
-  const { colors, typography } = useTheme();
+  const { theme, colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
   const { t } = useTranslation();
   
@@ -46,10 +46,12 @@ export function MedicationStatusBadge({ expirationDate }: MedicationStatusBadgeP
   const labelData = getExpirationLabel(expirationDate);
   const label = t(labelData.key, labelData.params);
   
+  const isDark = theme === 'dark';
+  
   const badgeColorMap: Record<ExpirationStatus, { background: string; text: string }> = {
-    valid: { background: '#E8F8ED', text: colors.success },
-    expiring: { background: '#FFF5E0', text: colors.warning },
-    expired: { background: '#FEE9E7', text: colors.error },
+    valid: { background: isDark ? '#0D2916' : '#E8F8ED', text: colors.success },
+    expiring: { background: isDark ? '#332306' : '#FFF5E0', text: colors.warning },
+    expired: { background: isDark ? '#300E0B' : '#FEE9E7', text: colors.error },
   };
 
   const statusColors = badgeColorMap[status];

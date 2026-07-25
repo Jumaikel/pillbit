@@ -75,7 +75,7 @@ export const DarkColors: ColorScheme = {
   primary: '#24C9EA',
   primaryLight: '#7FD6EA',
   primaryContainer: '#1B6F83',
-  secondary: '#C6CDF8',
+  secondary: '#2B3766',
   accent: '#FED7EE',
 
   // Backgrounds
@@ -123,7 +123,7 @@ export const HighContrastDarkColors: ColorScheme = {
   primary: '#7DE5FF',
   primaryLight: '#B3F0FF',
   primaryContainer: '#0095BA',
-  secondary: '#E6E9FF',
+  secondary: '#161F4D',
   accent: '#FFB3E6',
   background: '#000000',
   surface: '#000000',

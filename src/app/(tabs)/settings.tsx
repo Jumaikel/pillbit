@@ -76,9 +76,37 @@ export default function SettingsScreen() {
             <Text style={styles.title} accessibilityRole="header">{t('settings.title')}</Text>
           </View>
 
-          {/* Language Settings */}
+          {/* Appearance & Language Settings */}
           <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('settings.language')}</Text>
+            <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
+            
+            <Text style={styles.settingLabel}>{t('settings.theme')}</Text>
+            <View style={styles.buttonRow}>
+               <Button 
+                  label={t('settings.theme_system')} 
+                  variant={settings.theme === 'system' || !settings.theme ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('theme', 'system')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label={t('settings.theme_light')} 
+                  variant={settings.theme === 'light' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('theme', 'light')} 
+                  style={styles.flex1} 
+               />
+               <View style={{ width: 8 }} />
+               <Button 
+                  label={t('settings.theme_dark')} 
+                  variant={settings.theme === 'dark' ? 'primary' : 'outline'}
+                  onPress={() => handleToggle('theme', 'dark')} 
+                  style={styles.flex1} 
+               />
+            </View>
+
+            <View style={styles.divider} />
+
+            <Text style={styles.settingLabel}>{t('settings.language')}</Text>
             <View style={styles.buttonRow}>
                <Button 
                   label={t('settings.language_system')} 
