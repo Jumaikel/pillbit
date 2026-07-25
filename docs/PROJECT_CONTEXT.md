@@ -108,6 +108,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 ## Changelog
 
 ### v0.2.0
+- Documentation: created main repository README.md with architecture and setup details.
 - Application Branding: configured application icons and splash assets in app.json.
 - Settings: added theme selection and fixed dark mode contrast.
 - I18n: implemented full internationalization for medications, history, reminders, and settings modules.
