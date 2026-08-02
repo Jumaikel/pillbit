@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS pbt_medication (
     mdc_dosage              TEXT    NOT NULL,
     mdc_presentation        TEXT,
     mdc_quantity_available  INTEGER CHECK (mdc_quantity_available  IS NULL OR mdc_quantity_available  >= 0),
+    mdc_low_stock_threshold INTEGER CHECK (mdc_low_stock_threshold IS NULL OR mdc_low_stock_threshold >  0),
     mdc_expiration_date     DATE    NOT NULL,
     mdc_notes               TEXT,
     mdc_photo_path          TEXT,
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS pbt_consumption_record (
     csr_scheduled_datetime DATETIME NOT NULL,
     csr_action_datetime   DATETIME NOT NULL,
     csr_status            TEXT     NOT NULL CHECK (
-                              csr_status IN ('taken', 'skipped')
+                              csr_status IN ('taken', 'postponed', 'skipped')
                           ),
     csr_quantity_consumed INTEGER  DEFAULT 1,
     csr_notes             TEXT,
@@ -109,17 +110,21 @@ CREATE TABLE IF NOT EXISTS pbt_application_setting (
 
     ast_text_size                    TEXT    NOT NULL DEFAULT 'normal' CHECK (ast_text_size IN ('normal', 'large', 'extra_large')),
     ast_is_high_contrast_enabled     INTEGER NOT NULL DEFAULT 0,
+    ast_is_voice_input_enabled       INTEGER NOT NULL DEFAULT 0,
     ast_is_text_to_speech_enabled    INTEGER NOT NULL DEFAULT 0,
     ast_is_voice_notification_enabled INTEGER NOT NULL DEFAULT 0,
 
     ast_notify_dose_reminder         INTEGER NOT NULL DEFAULT 1,  
     ast_notify_expiration_warning    INTEGER NOT NULL DEFAULT 1,  
+    ast_notify_low_stock             INTEGER NOT NULL DEFAULT 1,  
 
+    ast_reminder_snooze_minutes      INTEGER NOT NULL DEFAULT 10 CHECK (ast_reminder_snooze_minutes IN (5, 10, 15, 30)),
     ast_is_notification_sound_enabled     INTEGER NOT NULL DEFAULT 1,
     ast_is_notification_vibration_enabled INTEGER NOT NULL DEFAULT 1,
 
     ast_theme                        TEXT    NOT NULL DEFAULT 'system' CHECK (ast_theme IN ('light', 'dark', 'system')),
 
+    ast_default_low_stock_threshold  INTEGER NOT NULL DEFAULT 5 CHECK (ast_default_low_stock_threshold > 0),
     ast_auto_reduce_stock            INTEGER NOT NULL DEFAULT 1,
     ast_ai_info_auto_generate        INTEGER NOT NULL DEFAULT 0,
 

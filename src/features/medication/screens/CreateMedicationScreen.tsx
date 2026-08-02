@@ -58,9 +58,8 @@ export function CreateMedicationScreen() {
           photoPath: values.photoPath.trim() || null,
         });
         
-        // Navigate to the newly created medication details screen
-        // Use replace instead of push so the back button from details doesn't go to the form again
-        router.replace(`/medications/${id}` as any);
+        // Navigate back to the medications list
+        router.navigate('/(tabs)/medications' as any);
       } catch {
         Alert.alert(t('medications.list.errorTitle'), t('medications.form.errorSave'));
       }

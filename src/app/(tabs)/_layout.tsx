@@ -79,6 +79,7 @@ export default function TabsLayout() {
         name="medications"
         options={{
           title: t('tabs.meds'),
+          href: '/(tabs)/medications',
           tabBarAccessibilityLabel: 'Medications tab',
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={focused ? 'medkit' : 'medkit-outline'} focused={focused} color={color} />
