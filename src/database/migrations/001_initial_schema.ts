@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS pbt_consumption_record (
     csr_scheduled_datetime DATETIME NOT NULL,
     csr_action_datetime   DATETIME NOT NULL,
     csr_status            TEXT     NOT NULL CHECK (
-                              csr_status IN ('taken', 'postponed', 'skipped')
+                              csr_status IN ('taken', 'skipped')
                           ),
     csr_quantity_consumed INTEGER  DEFAULT 1,
     csr_notes             TEXT,
@@ -109,14 +109,12 @@ CREATE TABLE IF NOT EXISTS pbt_application_setting (
 
     ast_text_size                    TEXT    NOT NULL DEFAULT 'normal' CHECK (ast_text_size IN ('normal', 'large', 'extra_large')),
     ast_is_high_contrast_enabled     INTEGER NOT NULL DEFAULT 0,
-    ast_is_voice_input_enabled       INTEGER NOT NULL DEFAULT 0,
     ast_is_text_to_speech_enabled    INTEGER NOT NULL DEFAULT 0,
     ast_is_voice_notification_enabled INTEGER NOT NULL DEFAULT 0,
 
     ast_notify_dose_reminder         INTEGER NOT NULL DEFAULT 1,  
     ast_notify_expiration_warning    INTEGER NOT NULL DEFAULT 1,  
 
-    ast_reminder_snooze_minutes      INTEGER NOT NULL DEFAULT 10 CHECK (ast_reminder_snooze_minutes IN (5, 10, 15, 30)),
     ast_is_notification_sound_enabled     INTEGER NOT NULL DEFAULT 1,
     ast_is_notification_vibration_enabled INTEGER NOT NULL DEFAULT 1,
 

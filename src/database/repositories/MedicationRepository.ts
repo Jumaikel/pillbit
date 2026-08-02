@@ -16,7 +16,8 @@ export class MedicationRepository {
             photoPath: row.mdc_photo_path,
             createdDatetime: row.mdc_created_datetime,
             updatedDatetime: row.mdc_updated_datetime,
-            deletedDatetime: row.mdc_deleted_datetime
+            deletedDatetime: row.mdc_deleted_datetime,
+            isDiscarded: row.mdc_is_discarded === 1
         };
     }
 
@@ -28,8 +29,8 @@ export class MedicationRepository {
             `INSERT INTO pbt_medication (
                 mdc_name, mdc_dosage, mdc_presentation, mdc_quantity_available, 
                 mdc_expiration_date, mdc_notes, 
-                mdc_photo_path, mdc_created_datetime, mdc_updated_datetime
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                mdc_photo_path, mdc_created_datetime, mdc_updated_datetime, mdc_is_discarded
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.name, 
                 data.dosage, 
@@ -39,7 +40,8 @@ export class MedicationRepository {
                 data.notes ?? null, 
                 data.photoPath ?? null, 
                 now, 
-                now
+                now,
+                data.isDiscarded ? 1 : 0
             ]
         );
 
@@ -72,7 +74,8 @@ export class MedicationRepository {
                 mdc_notes = ?,
                 mdc_photo_path = ?,
                 mdc_updated_datetime = ?,
-                mdc_deleted_datetime = ?
+                mdc_deleted_datetime = ?,
+                mdc_is_discarded = ?
              WHERE mdc_id = ? AND mdc_deleted_datetime IS NULL`,
             [
                 data.name !== undefined ? data.name : current.name,
@@ -84,6 +87,7 @@ export class MedicationRepository {
                 data.photoPath !== undefined ? data.photoPath : current.photoPath,
                 now,
                 data.deletedDatetime !== undefined ? data.deletedDatetime : current.deletedDatetime,
+                data.isDiscarded !== undefined ? (data.isDiscarded ? 1 : 0) : (current.isDiscarded ? 1 : 0),
                 id
             ]
         );

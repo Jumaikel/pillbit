@@ -268,32 +268,4 @@ export class NotificationService {
       console.error('[NotificationService] sendImmediateNotification failed:', e);
     }
   }
-
-  /**
-   * Schedule a one-time notification for a postponed dose.
-   * @param medication  The medication being postponed
-   * @param reminderId  The original reminder id (used to identify it in the payload)
-   * @param fireDate    The date/time when the postponed notification should fire
-   */
-  static async schedulePostponedReminder(
-    medication: Medication,
-    reminderId: number,
-    fireDate: Date
-  ): Promise<void> {
-    try {
-      const hasPermission = await this.requestPermissionsAsync();
-      if (!hasPermission) return;
-
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: `Recordatorio pospuesto: ${medication.name}`,
-          body: `Es hora de tomar ${medication.dosage}`,
-          data: { reminderId, medicationId: medication.id, isPostponed: true },
-        },
-        trigger: fireDate,
-      });
-    } catch (e) {
-      console.error('[NotificationService] schedulePostponedReminder failed:', e);
-    }
-  }
 }

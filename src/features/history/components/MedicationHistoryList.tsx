@@ -68,12 +68,6 @@ function HistoryRow({ item }: HistoryRowProps) {
             badgeBg: '#FEE9E7',
             badgeColor: colors.error,
         },
-        postponed: {
-            icon: 'alarm-outline',
-            label: t('doseLog.statusPostponed'),
-            badgeBg: '#FFF5E0',
-            badgeColor: colors.warning,
-        },
     };
 
     const config = statusConfig[item.status];
@@ -101,17 +95,6 @@ function HistoryRow({ item }: HistoryRowProps) {
                     </View>
                 </View>
 
-                {/* Postponed detail */}
-                {item.status === 'postponed' && item.postponedReminderDatetime && (
-                    <Text style={styles.postponeDetail}>
-                        {t('doseLog.postponedAt', {
-                            time: new Date(item.postponedReminderDatetime).toLocaleTimeString(i18n.language, {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                            }),
-                        })}
-                    </Text>
-                )}
             </View>
         </View>
     );
@@ -163,7 +146,6 @@ export function MedicationHistoryList({ medicationId }: MedicationHistoryListPro
         { label: t('doseLog.filterAll'), value: undefined },
         { label: t('doseLog.filterTaken'), value: 'taken' },
         { label: t('doseLog.filterSkipped'), value: 'skipped' },
-        { label: t('doseLog.filterPostponed'), value: 'postponed' },
     ];
 
     const handleFilterChange = useCallback(

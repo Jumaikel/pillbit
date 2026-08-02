@@ -3,15 +3,19 @@ import { Card } from '@/components/Card';
 import { Spacing, Radius } from '@/constants';
 import { MedicationExpirationState } from '../types';
 import { useTheme } from '@/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components';
 
 interface ExpirationCardProps {
     medication: MedicationExpirationState;
     onPress?: () => void;
+    onDiscard?: () => void;
 }
 
-export function ExpirationCard({ medication, onPress }: ExpirationCardProps) {
+export function ExpirationCard({ medication, onPress, onDiscard }: ExpirationCardProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
+  const { t } = useTranslation();
     const { name, expirationDate, expirationStatus, daysRemaining } = medication;
     
     const isExpired = expirationStatus === 'expired';
@@ -51,6 +55,11 @@ export function ExpirationCard({ medication, onPress }: ExpirationCardProps) {
                         {subtitleText}
                     </Text>
                 </View>
+                {onDiscard && (
+                    <View style={styles.actionContainer}>
+                        <Button label={t('medications.details.btnDiscard')} onPress={onDiscard} variant="outline" />
+                    </View>
+                )}
             </View>
         </Card>
     );
@@ -87,4 +96,8 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
         ...typography.caption,
         fontWeight: '600',
     },
+    actionContainer: {
+        marginTop: Spacing.sm,
+        width: '100%',
+    }
 });

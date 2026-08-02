@@ -18,6 +18,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -67,7 +68,7 @@ export function MedicationListScreen() {
     }
   }, [error, clearError, t]);
 
-  const { expiringSoonList, expiredList, refreshExpirationData } = useExpirationStore();
+  const { expiringSoonList, expiredList, discardedList, refreshExpirationData } = useExpirationStore();
   useEffect(() => {
     refreshExpirationData();
   }, [refreshExpirationData]);
@@ -158,24 +159,37 @@ export function MedicationListScreen() {
       </View>
 
       {/* ── Expiration & Inventory Links ── */}
-      <View style={styles.expirationLinks}>
-
-        <TouchableOpacity 
-          style={styles.expirationLink}
-          onPress={() => router.push('/medications/expiring' as never)}
+      <View>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.expirationLinks}
         >
-          <Text style={styles.expirationLinkText}>
-            {t('medications.list.expiring', { count: expiringSoonList.length })}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.expirationLink}
-          onPress={() => router.push('/medications/expired' as never)}
-        >
-          <Text style={styles.expirationLinkTextError}>
-            {t('medications.list.expired', { count: expiredList.length })}
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.expirationLink}
+            onPress={() => router.push('/medications/expiring' as never)}
+          >
+            <Text style={styles.expirationLinkText}>
+              {t('medications.list.expiring', { count: expiringSoonList.length })}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.expirationLink}
+            onPress={() => router.push('/medications/expired' as never)}
+          >
+            <Text style={styles.expirationLinkTextError}>
+              {t('medications.list.expired', { count: expiredList.length })}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.expirationLink}
+            onPress={() => router.push('/medications/discarded' as never)}
+          >
+            <Text style={styles.expirationLinkTextDiscarded}>
+              {t('medications.list.discardedList', { count: discardedList.length })}
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
 
       {/* ── Loading Spinner (initial load only) ── */}
@@ -267,12 +281,12 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
     gap: Spacing.sm,
   },
   expirationLink: {
-    flex: 1,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     backgroundColor: colors.surface,
     borderRadius: Radius.full,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.border,
   },
@@ -285,6 +299,11 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
     ...typography.bodySM,
     fontWeight: '600',
     color: colors.error,
+  },
+  expirationLinkTextDiscarded: {
+    ...typography.bodySM,
+    fontWeight: '600',
+    color: colors.textSecondary,
   },
 
   // Loading

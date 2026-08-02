@@ -13,7 +13,6 @@ const filters: { labelKey: string; value: ConsumptionStatus | undefined }[] = [
     { labelKey: 'history.filters.all', value: undefined },
     { labelKey: 'history.filters.taken', value: 'taken' },
     { labelKey: 'history.filters.skipped', value: 'skipped' },
-    { labelKey: 'history.filters.postponed', value: 'postponed' },
 ];
 
 export function HistoryFilterBar({ selectedStatus, onSelectStatus }: HistoryFilterBarProps) {

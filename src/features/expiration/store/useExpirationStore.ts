@@ -6,6 +6,7 @@ import { ExpirationService } from '../services/ExpirationService';
 interface ExpirationState {
     expiringSoonList: MedicationExpirationState[];
     expiredList: MedicationExpirationState[];
+    discardedList: MedicationExpirationState[];
     isLoading: boolean;
     error: string | null;
 
@@ -15,15 +16,17 @@ interface ExpirationState {
 export const useExpirationStore = create<ExpirationState>((set) => ({
     expiringSoonList: [],
     expiredList: [],
+    discardedList: [],
     isLoading: false,
     error: null,
 
     refreshExpirationData: async () => {
         set({ isLoading: true, error: null });
         try {
-            const [expiring, expired] = await Promise.all([
+            const [expiring, expired, discarded] = await Promise.all([
                 MedicationQueries.getMedicationsExpiringSoon(30),
                 MedicationQueries.getExpiredMedications(),
+                MedicationQueries.getDiscardedMedications(),
             ]);
 
             const mapWithStatus = (meds: any[]) => meds.map((m) => {
@@ -34,6 +37,7 @@ export const useExpirationStore = create<ExpirationState>((set) => ({
             set({
                 expiringSoonList: mapWithStatus(expiring),
                 expiredList: mapWithStatus(expired),
+                discardedList: mapWithStatus(discarded),
                 isLoading: false,
             });
         } catch (error: any) {

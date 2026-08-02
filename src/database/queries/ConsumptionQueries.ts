@@ -24,7 +24,6 @@ export class ConsumptionQueries {
             status: row.csr_status,
             quantityConsumed: row.csr_quantity_consumed,
             notes: row.csr_notes,
-            postponedReminderDatetime: row.csr_postponed_reminder_datetime ?? null,
             medicationName: row.mdc_name,
             medicationDosage: row.mdc_dosage
         };

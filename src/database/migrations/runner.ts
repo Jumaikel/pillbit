@@ -6,6 +6,8 @@ import { addLanguageSettingMigration } from './003_language_setting';
 import { addAiDosageAdministrationMigration } from './004_ai_dosage_administration';
 import { removeLowStockMigration } from './005_remove_low_stock';
 import { addPostponeReminderMigration } from './006_postpone_reminder';
+import { removePostponeReminderMigration } from './007_remove_postpone';
+import { discardMedicationMigration } from './008_discard_medication';
 
 const migrations = [
   {
@@ -76,6 +78,30 @@ const migrations = [
             await db.execAsync(addPostponeReminderMigration);
         } catch (e) {
              console.error("Migration 6 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 7,
+    name: '007_remove_postpone',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(removePostponeReminderMigration);
+        } catch (e) {
+             console.error("Migration 7 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 8,
+    name: '008_discard_medication',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(discardMedicationMigration);
+        } catch (e) {
+             console.error("Migration 8 Failed", e);
              throw e;
         }
     }

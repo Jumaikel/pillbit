@@ -6,11 +6,11 @@ This document describes the SQLite persistence layer architecture for the PillBi
 The application relies on a local-first architecture using `expo-sqlite`. The database uses a structured schema prefixed with `pbt_` for tables and specifically prefixed column names indicating their parent table context (e.g., `mdc_` for medication). 
 
 ## 2. Tables & Relationships
-- **`pbt_medication`**: The core entity storing medications. Soft-deletes are handled via `mdc_deleted_datetime`.
+- **`pbt_medication`**: The core entity storing medications. Soft-deletes are handled via `mdc_deleted_datetime`. The field `mdc_is_discarded` (INTEGER, DEFAULT 0) indicates if the medication was discarded due to expiration.
 - **`pbt_medication_reminder`**: Configured reminder schedules for a medication.
 - **`pbt_medication_ai_information`**: 1:1 relationship containing AI-generated educational content per medication.
 - **`pbt_expiration_alert`**: Pre-configured alerts for medication expirations.
-- **`pbt_consumption_record`**: Tracking user interactions (taken, skipped, postponed) against reminders. Column `csr_postponed_reminder_datetime` stores the scheduled time of the temporary reminder created when a dose is postponed (migration 006).
+- **`pbt_consumption_record`**: Tracking user interactions (taken, skipped) against reminders.
 - **`pbt_notification_log`**: Historical log of dispatched notifications. Retained even if related entities are soft-deleted.
 - **`pbt_application_setting`**: Singleton configuration table (locked to `ast_id = 1`).
 

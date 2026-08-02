@@ -50,6 +50,8 @@ interface MedicationActions {
   updateMedication: (id: number, data: UpdateMedicationDTO) => Promise<void>;
   /** Soft-delete a medication and refresh state */
   deleteMedication: (id: number) => Promise<void>;
+  /** Mark an expired medication as discarded, removing its alerts */
+  discardMedication: (id: number) => Promise<void>;
   /** Set the search query for filtering medications */
   setSearchQuery: (query: string) => void;
   /** Clear the current error */
@@ -65,8 +67,9 @@ interface MedicationActions {
  */
 export const selectFilteredMedications = (state: MedicationState): Medication[] => {
   if (!state.searchQuery.trim()) {
-    // Hide expired medications if there is no search query
+    // Hide expired and discarded medications if there is no search query
     return state.medications.filter((med) => {
+      if (med.isDiscarded) return false;
       if (!med.expirationDate) return true;
       const { status } = ExpirationService.calculateStatus(med.expirationDate);
       return status !== 'expired';
@@ -74,12 +77,18 @@ export const selectFilteredMedications = (state: MedicationState): Medication[] 
   }
   
   const q = state.searchQuery.toLowerCase().trim();
-  return state.medications.filter(
+  const filtered = state.medications.filter(
     (med) =>
       med.name.toLowerCase().includes(q) ||
       med.dosage.toLowerCase().includes(q) ||
       (med.presentation?.toLowerCase().includes(q) ?? false),
   );
+
+  // Sort so that discarded medications appear at the end of the search results
+  return filtered.sort((a, b) => {
+    if (a.isDiscarded === b.isDiscarded) return 0;
+    return a.isDiscarded ? 1 : -1;
+  });
 };
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -149,6 +158,21 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
       set({ medications, isLoading: false });
     } catch (e) {
       const message = e instanceof Error ? e.message : 'Failed to delete medication';
+      set({ error: message, isLoading: false });
+      throw e;
+    }
+  },
+
+  discardMedication: async (id: number) => {
+    set({ isLoading: true, error: null });
+    try {
+      await MedicationRepository.update(id, { isDiscarded: true });
+      await ExpirationService.generateAlerts(id, new Date().toISOString()); // generateAlerts handles isDiscarded and deletes existing
+      await NotificationService.syncExpirationAlerts();
+      const medications = await MedicationQueries.getAllMedications();
+      set({ medications, isLoading: false });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to discard medication';
       set({ error: message, isLoading: false });
       throw e;
     }

@@ -12,6 +12,7 @@ export interface Medication {
     createdDatetime: string;
     updatedDatetime: string;
     deletedDatetime: string | null;
+    isDiscarded: boolean;
 }
 
 export interface MedicationReminder {
@@ -47,7 +48,7 @@ export interface ExpirationAlert {
     sentDatetime: string | null;
 }
 
-export type ConsumptionStatus = 'taken' | 'postponed' | 'skipped';
+export type ConsumptionStatus = 'taken' | 'skipped';
 
 export interface ConsumptionRecord {
     id: number;
@@ -58,7 +59,6 @@ export interface ConsumptionRecord {
     status: ConsumptionStatus;
     quantityConsumed: number;
     notes: string | null;
-    postponedReminderDatetime: string | null;
 }
 
 export type NotificationType = 'dose_reminder' | 'expiration_warning';
@@ -81,12 +81,10 @@ export interface ApplicationSetting {
     id: number; // Always 1
     textSize: TextSize;
     isHighContrastEnabled: boolean;
-    isVoiceInputEnabled: boolean;
     isTextToSpeechEnabled: boolean;
     isVoiceNotificationEnabled: boolean;
     notifyDoseReminder: boolean;
     notifyExpirationWarning: boolean;
-    reminderSnoozeMinutes: number; // 5, 10, 15, 30
     isNotificationSoundEnabled: boolean;
     isNotificationVibrationEnabled: boolean;
     theme: Theme;

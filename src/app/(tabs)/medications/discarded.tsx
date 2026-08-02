@@ -1,20 +1,18 @@
 import { useEffect } from 'react';
-import { StyleSheet, View, FlatList, ActivityIndicator, Text, Alert } from 'react-native';
+import { StyleSheet, View, FlatList, ActivityIndicator, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Spacing } from '@/constants';
 import { useExpirationStore, ExpirationCard } from '@/features/expiration';
-import { useMedicationStore } from '@/features/medication';
 import { EmptyState } from '@/components/EmptyState';
 import { useTheme } from '@/hooks/useTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components';
 
-export default function ExpiredMedicationsScreen() {
+export default function DiscardedMedicationsScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
-    const { expiredList, isLoading, refreshExpirationData } = useExpirationStore();
-    const discardMedication = useMedicationStore((s) => s.discardMedication);
+    const { discardedList, isLoading, refreshExpirationData } = useExpirationStore();
     const router = useRouter();
     const { t } = useTranslation();
 
@@ -26,48 +24,25 @@ export default function ExpiredMedicationsScreen() {
         router.push(`/medications/${id}`);
     };
 
-    const handleDiscard = (id: number, name: string) => {
-        Alert.alert(
-            t('medications.details.alertDiscardTitle'),
-            t('medications.details.alertDiscardDesc', { name }),
-            [
-                { text: t('medications.details.alertDeleteBtnCancel'), style: 'cancel' },
-                {
-                    text: t('medications.details.btnDiscard'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await discardMedication(id);
-                            refreshExpirationData();
-                        } catch {
-                            // Optionally handle error visually
-                        }
-                    },
-                },
-            ],
-        );
-    };
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
             <View style={styles.header}>
                 <Button label={t('medications.details.btnBack')} onPress={() => router.navigate('/(tabs)/medications' as never)} variant="outline" />
-                <Text style={styles.headerTitle}>{t('medications.list.expired', { count: expiredList.length })}</Text>
+                <Text style={styles.headerTitle}>{t('medications.list.discardedList', { count: discardedList.length })}</Text>
                 <View style={styles.headerSpacer} />
             </View>
-            {isLoading && expiredList.length === 0 ? (
+            {isLoading && discardedList.length === 0 ? (
                 <View style={styles.centerContainer}>
                     <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             ) : (
                 <FlatList
-                    data={expiredList}
+                    data={discardedList}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <ExpirationCard 
                             medication={item} 
                             onPress={() => handlePress(item.id)} 
-                            onDiscard={() => handleDiscard(item.id, item.name)}
                         />
                     )}
                     contentContainerStyle={styles.listContent}
@@ -75,7 +50,7 @@ export default function ExpiredMedicationsScreen() {
                         <View style={styles.emptyContainer}>
                             <EmptyState
                                 title="All clear"
-                                description="You have no expired medications."
+                                description="You have no discarded medications."
                             />
                         </View>
                     }

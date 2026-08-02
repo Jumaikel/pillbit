@@ -54,6 +54,12 @@ export class ExpirationService {
                 [medicationId]
             );
 
+            // If the medication is discarded, we don't generate any new alerts
+            const medication = await MedicationRepository.findById(medicationId);
+            if (medication?.isDiscarded) {
+                return;
+            }
+
             const now = new Date();
 
             for (const config of alertTypes) {

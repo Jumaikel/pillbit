@@ -143,19 +143,7 @@ export default function SettingsScreen() {
                />
             </View>
             <View style={styles.divider} />
-            <View style={styles.settingRow}>
-               <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>{t('settings.accessibility.voiceInput')}</Text>
-                 <Text style={styles.settingDescription}>{t('settings.accessibility.voiceInputDesc')}</Text>
-               </View>
-               <Switch
-                 value={settings.isVoiceInputEnabled}
-                 onValueChange={(v) => handleToggle('isVoiceInputEnabled', v)}
-                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
-                 thumbColor="#fff"
-               />
-            </View>
-            <View style={styles.divider} />
+
             <View style={styles.settingRow}>
                <View style={styles.settingText}>
                  <Text style={styles.settingLabel}>{t('settings.accessibility.tts')}</Text>

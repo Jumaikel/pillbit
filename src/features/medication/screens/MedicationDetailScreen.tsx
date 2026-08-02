@@ -23,6 +23,7 @@ import { useAIStore } from '@/features/ai/store/useAIStore';
 import { SpeechService } from '@/services/SpeechService';
 import { useConfigStore } from '@/store/useConfigStore';
 import { useTranslation } from 'react-i18next';
+import { useDoseLogStore } from '@/features/history/store/useDoseLogStore';
 
 export function MedicationDetailScreen() {
   const { colors, typography } = useTheme();
@@ -31,11 +32,13 @@ export function MedicationDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const medicationId = Number(id);
   const { settings } = useConfigStore();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Stores
   const medications = useMedicationStore((s) => s.medications);
+  const todayDoses = useDoseLogStore((s) => s.todayDoses);
   const deleteMedication = useMedicationStore((s) => s.deleteMedication);
+  const discardMedication = useMedicationStore((s) => s.discardMedication);
   const isLoading = useMedicationStore((s) => s.isLoading);
   
   const { 
@@ -50,6 +53,7 @@ export function MedicationDetailScreen() {
   const [fetchedMedication, setFetchedMedication] = useState<Medication | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const [isReadingDetails, setIsReadingDetails] = useState(false);
 
   const storeMedication = medications.find((m) => m.id === medicationId) || null;
   const medication = storeMedication || fetchedMedication;
@@ -107,10 +111,69 @@ export function MedicationDetailScreen() {
     );
   }, [deleteMedication, medicationId, medication?.name, router]);
 
+  const handleDiscard = useCallback(() => {
+    Alert.alert(
+      t('medications.details.alertDiscardTitle'),
+      t('medications.details.alertDiscardDesc', { name: medication?.name ?? '' }),
+      [
+        { text: t('medications.details.alertDeleteBtnCancel'), style: 'cancel' },
+        {
+          text: t('medications.details.btnDiscard'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await discardMedication(medicationId);
+            } catch {
+              Alert.alert(t('medications.list.errorTitle'), t('medications.details.alertDeleteError'));
+            }
+          },
+        },
+      ],
+    );
+  }, [discardMedication, medicationId, medication?.name]);
+
 
   const handleGenerateAI = () => {
       if (medication) {
           generateMedicationInfo(medicationId, medication.name, true);
+      }
+  };
+  
+  const handleReadDetails = async () => {
+      if (isReadingDetails) {
+          await SpeechService.stop();
+          setIsReadingDetails(false);
+          return;
+      }
+      
+      if (medication) {
+          setIsReadingDetails(true);
+          const speechLang = i18n.language.startsWith('es') ? 'es' : 'en';
+          
+          const formatTime = (isoOrHHMM: string): string => {
+              if (/^\d{2}:\d{2}$/.test(isoOrHHMM)) {
+                  const [h, m] = isoOrHHMM.split(':');
+                  const d = new Date();
+                  d.setHours(parseInt(h, 10), parseInt(m, 10));
+                  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              }
+              return new Date(isoOrHHMM).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          };
+          
+          const doseStrings = todayDoses.map(d => formatTime(d.reminderTime)).join(', ');
+          
+          const textToRead = `${t('doseLog.scheduledFor', { time: doseStrings || t('medications.common.none') })}. 
+          ${t('medications.details.lblDosage')}: ${medication.dosage || t('medications.common.none')}. 
+          ${t('medications.details.lblPresentation')}: ${medication.presentation || t('medications.common.none')}. 
+          ${t('medications.details.lblExpiration')}: ${formatExpirationDate(medication.expirationDate) || t('medications.common.none')}. 
+          ${t('medications.details.lblNotes')}: ${medication.notes || t('medications.common.none')}.`;
+          
+          await SpeechService.read(textToRead, {
+              language: speechLang,
+              onDone: () => setIsReadingDetails(false),
+              onStopped: () => setIsReadingDetails(false),
+              onError: () => setIsReadingDetails(false)
+          });
       }
   };
   
@@ -123,18 +186,22 @@ export function MedicationDetailScreen() {
       
       if (aiInfo) {
           setIsReading(true);
+          const speechLang = i18n.language.startsWith('es') ? 'es' : 'en';
           const textToRead = `
-            Description: ${aiInfo.description || 'none'}. 
-            Dosage and Administration: ${aiInfo.dosageAdministration || 'none'}.
-            Common Uses: ${aiInfo.commonUses || 'none'}. 
-            Contraindications: ${aiInfo.contraindications || 'none'}. 
-            Side Effects: ${aiInfo.sideEffects || 'none'}. 
-            Warnings: ${aiInfo.warnings || 'none'}. 
-            Interactions: ${aiInfo.interactions || 'none'}.
+            ${t('medications.details.lblDescription')}: ${aiInfo.description || 'none'}. 
+            ${t('medications.details.lblDosageAdministration')}: ${aiInfo.dosageAdministration || 'none'}.
+            ${t('medications.details.lblCommonUses')}: ${aiInfo.commonUses || 'none'}. 
+            ${t('medications.details.lblContraindications')}: ${aiInfo.contraindications || 'none'}. 
+            ${t('medications.details.lblSideEffects')}: ${aiInfo.sideEffects || 'none'}. 
+            ${t('medications.details.lblWarnings')}: ${aiInfo.warnings || 'none'}. 
+            ${t('medications.details.lblInteractions')}: ${aiInfo.interactions || 'none'}.
           `;
-          await SpeechService.read(textToRead);
-          // Assuming we have to manually turn it off if we don't have event listeners setup
-          setTimeout(() => setIsReading(false), 5000); 
+          await SpeechService.read(textToRead, {
+              language: speechLang,
+              onDone: () => setIsReading(false),
+              onStopped: () => setIsReading(false),
+              onError: () => setIsReading(false)
+          }); 
       }
   };
 
@@ -175,7 +242,13 @@ export function MedicationDetailScreen() {
           <Text style={styles.title} accessibilityRole="header">{medication.name}</Text>
           <Text style={styles.dosage}>{medication.dosage}</Text>
           <View style={styles.badgeRow}>
-            <MedicationStatusBadge expirationDate={medication.expirationDate} />
+            {medication.isDiscarded ? (
+              <View style={[styles.statusBadge, { backgroundColor: colors.surfaceVariant }]}>
+                 <Text style={[styles.statusBadgeText, { color: colors.textSecondary }]}>{t('medications.details.discarded')}</Text>
+              </View>
+            ) : (
+              <MedicationStatusBadge expirationDate={medication.expirationDate} />
+            )}
             <View style={styles.badgeSpacer} />
             <InventoryIndicator quantity={medication.quantityAvailable} status={inventoryStatus} />
           </View>
@@ -196,7 +269,14 @@ export function MedicationDetailScreen() {
           />
         </View>
 
-        <Card padded>
+        <View style={styles.detailsSection}>
+          <View style={styles.detailsHeader}>
+              <Text style={[styles.sectionTitle, { flexShrink: 1, marginRight: 8, marginBottom: 0 }]}>{t('medications.details.titleDetails')}</Text>
+              {settings.isTextToSpeechEnabled && (
+                  <Button label={isReadingDetails ? t('medications.details.btnStopReading') : t('medications.details.btnReadDetails')} onPress={handleReadDetails} variant="outline" />
+              )}
+          </View>
+          <Card padded>
           <DetailRow label={t('medications.details.lblDosage')} value={medication.dosage} styles={styles} />
           <Divider styles={styles} />
           <DetailRow label={t('medications.details.lblPresentation')} value={medication.presentation} styles={styles} />
@@ -206,11 +286,12 @@ export function MedicationDetailScreen() {
           <DetailRow label={t('medications.details.lblQuantity')} value={medication.quantityAvailable !== null ? `${medication.quantityAvailable} ${t('medications.common.units')}` : null} styles={styles} />
 
         </Card>
+        </View>
 
         {settings?.isAiEnabled && (
           <View style={styles.aiSection}>
             <View style={styles.aiHeader}>
-                <Text style={styles.sectionTitle}>{t('medications.details.aiTitle')}</Text>
+                <Text style={[styles.sectionTitle, { flexShrink: 1, marginRight: 8, marginBottom: 0 }]}>{t('medications.details.aiTitle')}</Text>
                 {aiInfo && settings.isTextToSpeechEnabled && (
                    <Button label={isReading ? t('medications.details.btnStopReading') : t('medications.details.btnReadInfo')} onPress={handleReadAI} variant="outline" />
                 )}
@@ -264,6 +345,9 @@ export function MedicationDetailScreen() {
         </Card>
 
         <View style={styles.deleteSection}>
+          {medication.expirationDate && new Date(medication.expirationDate).getTime() < new Date().getTime() && !medication.isDiscarded && (
+             <Button label={t('medications.details.btnDiscard')} onPress={handleDiscard} variant="secondary" loading={isLoading} style={{ marginBottom: Spacing.sm }} />
+          )}
           <Button label={t('medications.details.btnDelete')} onPress={handleDelete} variant="outline" loading={isLoading} />
         </View>
       </ScrollView>
@@ -308,7 +392,11 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
   dosage: { ...typography.bodyLG, color: colors.textSecondary },
   badgeRow: { flexDirection: 'row', alignItems: 'center', marginTop: Spacing.xxs },
   badgeSpacer: { width: Spacing.sm },
+  statusBadge: { paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: 16 },
+  statusBadgeText: { ...typography.caption, fontWeight: '600' },
   sectionTitle: { ...typography.headingMD, color: colors.textPrimary, marginBottom: Spacing.xs },
+  detailsSection: { marginTop: Spacing.sm },
+  detailsHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.sm },
   quickActions: { marginBottom: Spacing.sm },
   logButtons: { flexDirection: 'row', gap: Spacing.xs },
   flexButton: { flex: 1 },

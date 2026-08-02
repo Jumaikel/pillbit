@@ -58,10 +58,9 @@ interface DoseItemProps {
     dose: MedicationTodayDose;
     onTake: () => void;
     onSkip: () => void;
-    onPostpone: () => void;
 }
 
-function DoseItem({ dose, onTake, onSkip, onPostpone }: DoseItemProps) {
+function DoseItem({ dose, onTake, onSkip }: DoseItemProps) {
     const { colors, typography } = useTheme();
     const styles = getDoseItemStyles(colors, typography);
     const { t } = useTranslation();
@@ -69,11 +68,9 @@ function DoseItem({ dose, onTake, onSkip, onPostpone }: DoseItemProps) {
     const isPending = dose.status === null;
     const isTaken = dose.status === 'taken';
     const isSkipped = dose.status === 'skipped';
-    const isPostponed = dose.status === 'postponed';
 
     const scheduledTime = formatTime(dose.reminderTime);
     const actionTime = dose.actionDatetime ? formatTime(dose.actionDatetime) : null;
-    const postponedTime = dose.postponedReminderDatetime ? formatTime(dose.postponedReminderDatetime) : null;
 
     return (
         <View style={styles.container}>
@@ -99,20 +96,6 @@ function DoseItem({ dose, onTake, onSkip, onPostpone }: DoseItemProps) {
                         <Ionicons name="checkmark-circle-outline" size={16} color="#fff" />
                         <Text style={[styles.actionBtnText, styles.btnTakeText]}>
                             {t('doseLog.btnTake')}
-                        </Text>
-                    </TouchableOpacity>
-
-                    {/* Postpone button */}
-                    <TouchableOpacity
-                        style={[styles.actionBtn, styles.btnPostpone]}
-                        onPress={onPostpone}
-                        accessibilityRole="button"
-                        accessibilityLabel={t('doseLog.btnPostpone')}
-                        activeOpacity={0.75}
-                    >
-                        <Ionicons name="time-outline" size={16} color={colors.warning} />
-                        <Text style={[styles.actionBtnText, styles.btnPostponeText]}>
-                            {t('doseLog.btnPostpone')}
                         </Text>
                     </TouchableOpacity>
 
@@ -142,15 +125,6 @@ function DoseItem({ dose, onTake, onSkip, onPostpone }: DoseItemProps) {
                     <Ionicons name="close-circle" size={16} color={colors.error} />
                     <Text style={[styles.statusText, { color: colors.error }]}>
                         {actionTime ? t('doseLog.skippedAt', { time: actionTime }) : t('doseLog.statusSkipped')}
-                    </Text>
-                </View>
-            ) : isPostponed ? (
-                <View style={[styles.statusBadge, styles.badgePostponed]}>
-                    <Ionicons name="alarm-outline" size={16} color={colors.warning} />
-                    <Text style={[styles.statusText, { color: colors.warning }]}>
-                        {postponedTime
-                            ? t('doseLog.postponedAt', { time: postponedTime })
-                            : t('doseLog.statusPostponed')}
                     </Text>
                 </View>
             ) : null}
@@ -226,7 +200,6 @@ export function DoseTodayPanel({ medicationId, medicationName }: DoseTodayPanelP
                         dose={dose}
                         onTake={() => handleAction(dose, 'taken')}
                         onSkip={() => confirmSkip(dose)}
-                        onPostpone={() => handleAction(dose, 'postponed')}
                     />
                 ))
             )}
@@ -304,11 +277,6 @@ const getDoseItemStyles = (colors: any, typography: any) =>
         btnTake: {
             backgroundColor: colors.success,
         },
-        btnPostpone: {
-            backgroundColor: 'transparent',
-            borderWidth: 1.5,
-            borderColor: colors.warning,
-        },
         btnSkip: {
             backgroundColor: 'transparent',
             borderWidth: 1.5,
@@ -320,9 +288,6 @@ const getDoseItemStyles = (colors: any, typography: any) =>
         },
         btnTakeText: {
             color: '#fff',
-        },
-        btnPostponeText: {
-            color: colors.warning,
         },
         btnSkipText: {
             color: colors.textSecondary,
@@ -341,9 +306,6 @@ const getDoseItemStyles = (colors: any, typography: any) =>
         },
         badgeSkipped: {
             backgroundColor: '#FEE9E7',
-        },
-        badgePostponed: {
-            backgroundColor: '#FFF5E0',
         },
         statusText: {
             ...typography.bodySM,

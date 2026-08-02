@@ -24,7 +24,6 @@ export interface MedicationTodayDose {
     status: ConsumptionStatus | null;
     actionDatetime: string | null;
     scheduledDatetime: string | null;
-    postponedReminderDatetime: string | null;
 }
 
 export class DoseLogService {
@@ -43,7 +42,6 @@ export class DoseLogService {
             status: row.status ?? null,
             actionDatetime: row.actionDatetime ?? null,
             scheduledDatetime: row.scheduledDatetime ?? null,
-            postponedReminderDatetime: row.postponedReminderDatetime ?? null,
         }));
     }
 
@@ -63,38 +61,6 @@ export class DoseLogService {
         notes?: string
     ): Promise<number> {
         const now = new Date().toISOString();
-        let postponedReminderDatetime: string | null = null;
-
-        if (status === 'postponed') {
-            // Determine snooze minutes from settings (default 10)
-            let snoozeMinutes = 10;
-            try {
-                const settings = await ApplicationSettingRepository.get();
-                if (settings?.reminderSnoozeMinutes) {
-                    snoozeMinutes = settings.reminderSnoozeMinutes;
-                }
-            } catch {
-                // use default
-            }
-
-            const postponeDate = new Date(Date.now() + snoozeMinutes * 60 * 1000);
-            postponedReminderDatetime = postponeDate.toISOString();
-
-            // Schedule a temporary one-time notification for the postponed reminder
-            try {
-                const medication = await MedicationRepository.findById(medicationId);
-                if (medication) {
-                    await NotificationService.schedulePostponedReminder(
-                        medication,
-                        reminderId,
-                        postponeDate
-                    );
-                }
-            } catch (e) {
-                // Non-fatal: log but don't block the record creation
-                console.error('Failed to schedule postpone notification:', e);
-            }
-        }
 
         const recordId = await ConsumptionRecordRepository.create({
             medicationId,
@@ -103,8 +69,7 @@ export class DoseLogService {
             actionDatetime: now,
             status,
             quantityConsumed: status === 'taken' ? 1 : 0,
-            notes: notes ?? null,
-            postponedReminderDatetime,
+            notes: notes ?? null
         });
 
         return recordId;

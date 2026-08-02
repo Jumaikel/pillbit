@@ -16,6 +16,7 @@ export interface CreateMedicationDTO {
     expirationDate: string; 
     notes?: string | null;
     photoPath?: string | null;
+    isDiscarded?: boolean;
 }
 
 export interface UpdateMedicationDTO extends Partial<CreateMedicationDTO> {
@@ -66,7 +67,6 @@ export interface CreateConsumptionRecordDTO {
     status: ConsumptionStatus;
     quantityConsumed?: number | null; // defaults to 1
     notes?: string | null;
-    postponedReminderDatetime?: string | null;
 }
 
 export interface UpdateConsumptionRecordDTO {
@@ -92,12 +92,10 @@ export interface UpdateNotificationLogDTO {
 export interface UpdateApplicationSettingDTO {
     textSize?: TextSize;
     isHighContrastEnabled?: boolean;
-    isVoiceInputEnabled?: boolean;
     isTextToSpeechEnabled?: boolean;
     isVoiceNotificationEnabled?: boolean;
     notifyDoseReminder?: boolean;
     notifyExpirationWarning?: boolean;
-    reminderSnoozeMinutes?: number; 
     isNotificationSoundEnabled?: boolean;
     isNotificationVibrationEnabled?: boolean;
     theme?: Theme;

@@ -14,7 +14,8 @@ export class MedicationQueries {
             photoPath: row.mdc_photo_path,
             createdDatetime: row.mdc_created_datetime,
             updatedDatetime: row.mdc_updated_datetime,
-            deletedDatetime: row.mdc_deleted_datetime
+            deletedDatetime: row.mdc_deleted_datetime,
+            isDiscarded: row.mdc_is_discarded === 1
         };
     }
 
@@ -31,6 +32,7 @@ export class MedicationQueries {
         const rows = await db.getAllAsync<any>(
             `SELECT * FROM pbt_medication 
              WHERE mdc_deleted_datetime IS NULL 
+             AND mdc_is_discarded = 0
              AND mdc_expiration_date >= date('now') 
              AND mdc_expiration_date <= date('now', '+' || ? || ' days')
              ORDER BY mdc_expiration_date ASC`,
@@ -44,8 +46,20 @@ export class MedicationQueries {
         const rows = await db.getAllAsync<any>(
             `SELECT * FROM pbt_medication 
              WHERE mdc_deleted_datetime IS NULL 
+             AND mdc_is_discarded = 0
              AND mdc_expiration_date < date('now')
              ORDER BY mdc_expiration_date ASC`
+        );
+        return rows.map(this.mapMedicationRow);
+    }
+
+    static async getDiscardedMedications(): Promise<Medication[]> {
+        const db = getDatabase();
+        const rows = await db.getAllAsync<any>(
+            `SELECT * FROM pbt_medication 
+             WHERE mdc_deleted_datetime IS NULL 
+             AND mdc_is_discarded = 1
+             ORDER BY mdc_name ASC`
         );
         return rows.map(this.mapMedicationRow);
     }
@@ -59,6 +73,7 @@ export class MedicationQueries {
              JOIN pbt_medication m ON r.mdc_id = m.mdc_id
              WHERE r.mdr_is_active = 1 
              AND m.mdc_deleted_datetime IS NULL
+             AND m.mdc_is_discarded = 0
              ORDER BY r.mdr_reminder_time ASC`
         );
         return rows.map(row => ({
@@ -128,6 +143,7 @@ export class MedicationQueries {
                 ON r.mdr_id = c.mdr_id AND date(c.csr_scheduled_datetime) = date('now', 'localtime')
              WHERE r.mdr_is_active = 1 
              AND m.mdc_deleted_datetime IS NULL
+             AND m.mdc_is_discarded = 0
              ORDER BY r.mdr_reminder_time ASC`
         );
         return rows;
@@ -149,8 +165,7 @@ export class MedicationQueries {
                 c.csr_id           AS consumptionId,
                 c.csr_status       AS status,
                 c.csr_action_datetime AS actionDatetime,
-                c.csr_scheduled_datetime AS scheduledDatetime,
-                c.csr_postponed_reminder_datetime AS postponedReminderDatetime
+                c.csr_scheduled_datetime AS scheduledDatetime
              FROM pbt_medication_reminder r
              JOIN pbt_medication m ON r.mdc_id = m.mdc_id
              LEFT JOIN pbt_consumption_record c 
@@ -158,6 +173,7 @@ export class MedicationQueries {
                 AND date(c.csr_scheduled_datetime) = date('now', 'localtime')
              WHERE r.mdr_is_active = 1 
              AND m.mdc_deleted_datetime IS NULL
+             AND m.mdc_is_discarded = 0
              AND m.mdc_id = ?
              ORDER BY r.mdr_reminder_time ASC`,
             [medicationId]

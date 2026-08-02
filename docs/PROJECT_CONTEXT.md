@@ -14,6 +14,12 @@ Para referencias completas ver:
 - Especificación funcional → `docs/PillBit.md`
 - Guía de desarrollo → `docs/DEVELOPMENT_GUIDE.md`
 
+## Flujos Principales
+
+1.  **Registro de Dosis:** El usuario toma u omite (Tomar/Omitir) un medicamento programado. Ya no se soporta posponer.
+2.  **Gestión de Vencimiento:** Alertas de vencimiento se muestran a los usuarios. Los medicamentos vencidos se pueden "Desechar", lo cual los oculta del inventario activo y cancela sus alertas.
+3.  **Consulta de Historial:** Vista detallada de las dosis tomadas y omitidas, con soporte para filtrar por fecha y estado.
+
 ---
 
 ## Architecture Decisions
@@ -37,7 +43,8 @@ Versión compatible con Expo 56 / RN 0.85. Integrado vía `jsxImportSource: 'nat
 SF Symbols en iOS, Material Icons en Android. Dependencia ya incluida, sin overhead adicional.
 
 ### Local Notification Sync via Payload (2026-06-30)
-`reminderId` inyectado en el `data` payload de la notificación en lugar de guardar identificadores de Expo en la DB. Se sincroniza consultando las notificaciones programadas del OS.
+*   **Gestión del Ciclo de Vida:** CRUD completo, notificaciones de dosis y estado (Activo, Expirado, Desechado).
+*   **Gestión de Expiración:** Monitoreo activo de fechas de caducidad con alertas automatizadas e interfaz dedicada para desechar.
 
 ### Dynamic Theming & Scaling via useTheme Hook (2026-07-09)
 Soporte de Alto Contraste y Escalado de Texto sin reiniciar la app. El hook `useTheme` lee la config de SQLite/Zustand y computa tipografía y paleta en tiempo de ejecución.
@@ -79,14 +86,13 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 | AI Medication Info (OpenRouter) | `src/services/OpenRouterService.ts` | ✅ |
 | Dynamic Theme (`useTheme`) | `src/hooks/` | ✅ |
 | TTS (`expo-speech`) | `src/services/` | ✅ |
-| Voice Input | `src/services/VoiceInputService.ts` | 🚧 Scaffolding |
 
 ### Shared Components
 - `Button` — primary / secondary / outline, loading state
 - `Card` — static y pressable
 - `Input` — label, error, disabled
 - `EmptyState` — con CTA opcional
-- `DoseTodayPanel` — panel de dosis de hoy por medicamento con Tomar/Omitir/Posponer
+- `DoseTodayPanel` — panel de dosis de hoy por medicamento con Tomar/Omitir
 - `MedicationHistoryList` — lista paginada del historial por medicamento con filtros
 
 ---
@@ -114,9 +120,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 ### v0.7.0
 - Dose Log per Medication: `DoseTodayPanel`, `MedicationHistoryList`, `DoseLogService`, `useDoseLogStore`
 - Nueva pantalla `/medications/[id]/dose-history`
-- Botones Tomar/Omitir/Posponer con horario del recordatorio en `MedicationDetailScreen`
-- Lógica de posponer: crea notificación temporal + guarda `postponedReminderDatetime`
-- Migración `006_postpone_reminder` añade columna a `pbt_consumption_record`
+- Botones Tomar/Omitir con horario del recordatorio en `MedicationDetailScreen`
 - Traducciones completas en `es.json` y `en.json` (clave `doseLog.*`)
 
 ### v0.2.0
@@ -134,7 +138,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 
 ### v0.5.0
 - Consumption History Module (`features/history`, `HistoryCard`, `HistoryFilterBar`)
-- "Log Dose" (Taken/Skip/Postpone) en `MedicationDetailScreen`
+- "Log Dose" (Taken/Skip) en `MedicationDetailScreen`
 - Expiration Monitoring Module (`features/expiration`, `ExpirationService`)
 - Pantallas `/medications/expiring` y `/medications/expired`
 - `NotificationService.syncExpirationAlerts()`
