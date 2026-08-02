@@ -1,16 +1,20 @@
 import { useEffect } from 'react';
-import { StyleSheet, View, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, FlatList, ActivityIndicator, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Spacing } from '@/constants';
 import { useExpirationStore, ExpirationCard } from '@/features/expiration';
 import { EmptyState } from '@/components/EmptyState';
 import { useTheme } from '@/hooks/useTheme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components';
 
 export default function ExpiredMedicationsScreen() {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
     const { expiredList, isLoading, refreshExpirationData } = useExpirationStore();
     const router = useRouter();
+    const { t } = useTranslation();
 
     useEffect(() => {
         refreshExpirationData();
@@ -21,7 +25,12 @@ export default function ExpiredMedicationsScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container} edges={['top']}>
+            <View style={styles.header}>
+                <Button label={t('medications.details.btnBack')} onPress={() => router.navigate('/(tabs)/medications' as never)} variant="outline" />
+                <Text style={styles.headerTitle}>{t('medications.list.expired', { count: expiredList.length })}</Text>
+                <View style={styles.headerSpacer} />
+            </View>
             {isLoading && expiredList.length === 0 ? (
                 <View style={styles.centerContainer}>
                     <ActivityIndicator size="large" color={colors.primary} />
@@ -47,7 +56,7 @@ export default function ExpiredMedicationsScreen() {
                     }
                 />
             )}
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -55,6 +64,23 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: colors.background,
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: Spacing.md,
+        paddingTop: Spacing.md,
+        paddingBottom: Spacing.sm,
+    },
+    headerTitle: {
+        ...typography.headingMD,
+        color: colors.textPrimary,
+        flex: 1,
+        textAlign: 'center',
+    },
+    headerSpacer: {
+        width: 80, // Approximate width of the back button to center the title
     },
     listContent: {
         padding: Spacing.md,
