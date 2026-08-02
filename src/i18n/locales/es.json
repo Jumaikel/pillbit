@@ -200,6 +200,7 @@
   },
   "reminders": {
     "title": "Recordatorios",
+    "btnBack": "← Atrás",
     "editTitle": "Editar Recordatorio",
     "newTitle": "Nuevo Recordatorio",
     "btnCancel": "Cancelar",

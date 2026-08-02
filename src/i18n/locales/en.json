@@ -200,6 +200,7 @@
   },
   "reminders": {
     "title": "Reminders",
+    "btnBack": "← Back",
     "editTitle": "Edit Reminder",
     "newTitle": "New Reminder",
     "btnCancel": "Cancel",
