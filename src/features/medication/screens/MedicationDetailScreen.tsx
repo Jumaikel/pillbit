@@ -272,7 +272,7 @@ export function MedicationDetailScreen() {
         <View style={styles.detailsSection}>
           <View style={styles.detailsHeader}>
               <Text style={[styles.sectionTitle, { flexShrink: 1, marginRight: 8, marginBottom: 0 }]}>{t('medications.details.titleDetails')}</Text>
-              {settings.isTextToSpeechEnabled && (
+              {settings?.isTextToSpeechEnabled && (
                   <Button label={isReadingDetails ? t('medications.details.btnStopReading') : t('medications.details.btnReadDetails')} onPress={handleReadDetails} variant="outline" />
               )}
           </View>

@@ -1,10 +1,10 @@
 import { View, Text, StyleSheet, Switch, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+
 import { Spacing } from '@/constants';
 import { useConfigStore } from '@/store/useConfigStore';
-import { Input, Button, Card } from '@/components';
-import { useInventoryStore } from '@/features/inventory';
+import { Button, Card } from '@/components';
+
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -27,7 +27,7 @@ export default function SettingsScreen() {
       if (key === 'language') {
          i18n.changeLanguage(value === 'system' ? undefined : (value as string));
       }
-    } catch (e) {
+    } catch {
       Alert.alert(t('settings.errorTitle'), t('settings.errorUpdate'));
     }
   };

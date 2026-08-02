@@ -38,7 +38,7 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
   const handleToggle = async (id: number, isActive: boolean) => {
     try {
       await toggleReminder(id, isActive);
-    } catch (e) {
+    } catch {
       Alert.alert(t('reminders.errorTitle'), t('reminders.errorToggle'));
     }
   };
@@ -55,7 +55,7 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
           onPress: async () => {
             try {
               await deleteReminder(id);
-            } catch (e) {
+            } catch {
               Alert.alert(t('reminders.errorTitle'), t('reminders.errorDelete'));
             }
           }
@@ -90,7 +90,7 @@ export function ReminderManagementScreen({ medicationId }: ReminderManagementScr
       }
       setIsFormVisible(false);
       setEditingReminder(null);
-    } catch (e) {
+    } catch {
       Alert.alert(t('reminders.errorTitle'), t('reminders.errorSave'));
     }
   };

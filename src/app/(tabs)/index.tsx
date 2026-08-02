@@ -23,7 +23,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   
   const loadInventory = useInventoryStore((s) => s.loadInventory);
-  const emptyItemsCount = useInventoryStore((s) => s.emptyItems.length);
+
   const loadExpiration = useExpirationStore((s) => s.refreshExpirationData);
   const expiringSoonList = useExpirationStore((s) => s.expiringSoonList);
   const expiredList = useExpirationStore((s) => s.expiredList);
@@ -46,7 +46,7 @@ export default function HomeScreen() {
     loadDashboard();
   }, [loadInventory, loadExpiration, loadDashboard]);
 
-  const hasEmpty = emptyItemsCount > 0;
+
   const expirationCount = expiringSoonList.length + expiredList.length;
   const hasExpired = expiredList.length > 0;
 

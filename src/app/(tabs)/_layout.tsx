@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius } from '@/constants';
+
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
 

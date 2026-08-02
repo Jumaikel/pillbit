@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { Radius, Spacing } from '@/constants';
+import { Spacing } from '@/constants';
 import { useTheme } from '@/hooks/useTheme';
 
 interface ImagePickerInputProps {
@@ -21,7 +21,6 @@ export function ImagePickerInput({
 }: ImagePickerInputProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
-  const [loading, setLoading] = useState(false);
 
   const handlePress = () => {
     Alert.alert(

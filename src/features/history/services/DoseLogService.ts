@@ -7,12 +7,11 @@
  */
 
 import { ConsumptionRecordRepository } from '@/database/repositories/ConsumptionRecordRepository';
-import { MedicationRepository } from '@/database/repositories/MedicationRepository';
-import { ApplicationSettingRepository } from '@/database/repositories/ApplicationSettingRepository';
+
 import { MedicationQueries } from '@/database/queries/MedicationQueries';
 import { ConsumptionQueries, ConsumptionHistoryItem } from '@/database/queries/ConsumptionQueries';
 import { ConsumptionStatus } from '@/database/models';
-import { NotificationService } from '@/services/NotificationService';
+
 
 export interface MedicationTodayDose {
     reminderId: number;

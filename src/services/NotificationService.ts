@@ -2,8 +2,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { Medication, MedicationReminder, MedicationQueries } from '@/database';
 import { getDatabase } from '@/database/adapters/sqlite';
-import { ApplicationSettingRepository } from '@/database/repositories/ApplicationSettingRepository';
-import { NotificationLogRepository } from '@/database/repositories/NotificationLogRepository';
+
 
 // Fallback/Mock for Notifications in Expo Go
 let Notifications: any = {
@@ -22,6 +21,7 @@ const isExpoGo = Constants.appOwnership === 'expo';
 
 if (!isExpoGo) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     Notifications = require('expo-notifications');
   } catch (e) {
     console.warn('expo-notifications could not be loaded. Mocking instead.', e);

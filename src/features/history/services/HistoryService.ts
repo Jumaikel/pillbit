@@ -1,6 +1,5 @@
 import { ConsumptionRecordRepository } from '@/database/repositories/ConsumptionRecordRepository';
-import { MedicationRepository } from '@/database/repositories/MedicationRepository';
-import { ApplicationSettingRepository } from '@/database/repositories/ApplicationSettingRepository';
+
 import { ConsumptionQueries, ConsumptionHistoryItem, ConsumptionHistoryFilters } from '@/database/queries/ConsumptionQueries';
 import { ConsumptionStatus } from '@/database/models';
 
