@@ -12,7 +12,7 @@ The application relies on a local-first architecture using `expo-sqlite`. The da
 - **`pbt_expiration_alert`**: Pre-configured alerts for medication expirations.
 - **`pbt_consumption_record`**: Tracking user interactions (taken, skipped) against reminders.
 - **`pbt_notification_log`**: Historical log of dispatched notifications. Retained even if related entities are soft-deleted.
-- **`pbt_application_setting`**: Singleton configuration table (locked to `ast_id = 1`).
+- **`pbt_application_setting`**: Singleton configuration table (locked to `ast_id = 1`). Includes `ast_last_ai_request_date` to manage AI request rate limits.
 
 **Cascading Deletions**: A database-level `AFTER UPDATE` trigger (`trg_pbt_medication_soft_delete`) monitors the `mdc_deleted_datetime`. Upon soft-deletion, it automatically purges related operational rows (reminders, AI information, consumption records, and expiration alerts). Notification logs remain using `SET NULL`.
 

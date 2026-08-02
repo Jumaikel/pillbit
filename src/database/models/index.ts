@@ -93,6 +93,7 @@ export interface ApplicationSetting {
     isAiEnabled: boolean;
     aiModel: string;
     language: string;
+    lastAiRequestDate: string | null;
     createdDatetime: string;
     updatedDatetime: string;
 }

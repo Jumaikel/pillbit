@@ -20,6 +20,7 @@ export class ApplicationSettingRepository {
             isAiEnabled: row.ast_is_ai_enabled === 1,
             aiModel: row.ast_ai_model,
             language: row.ast_language,
+            lastAiRequestDate: row.ast_last_ai_request_date || null,
             createdDatetime: row.ast_created_datetime,
             updatedDatetime: row.ast_updated_datetime
         };
@@ -72,6 +73,7 @@ export class ApplicationSettingRepository {
                 ast_is_ai_enabled = ?,
                 ast_ai_model = ?,
                 ast_language = ?,
+                ast_last_ai_request_date = ?,
                 ast_updated_datetime = ?
              WHERE ast_id = 1`,
             [
@@ -89,6 +91,7 @@ export class ApplicationSettingRepository {
                 data.isAiEnabled !== undefined ? (data.isAiEnabled ? 1 : 0) : (current.isAiEnabled ? 1 : 0),
                 data.aiModel !== undefined ? data.aiModel : current.aiModel,
                 data.language !== undefined ? data.language : current.language,
+                data.lastAiRequestDate !== undefined ? data.lastAiRequestDate : current.lastAiRequestDate,
                 now
             ]
         );

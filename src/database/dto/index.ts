@@ -104,4 +104,5 @@ export interface UpdateApplicationSettingDTO {
     isAiEnabled?: boolean;
     aiModel?: string;
     language?: string;
+    lastAiRequestDate?: string | null;
 }

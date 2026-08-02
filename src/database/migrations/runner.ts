@@ -8,6 +8,7 @@ import { removeLowStockMigration } from './005_remove_low_stock';
 import { addPostponeReminderMigration } from './006_postpone_reminder';
 import { removePostponeReminderMigration } from './007_remove_postpone';
 import { discardMedicationMigration } from './008_discard_medication';
+import { aiRequestLimitMigration } from './009_ai_request_limit';
 
 const migrations = [
   {
@@ -102,6 +103,18 @@ const migrations = [
             await db.execAsync(discardMedicationMigration);
         } catch (e) {
              console.error("Migration 8 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 9,
+    name: '009_ai_request_limit',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(aiRequestLimitMigration);
+        } catch (e) {
+             console.error("Migration 9 Failed", e);
              throw e;
         }
     }

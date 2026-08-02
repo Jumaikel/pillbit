@@ -122,6 +122,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 - Nueva pantalla `/medications/[id]/dose-history`
 - Botones Tomar/Omitir con horario del recordatorio en `MedicationDetailScreen`
 - Traducciones completas en `es.json` y `en.json` (clave `doseLog.*`)
+- Límite de 1 petición por día a la IA en entorno de producción (migración `009_ai_request_limit`)
 
 ### v0.2.0
 - Application Branding: configured application icons and splash assets in app.json.

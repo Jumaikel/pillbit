@@ -1,4 +1,5 @@
 import { CreateMedicationAiInformationDTO } from "@/database/dto";
+import { ApplicationSettingRepository } from "@/database/repositories/ApplicationSettingRepository";
 
 interface OpenRouterConfig {
   apiKey: string;
@@ -31,8 +32,20 @@ export class OpenRouterService {
 
     const languageName = language.startsWith("es") ? "Spanish" : "English";
 
+    const isProd = process.env.EXPO_PUBLIC_ISDEV === "prod";
+    if (isProd) {
+      const settings = await ApplicationSettingRepository.get();
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      if (settings?.lastAiRequestDate === today) {
+        throw new Error("Límite de peticiones diarias a la IA alcanzado.");
+      }
+    }
+
     const prompt = `You are a medical assistant providing factual, educational information about medications.
-Generate information for the medication: "${medicationName}".
+If the input "${medicationName}" is a misspelled version of a real medication, you MUST provide the full information for the intended medication and mention the spelling correction at the beginning of the "description" field.
+If the input "${medicationName}" is completely unrecognizable, NOT a real medication, or if the request is inappropriate, YOU MUST return exactly this JSON: { "error": "NOT_A_MEDICATION" } and nothing else.
+Otherwise, generate information for the medication: "${medicationName}".
 The response MUST be written in the following language: ${languageName}.
 Provide the output strictly in valid JSON format with exactly these keys:
 {
@@ -79,6 +92,7 @@ Do not include any markdown, backticks, or extra text. Just the JSON object.`;
         throw new Error("Empty response from AI model");
       }
 
+      let parsed: any = null;
       try {
         // Some models return markdown code blocks anyway, clean it up
         let cleanContent = content;
@@ -87,16 +101,7 @@ Do not include any markdown, backticks, or extra text. Just the JSON object.`;
             .replace(/^\`\`\`json/, "")
             .replace(/\`\`\`$/, "");
         }
-        const parsed = JSON.parse(cleanContent.trim());
-        return {
-          description: parsed.description || null,
-          commonUses: parsed.commonUses || null,
-          dosageAdministration: parsed.dosageAdministration || null,
-          contraindications: parsed.contraindications || null,
-          sideEffects: parsed.sideEffects || null,
-          warnings: parsed.warnings || null,
-          interactions: parsed.interactions || null,
-        };
+        parsed = JSON.parse(cleanContent.trim());
       } catch (parseError) {
         console.error(
           "AI response parse error:",
@@ -106,6 +111,29 @@ Do not include any markdown, backticks, or extra text. Just the JSON object.`;
         );
         throw new Error("Failed to parse AI response into structured data");
       }
+        
+      if (isProd) {
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        await ApplicationSettingRepository.update({ lastAiRequestDate: today });
+      }
+
+      if (parsed.error === 'NOT_A_MEDICATION') {
+          const errorMsg = language.startsWith("es")
+              ? "El término ingresado no parece ser un medicamento válido o la consulta está fuera de lugar."
+              : "The entered term does not appear to be a valid medication or the request is out of scope.";
+          throw new Error(errorMsg);
+      }
+
+      return {
+        description: parsed.description || null,
+        commonUses: parsed.commonUses || null,
+        dosageAdministration: parsed.dosageAdministration || null,
+        contraindications: parsed.contraindications || null,
+        sideEffects: parsed.sideEffects || null,
+        warnings: parsed.warnings || null,
+        interactions: parsed.interactions || null,
+      };
     } catch (error: any) {
       if (error.name === "TypeError" && error.message === "Failed to fetch") {
         throw new Error("Network failure. Please check your connection.");
