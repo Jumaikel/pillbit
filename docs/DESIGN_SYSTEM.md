@@ -257,6 +257,33 @@ import { EmptyState } from '@/components';
 | `description` | `string` | — | Supporting text |
 | `action` | `{ label: string, onPress: () => void }` | — | Optional CTA button |
 
+### DoseTodayPanel
+
+```tsx
+import { DoseTodayPanel } from '@/features/history/components/DoseTodayPanel';
+<DoseTodayPanel medicationId={42} medicationName="Aspirina" />
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `medicationId` | `number` | required | The medication to show today's schedule for |
+| `medicationName` | `string` | required | Used for accessibility labels |
+
+Muestra la lista de recordatorios de hoy para un medicamento con botones Tomar/Omitir/Posponer y badges de estado.
+
+### MedicationHistoryList
+
+```tsx
+import { MedicationHistoryList } from '@/features/history/components/MedicationHistoryList';
+<MedicationHistoryList medicationId={42} />
+```
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `medicationId` | `number` | required | Medication whose history to display |
+
+Lista paginada (30 por página) del historial de dosis con filtro bar (Todos / Tomados / Omitidos / Pospuestos).
+
 ---
 
 ## Responsive Design

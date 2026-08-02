@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 interface TabIconProps {
   name: React.ComponentProps<typeof Ionicons>['name'];
   focused: boolean;
-  color: string;
+  color: any;
 }
 
 function TabIcon({ name, focused, color }: TabIconProps) {

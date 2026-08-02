@@ -19,7 +19,6 @@ export interface MedicationFormValues {
   presentation: string;
   notes: string;
   quantityAvailable: string; // string → parsed to number | null before persistence
-  lowStockThreshold: string;  // string → parsed to number | null before persistence
   photoPath: string;
 }
 

@@ -6,7 +6,6 @@ export interface Medication {
     dosage: string;
     presentation: string | null;
     quantityAvailable: number | null;
-    lowStockThreshold: number | null;
     expirationDate: string; // ISO format (YYYY-MM-DD)
     notes: string | null;
     photoPath: string | null;
@@ -59,9 +58,10 @@ export interface ConsumptionRecord {
     status: ConsumptionStatus;
     quantityConsumed: number;
     notes: string | null;
+    postponedReminderDatetime: string | null;
 }
 
-export type NotificationType = 'dose_reminder' | 'expiration_warning' | 'low_stock';
+export type NotificationType = 'dose_reminder' | 'expiration_warning';
 
 export interface NotificationLog {
     id: number;
@@ -86,13 +86,10 @@ export interface ApplicationSetting {
     isVoiceNotificationEnabled: boolean;
     notifyDoseReminder: boolean;
     notifyExpirationWarning: boolean;
-    notifyLowStock: boolean;
     reminderSnoozeMinutes: number; // 5, 10, 15, 30
     isNotificationSoundEnabled: boolean;
     isNotificationVibrationEnabled: boolean;
     theme: Theme;
-    defaultLowStockThreshold: number;
-    autoReduceStock: boolean;
     aiInfoAutoGenerate: boolean;
     showMedicalDisclaimer: boolean;
     isAiEnabled: boolean;

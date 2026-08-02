@@ -58,7 +58,6 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
             const { useInventoryStore } = require('@/features/inventory/store/useInventoryStore');
             const { NotificationService } = require('@/services/NotificationService');
             await useInventoryStore.getState().refreshAfterConsumption();
-            await NotificationService.syncLowStockAlerts();
         } catch (error: any) {
             set({ error: error.message || 'Failed to register consumption', isLoading: false });
             throw error;

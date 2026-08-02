@@ -56,6 +56,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 /medications/[id]   → Detail screen
 /medications/[id]/edit     → Edit form
 /medications/[id]/reminders → Reminder management
+/medications/[id]/dose-history → Dose history per medication
 /medications/expiring → Expiring soon list
 /medications/expired  → Expired list
 /history            → History tab      (src/app/(tabs)/history.tsx)
@@ -72,6 +73,7 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 | Medication CRUD | `src/features/medication/` | ✅ |
 | Reminder Management | `src/features/reminder/` | ✅ |
 | Consumption History | `src/features/history/` | ✅ |
+| Dose Log per Medication | `src/features/history/` | ✅ |
 | Expiration Monitoring | `src/features/expiration/` | ✅ |
 | Settings & Accessibility | `src/app/(tabs)/settings.tsx` | ✅ |
 | AI Medication Info (OpenRouter) | `src/services/OpenRouterService.ts` | ✅ |
@@ -84,6 +86,8 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 - `Card` — static y pressable
 - `Input` — label, error, disabled
 - `EmptyState` — con CTA opcional
+- `DoseTodayPanel` — panel de dosis de hoy por medicamento con Tomar/Omitir/Posponer
+- `MedicationHistoryList` — lista paginada del historial por medicamento con filtros
 
 ---
 
@@ -106,6 +110,14 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 ---
 
 ## Changelog
+
+### v0.7.0
+- Dose Log per Medication: `DoseTodayPanel`, `MedicationHistoryList`, `DoseLogService`, `useDoseLogStore`
+- Nueva pantalla `/medications/[id]/dose-history`
+- Botones Tomar/Omitir/Posponer con horario del recordatorio en `MedicationDetailScreen`
+- Lógica de posponer: crea notificación temporal + guarda `postponedReminderDatetime`
+- Migración `006_postpone_reminder` añade columna a `pbt_consumption_record`
+- Traducciones completas en `es.json` y `en.json` (clave `doseLog.*`)
 
 ### v0.2.0
 - Application Branding: configured application icons and splash assets in app.json.

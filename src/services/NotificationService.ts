@@ -4,7 +4,6 @@ import { Medication, MedicationReminder, MedicationQueries } from '@/database';
 import { getDatabase } from '@/database/adapters/sqlite';
 import { ApplicationSettingRepository } from '@/database/repositories/ApplicationSettingRepository';
 import { NotificationLogRepository } from '@/database/repositories/NotificationLogRepository';
-import { InventoryService } from '@/features/inventory/services/InventoryService';
 
 // Fallback/Mock for Notifications in Expo Go
 let Notifications: any = {
@@ -248,90 +247,6 @@ export class NotificationService {
     }
   }
 
-  /**
-   * Check for low-stock medications and send immediate notifications.
-   *
-   * Deduplication strategy:
-   *   - Fetches today's `low_stock` notification log entries from SQLite.
-   *   - Only sends a notification for a medication if none was sent today.
-   *   - Respects the `notifyLowStock` application setting.
-   *
-   * Should be called:
-   *   - On app startup
-   *   - After a consumption record marks status as 'taken'
-   *   - After a medication is created or updated
-   */
-  static async syncLowStockAlerts(): Promise<void> {
-    const hasPermission = await this.requestPermissionsAsync();
-    if (!hasPermission) return;
-
-    try {
-      // Check setting — respect user preference
-      const settings = await ApplicationSettingRepository.get();
-      if (!settings || !settings.notifyLowStock) return;
-
-      // Fetch low-stock medications via InventoryService
-      const lowStockMedications = await InventoryService.getLowStockMedications();
-      if (lowStockMedications.length === 0) return;
-
-      // Fetch today's low_stock notification logs from SQLite (dedup)
-      const db = getDatabase();
-      const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-      const recentLogs = await db.getAllAsync<{
-        mdc_id: number | null;
-        ntf_type: string;
-        ntf_sent_datetime: string;
-      }>(
-        `SELECT mdc_id, ntf_type, ntf_sent_datetime
-         FROM pbt_notification_log
-         WHERE ntf_type = 'low_stock'
-           AND date(ntf_sent_datetime) = ?`,
-        [todayStr],
-      );
-
-      // Convert to the shape InventoryService.wasLowStockNotifiedToday expects
-      const logItems = recentLogs.map((row) => ({
-        medicationId: row.mdc_id,
-        type: row.ntf_type,
-        sentDatetime: row.ntf_sent_datetime,
-      }));
-
-      // Send notifications for medications that weren't notified today
-      const nowStr = new Date().toISOString();
-      for (const med of lowStockMedications) {
-        const alreadyNotified = InventoryService.wasLowStockNotifiedToday(med.id, logItems);
-        if (alreadyNotified) continue;
-
-        const isEmpty = med.inventoryStatus === 'empty';
-        const title = isEmpty
-          ? `Out of Stock: ${med.name}`
-          : `Low Stock: ${med.name}`;
-        const body = isEmpty
-          ? `${med.name} is out of stock. Please refill soon.`
-          : `Only ${med.quantityAvailable} unit${med.quantityAvailable === 1 ? '' : 's'} remaining${med.effectiveThreshold ? ` (threshold: ${med.effectiveThreshold})` : ''}.`;
-
-        // Send immediate notification (no scheduled trigger)
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title,
-            body,
-            data: { medicationId: med.id, type: 'low_stock' },
-          },
-          trigger: null, // immediate
-        });
-
-        // Log to prevent duplicate notifications today
-        await NotificationLogRepository.create({
-          medicationId: med.id,
-          type: 'low_stock',
-          sentDatetime: nowStr,
-        });
-      }
-    } catch (e) {
-      console.error('[NotificationService] syncLowStockAlerts failed:', e);
-      // Fail gracefully — do not throw, notifications are non-critical
-    }
-  }
 
   /**
    * Send an immediate local notification (e.g. for background tasks completing)
@@ -351,6 +266,34 @@ export class NotificationService {
       });
     } catch (e) {
       console.error('[NotificationService] sendImmediateNotification failed:', e);
+    }
+  }
+
+  /**
+   * Schedule a one-time notification for a postponed dose.
+   * @param medication  The medication being postponed
+   * @param reminderId  The original reminder id (used to identify it in the payload)
+   * @param fireDate    The date/time when the postponed notification should fire
+   */
+  static async schedulePostponedReminder(
+    medication: Medication,
+    reminderId: number,
+    fireDate: Date
+  ): Promise<void> {
+    try {
+      const hasPermission = await this.requestPermissionsAsync();
+      if (!hasPermission) return;
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: `Recordatorio pospuesto: ${medication.name}`,
+          body: `Es hora de tomar ${medication.dosage}`,
+          data: { reminderId, medicationId: medication.id, isPostponed: true },
+        },
+        trigger: fireDate,
+      });
+    } catch (e) {
+      console.error('[NotificationService] schedulePostponedReminder failed:', e);
     }
   }
 }

@@ -10,7 +10,7 @@ The application relies on a local-first architecture using `expo-sqlite`. The da
 - **`pbt_medication_reminder`**: Configured reminder schedules for a medication.
 - **`pbt_medication_ai_information`**: 1:1 relationship containing AI-generated educational content per medication.
 - **`pbt_expiration_alert`**: Pre-configured alerts for medication expirations.
-- **`pbt_consumption_record`**: Tracking user interactions (taken, skipped, postponed) against reminders.
+- **`pbt_consumption_record`**: Tracking user interactions (taken, skipped, postponed) against reminders. Column `csr_postponed_reminder_datetime` stores the scheduled time of the temporary reminder created when a dose is postponed (migration 006).
 - **`pbt_notification_log`**: Historical log of dispatched notifications. Retained even if related entities are soft-deleted.
 - **`pbt_application_setting`**: Singleton configuration table (locked to `ast_id = 1`).
 

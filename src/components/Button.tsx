@@ -131,6 +131,7 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
   label: {
     ...typography.bodyMD,
     fontWeight: '600',
+    textAlign: 'center',
   },
   primaryLabel: {
     color: '#FFFFFF',

@@ -28,23 +28,6 @@ export class HistoryService {
             notes
         });
 
-        // Handle auto stock reduction if the medication was taken
-        if (status === 'taken') {
-            try {
-                const settings = await ApplicationSettingRepository.get();
-                if (settings && settings.autoReduceStock) {
-                    const medication = await MedicationRepository.findById(medicationId);
-                    if (medication && medication.quantityAvailable !== null) {
-                        const newQuantity = Math.max(0, medication.quantityAvailable - quantityConsumed);
-                        await MedicationRepository.update(medicationId, { quantityAvailable: newQuantity });
-                    }
-                }
-            } catch (error) {
-                console.error('Failed to auto-reduce stock:', error);
-                // Do not throw, we still successfully logged the consumption
-            }
-        }
-
         return recordId;
     }
 

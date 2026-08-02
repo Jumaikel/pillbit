@@ -11,7 +11,6 @@ export class MedicationRepository {
             dosage: row.mdc_dosage,
             presentation: row.mdc_presentation,
             quantityAvailable: row.mdc_quantity_available,
-            lowStockThreshold: row.mdc_low_stock_threshold,
             expirationDate: row.mdc_expiration_date,
             notes: row.mdc_notes,
             photoPath: row.mdc_photo_path,
@@ -28,15 +27,14 @@ export class MedicationRepository {
         const result = await db.runAsync(
             `INSERT INTO pbt_medication (
                 mdc_name, mdc_dosage, mdc_presentation, mdc_quantity_available, 
-                mdc_low_stock_threshold, mdc_expiration_date, mdc_notes, 
+                mdc_expiration_date, mdc_notes, 
                 mdc_photo_path, mdc_created_datetime, mdc_updated_datetime
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.name, 
                 data.dosage, 
                 data.presentation ?? null, 
                 data.quantityAvailable ?? null, 
-                data.lowStockThreshold ?? null, 
                 data.expirationDate, 
                 data.notes ?? null, 
                 data.photoPath ?? null, 
@@ -70,7 +68,6 @@ export class MedicationRepository {
                 mdc_dosage = ?,
                 mdc_presentation = ?,
                 mdc_quantity_available = ?,
-                mdc_low_stock_threshold = ?,
                 mdc_expiration_date = ?,
                 mdc_notes = ?,
                 mdc_photo_path = ?,
@@ -82,7 +79,6 @@ export class MedicationRepository {
                 data.dosage !== undefined ? data.dosage : current.dosage,
                 data.presentation !== undefined ? data.presentation : current.presentation,
                 data.quantityAvailable !== undefined ? data.quantityAvailable : current.quantityAvailable,
-                data.lowStockThreshold !== undefined ? data.lowStockThreshold : current.lowStockThreshold,
                 data.expirationDate !== undefined ? data.expirationDate : current.expirationDate,
                 data.notes !== undefined ? data.notes : current.notes,
                 data.photoPath !== undefined ? data.photoPath : current.photoPath,

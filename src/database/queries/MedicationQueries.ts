@@ -9,7 +9,6 @@ export class MedicationQueries {
             dosage: row.mdc_dosage,
             presentation: row.mdc_presentation,
             quantityAvailable: row.mdc_quantity_available,
-            lowStockThreshold: row.mdc_low_stock_threshold,
             expirationDate: row.mdc_expiration_date,
             notes: row.mdc_notes,
             photoPath: row.mdc_photo_path,
@@ -51,18 +50,6 @@ export class MedicationQueries {
         return rows.map(this.mapMedicationRow);
     }
 
-    static async getLowStockMedications(): Promise<Medication[]> {
-        const db = getDatabase();
-        const rows = await db.getAllAsync<any>(
-            `SELECT * FROM pbt_medication 
-             WHERE mdc_deleted_datetime IS NULL 
-             AND mdc_quantity_available IS NOT NULL 
-             AND mdc_low_stock_threshold IS NOT NULL
-             AND mdc_quantity_available <= mdc_low_stock_threshold
-             ORDER BY mdc_quantity_available ASC`
-        );
-        return rows.map(this.mapMedicationRow);
-    }
 
     static async getActiveReminders(): Promise<(MedicationReminder & { medicationName: string })[]> {
         const db = getDatabase();
@@ -142,6 +129,38 @@ export class MedicationQueries {
              WHERE r.mdr_is_active = 1 
              AND m.mdc_deleted_datetime IS NULL
              ORDER BY r.mdr_reminder_time ASC`
+        );
+        return rows;
+    }
+
+    /**
+     * Returns today's scheduled doses for a specific medication.
+     * Includes regular reminders + any postponed-reminder slots logged today.
+     */
+    static async getMedicationTodaySchedule(medicationId: number): Promise<any[]> {
+        const db = getDatabase();
+        const rows = await db.getAllAsync<any>(
+            `SELECT 
+                r.mdr_id          AS reminderId,
+                r.mdr_reminder_time AS reminderTime,
+                m.mdc_id           AS medicationId,
+                m.mdc_name         AS medicationName,
+                m.mdc_dosage       AS dosage,
+                c.csr_id           AS consumptionId,
+                c.csr_status       AS status,
+                c.csr_action_datetime AS actionDatetime,
+                c.csr_scheduled_datetime AS scheduledDatetime,
+                c.csr_postponed_reminder_datetime AS postponedReminderDatetime
+             FROM pbt_medication_reminder r
+             JOIN pbt_medication m ON r.mdc_id = m.mdc_id
+             LEFT JOIN pbt_consumption_record c 
+                ON r.mdr_id = c.mdr_id 
+                AND date(c.csr_scheduled_datetime) = date('now', 'localtime')
+             WHERE r.mdr_is_active = 1 
+             AND m.mdc_deleted_datetime IS NULL
+             AND m.mdc_id = ?
+             ORDER BY r.mdr_reminder_time ASC`,
+            [medicationId]
         );
         return rows;
     }

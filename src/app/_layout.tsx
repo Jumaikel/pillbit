@@ -39,7 +39,6 @@ export default function RootLayout() {
 
         await NotificationService.syncReminders();
         await NotificationService.syncExpirationAlerts();
-        await NotificationService.syncLowStockAlerts();
       } catch (e) {
         console.error('[RootLayout] Application initialization failed:', e);
       }

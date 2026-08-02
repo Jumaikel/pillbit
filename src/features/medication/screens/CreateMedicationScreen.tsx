@@ -19,7 +19,7 @@ import { useRouter } from 'expo-router';
 import { Controller } from 'react-hook-form';
 import { useCallback } from 'react';
 import { Spacing } from '@/constants';
-import { Button, Input, DateInput, ImagePickerInput } from '@/components';
+import { Button, Input, DateInput, ImagePickerInput, SelectInput } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { useMedicationForm } from '../hooks/useMedicationForm';
 import { MedicationFormValues } from '../types';
@@ -55,8 +55,6 @@ export function CreateMedicationScreen() {
           notes: values.notes.trim() || null,
           quantityAvailable:
             values.quantityAvailable.trim() ? Number(values.quantityAvailable) : null,
-          lowStockThreshold:
-            values.lowStockThreshold.trim() ? Number(values.lowStockThreshold) : null,
           photoPath: values.photoPath.trim() || null,
         });
         
@@ -78,7 +76,7 @@ export function CreateMedicationScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* ── Navigation header ── */}
       <View style={styles.navHeader}>
-        <Button label={t('medications.form.btnCancel')} onPress={() => router.back()} variant="outline" />
+        <Button label={t('medications.form.btnCancel')} onPress={() => router.navigate('/(tabs)/medications' as never)} variant="outline" />
       </View>
 
       <KeyboardAvoidingView
@@ -170,16 +168,24 @@ export function CreateMedicationScreen() {
             <Controller
               control={control}
               name="presentation"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
+              render={({ field: { onChange, value } }) => (
+                <SelectInput
                   label={t('medications.form.labelPresentation')}
                   placeholder={t('medications.form.placeholderPresentation')}
                   value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
+                  onChange={onChange}
                   errorMessage={errors.presentation?.message}
-                  autoCapitalize="words"
-                  returnKeyType="next"
+                  options={[
+                    { label: t('medications.form.presentations.tablet'), value: t('medications.form.presentations.tablet') },
+                    { label: t('medications.form.presentations.capsule'), value: t('medications.form.presentations.capsule') },
+                    { label: t('medications.form.presentations.cream'), value: t('medications.form.presentations.cream') },
+                    { label: t('medications.form.presentations.syrup'), value: t('medications.form.presentations.syrup') },
+                    { label: t('medications.form.presentations.drops'), value: t('medications.form.presentations.drops') },
+                    { label: t('medications.form.presentations.injection'), value: t('medications.form.presentations.injection') },
+                    { label: t('medications.form.presentations.inhaler'), value: t('medications.form.presentations.inhaler') },
+                    { label: t('medications.form.presentations.ointment'), value: t('medications.form.presentations.ointment') },
+                    { label: t('medications.form.presentations.other'), value: t('medications.form.presentations.other') },
+                  ]}
                 />
               )}
             />
@@ -201,22 +207,6 @@ export function CreateMedicationScreen() {
               )}
             />
 
-            <Controller
-              control={control}
-              name="lowStockThreshold"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  label={t('medications.form.labelThreshold')}
-                  placeholder={t('medications.form.placeholderThreshold')}
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  errorMessage={errors.lowStockThreshold?.message}
-                  keyboardType="numeric"
-                  returnKeyType="next"
-                />
-              )}
-            />
 
             <Controller
               control={control}

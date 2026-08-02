@@ -18,3 +18,4 @@ export { Input } from './Input';
 export { EmptyState } from './EmptyState';
 export { DateInput } from './DateInput';
 export { ImagePickerInput } from './ImagePickerInput';
+export { SelectInput } from './SelectInput';

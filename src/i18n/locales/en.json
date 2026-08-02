@@ -4,14 +4,6 @@
     "todayDoses": "Today's Doses",
     "noDoses": "You have no scheduled doses for today.",
     "addMedication": "Add Medication",
-    "lowStock": {
-      "outOfStock_one": "1 medication is out of stock",
-      "outOfStock_other": "{{count}} medications need attention",
-      "runningLow_one": "1 medication is running low",
-      "runningLow_other": "{{count}} medications are running low",
-      "tapToManage": "Tap to manage inventory",
-      "tapToView": "{{title}}. Tap to view."
-    },
     "expiration": {
       "title": "Expiration Attention",
       "subtitle_expired_one": "You have 1 medication expired or expiring soon.",
@@ -72,17 +64,6 @@
       "title": "AI Features",
       "enable": "Enable AI Info",
       "enableDesc": "Use AI to generate medication insights."
-    },
-    "inventory": {
-      "title": "Inventory Tracking",
-      "autoReduce": "Auto-Reduce Stock",
-      "globalThreshold": "Global Low Stock Threshold",
-      "placeholderThreshold": "e.g. 10",
-      "btnSave": "Save"
-    },
-    "notifications": {
-      "title": "Notifications",
-      "lowStock": "Low Stock Alerts"
     }
   },
   "tabs": {
@@ -96,7 +77,6 @@
       "title": "Medications",
       "add": "+ Add",
       "searchPlaceholder": "Search medications…",
-      "lowStock": "Low Stock ({{count}})",
       "expiring": "Expiring ({{count}})",
       "expired": "Expired ({{count}})",
       "loading": "Loading medications…",
@@ -131,11 +111,20 @@
       "placeholderDosage": "e.g. 500mg",
       "labelExpiration": "Expiration Date",
       "labelPresentation": "Presentation",
-      "placeholderPresentation": "e.g. Tablet, Capsule",
+      "placeholderPresentation": "Select presentation",
+      "presentations": {
+        "tablet": "Tablet",
+        "capsule": "Capsule",
+        "cream": "Cream",
+        "syrup": "Syrup",
+        "drops": "Drops",
+        "injection": "Injection",
+        "inhaler": "Inhaler",
+        "ointment": "Ointment",
+        "other": "Other"
+      },
       "labelQuantity": "Quantity Available",
       "placeholderQuantity": "e.g. 30",
-      "labelThreshold": "Low Stock Threshold",
-      "placeholderThreshold": "e.g. 10",
       "labelNotes": "Notes",
       "placeholderNotes": "e.g. Take with food",
       "btnCancel": "← Cancel",
@@ -158,7 +147,6 @@
       "lblPresentation": "Presentation",
       "lblExpiration": "Expiration Date",
       "lblQuantity": "Quantity Available",
-      "lblThreshold": "Low Stock Threshold",
       "aiTitle": "AI Information",
       "btnReadInfo": "Read Info",
       "btnStopReading": "Stop",
@@ -247,5 +235,36 @@
       "errorTitle": "AI Analysis Failed",
       "errorBody": "Could not generate information for {{medicationName}}."
     }
+  },
+  "doseLog": {
+    "todayTitle": "Today's Doses",
+    "noRemindersToday": "No reminders configured for this medication.",
+    "btnTake": "Take",
+    "btnSkip": "Skip",
+    "btnPostpone": "Postpone",
+    "statusTaken": "Taken",
+    "statusSkipped": "Skipped",
+    "statusPostponed": "Postponed",
+    "takenAt": "Taken at {{time}}",
+    "skippedAt": "Skipped at {{time}}",
+    "postponedAt": "Postponed · New reminder: {{time}}",
+    "nextReminder": "Next reminder: {{time}}",
+    "noMoreToday": "No more reminders today",
+    "scheduledFor": "Scheduled for {{time}}",
+    "btnHistory": "View Dose History",
+    "historyTitle": "Dose History",
+    "historySubtitle": "All records for {{name}}",
+    "emptyTitle": "No records yet",
+    "emptyDesc": "Dose history will appear here once you log a dose.",
+    "filterAll": "All",
+    "filterTaken": "Taken",
+    "filterSkipped": "Skipped",
+    "filterPostponed": "Postponed",
+    "errorLog": "Failed to log the dose.",
+    "successLog": "Dose logged successfully.",
+    "confirmSkipTitle": "Skip Dose",
+    "confirmSkipMessage": "Are you sure you want to skip this dose?",
+    "confirmSkipCancel": "Cancel",
+    "confirmSkipConfirm": "Skip"
   }
 }

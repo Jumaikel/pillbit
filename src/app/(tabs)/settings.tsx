@@ -15,36 +15,8 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   
   const { settings, isLoading, updateSettings } = useConfigStore();
-  const [thresholdInput, setThresholdInput] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (settings) {
-      setThresholdInput(settings.defaultLowStockThreshold?.toString() || '');
-    }
-  }, [settings]);
 
-  const handleSaveInventory = async () => {
-    if (!settings) return;
-    setIsSaving(true);
-    try {
-      const parsedThreshold = thresholdInput.trim() === '' ? null : parseInt(thresholdInput, 10);
-      if (parsedThreshold !== null && (isNaN(parsedThreshold) || parsedThreshold < 0)) {
-         Alert.alert(t('settings.invalidThresholdTitle'), t('settings.invalidThresholdDesc'));
-         setIsSaving(false);
-         return;
-      }
-      await updateSettings({ defaultLowStockThreshold: parsedThreshold === null ? undefined : parsedThreshold });
-      // Refresh inventory because global threshold changed
-      const { refreshAfterSettingsChange } = useInventoryStore.getState();
-      await refreshAfterSettingsChange();
-      Alert.alert(t('settings.successTitle'), t('settings.successSave'));
-    } catch (e) {
-      Alert.alert(t('settings.errorTitle'), t('settings.errorSave'));
-    } finally {
-      setIsSaving(false);
-    }
-  };
 
 
 
@@ -81,52 +53,48 @@ export default function SettingsScreen() {
             <Text style={styles.sectionTitle}>{t('settings.appearance')}</Text>
             
             <Text style={styles.settingLabel}>{t('settings.theme')}</Text>
-            <View style={styles.buttonRow}>
+            <View style={styles.buttonGroup}>
                <Button 
                   label={t('settings.theme_system')} 
                   variant={settings.theme === 'system' || !settings.theme ? 'primary' : 'outline'}
                   onPress={() => handleToggle('theme', 'system')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.theme_light')} 
                   variant={settings.theme === 'light' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('theme', 'light')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.theme_dark')} 
                   variant={settings.theme === 'dark' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('theme', 'dark')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
             </View>
 
             <View style={styles.divider} />
 
             <Text style={styles.settingLabel}>{t('settings.language')}</Text>
-            <View style={styles.buttonRow}>
+            <View style={styles.buttonGroup}>
                <Button 
                   label={t('settings.language_system')} 
                   variant={settings.language === 'system' || !settings.language ? 'primary' : 'outline'}
                   onPress={() => handleToggle('language', 'system')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.language_es')} 
                   variant={settings.language === 'es' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('language', 'es')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.language_en')} 
                   variant={settings.language === 'en' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('language', 'en')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
             </View>
           </Card>
@@ -154,26 +122,24 @@ export default function SettingsScreen() {
                  <Text style={styles.settingDescription}>{t('settings.accessibility.textSizeDesc')}</Text>
                </View>
             </View>
-            <View style={styles.buttonRow}>
+            <View style={styles.buttonGroup}>
                <Button 
                   label={t('settings.accessibility.sizeNormal')} 
                   variant={settings.textSize === 'normal' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'normal')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.accessibility.sizeLarge')} 
                   variant={settings.textSize === 'large' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'large')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
-               <View style={{ width: 8 }} />
                <Button 
                   label={t('settings.accessibility.sizeXLarge')} 
                   variant={settings.textSize === 'extra_large' ? 'primary' : 'outline'}
                   onPress={() => handleToggle('textSize', 'extra_large')} 
-                  style={styles.flex1} 
+                  style={styles.optionButton} 
                />
             </View>
             <View style={styles.divider} />
@@ -227,59 +193,7 @@ export default function SettingsScreen() {
             )}
           </Card>
 
-          {/* General Settings */}
-          <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('settings.inventory.title')}</Text>
-            <View style={styles.settingRow}>
-               <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>{t('settings.inventory.autoReduce')}</Text>
-               </View>
-               <Switch
-                 value={settings.autoReduceStock}
-                 onValueChange={(v) => handleToggle('autoReduceStock', v)}
-                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
-                 thumbColor="#fff"
-               />
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.settingRow}>
-               <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>{t('settings.inventory.globalThreshold')}</Text>
-               </View>
-            </View>
-            <View style={styles.inputContainer}>
-               <Input
-                 placeholder={t('settings.inventory.placeholderThreshold')}
-                 value={thresholdInput}
-                 onChangeText={setThresholdInput}
-                 keyboardType="numeric"
-                 returnKeyType="done"
-               />
-               <Button 
-                 label={t('settings.inventory.btnSave')} 
-                 onPress={handleSaveInventory} 
-                 loading={isSaving}
-                 disabled={isSaving}
-                 style={styles.saveButton}
-               />
-            </View>
-          </Card>
-
-          <Card padded style={styles.section}>
-            <Text style={styles.sectionTitle}>{t('settings.notifications.title')}</Text>
-            <View style={styles.settingRow}>
-               <View style={styles.settingText}>
-                 <Text style={styles.settingLabel}>{t('settings.notifications.lowStock')}</Text>
-               </View>
-               <Switch
-                 value={settings.notifyLowStock}
-                 onValueChange={(v) => handleToggle('notifyLowStock', v)}
-                 trackColor={{ false: colors.textDisabled, true: colors.primary }}
-                 thumbColor="#fff"
-               />
-            </View>
-          </Card>
-
+          {/* Add more sections as needed */}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -332,11 +246,15 @@ const getStyles = (colors: any, typography: any) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: Spacing.xs,
   },
-  buttonRow: {
+  buttonGroup: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: Spacing.xs,
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  optionButton: {
+    flexGrow: 1,
+    minWidth: '30%',
   },
   settingText: {
     flex: 1,

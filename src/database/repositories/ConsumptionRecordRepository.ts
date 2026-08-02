@@ -13,7 +13,8 @@ export class ConsumptionRecordRepository {
             actionDatetime: row.csr_action_datetime,
             status: row.csr_status,
             quantityConsumed: row.csr_quantity_consumed,
-            notes: row.csr_notes
+            notes: row.csr_notes,
+            postponedReminderDatetime: row.csr_postponed_reminder_datetime ?? null
         };
     }
 
@@ -23,8 +24,8 @@ export class ConsumptionRecordRepository {
         const result = await db.runAsync(
             `INSERT INTO pbt_consumption_record (
                 mdc_id, mdr_id, csr_scheduled_datetime, csr_action_datetime,
-                csr_status, csr_quantity_consumed, csr_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                csr_status, csr_quantity_consumed, csr_notes, csr_postponed_reminder_datetime
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 data.medicationId,
                 data.reminderId ?? null,
@@ -32,7 +33,8 @@ export class ConsumptionRecordRepository {
                 data.actionDatetime,
                 data.status,
                 data.quantityConsumed ?? 1,
-                data.notes ?? null
+                data.notes ?? null,
+                data.postponedReminderDatetime ?? null
             ]
         );
 

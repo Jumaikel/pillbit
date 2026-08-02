@@ -33,9 +33,10 @@ import { EmptyState } from '@/components';
 import { useMedicationStore, selectFilteredMedications } from '../store/useMedicationStore';
 import { MedicationCard } from '../components/MedicationCard';
 import { useExpirationStore } from '@/features/expiration';
-import { useInventoryStore, selectLowStockCount } from '@/features/inventory';
+import { useInventoryStore } from '@/features/inventory';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -49,7 +50,7 @@ export function MedicationListScreen() {
   const isLoading = useMedicationStore((s) => s.isLoading);
   const error = useMedicationStore((s) => s.error);
   const searchQuery = useMedicationStore((s) => s.searchQuery);
-  const filteredMedications = useMedicationStore(selectFilteredMedications);
+  const filteredMedications = useMedicationStore(useShallow(selectFilteredMedications));
   const loadMedications = useMedicationStore((s) => s.loadMedications);
   const setSearchQuery = useMedicationStore((s) => s.setSearchQuery);
   const clearError = useMedicationStore((s) => s.clearError);
@@ -72,7 +73,6 @@ export function MedicationListScreen() {
   }, [refreshExpirationData]);
 
   const loadInventory = useInventoryStore((s) => s.loadInventory);
-  const lowStockCount = useInventoryStore(selectLowStockCount);
   useEffect(() => {
     loadInventory();
   }, [loadInventory]);
@@ -159,14 +159,7 @@ export function MedicationListScreen() {
 
       {/* ── Expiration & Inventory Links ── */}
       <View style={styles.expirationLinks}>
-        <TouchableOpacity 
-          style={styles.expirationLink}
-          onPress={() => router.push('/medications/low-stock' as never)}
-        >
-          <Text style={[styles.expirationLinkText, lowStockCount > 0 && { color: colors.error }]}>
-            {t('medications.list.lowStock', { count: lowStockCount })}
-          </Text>
-        </TouchableOpacity>
+
         <TouchableOpacity 
           style={styles.expirationLink}
           onPress={() => router.push('/medications/expiring' as never)}

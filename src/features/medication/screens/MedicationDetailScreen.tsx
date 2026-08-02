@@ -16,8 +16,7 @@ import { Button, Card } from '@/components';
 import { useMedicationStore } from '../store/useMedicationStore';
 import { MedicationStatusBadge } from '../components/MedicationStatusBadge';
 import { formatExpirationDate } from '../utils/medicationUtils';
-import { useHistoryStore } from '@/features/history';
-import { ConsumptionStatus } from '@/database/models';
+import { DoseTodayPanel } from '@/features/history/components/DoseTodayPanel';
 import { useInventoryStore, InventoryIndicator, InventoryService } from '@/features/inventory';
 import { useTheme } from '@/hooks/useTheme';
 import { useAIStore } from '@/features/ai/store/useAIStore';
@@ -60,8 +59,7 @@ export function MedicationDetailScreen() {
   const inventoryItems = useInventoryStore((s) => s.inventoryItems);
   const enrichedInventoryState = inventoryItems.find((item) => item.id === medicationId);
   const inventoryStatus = enrichedInventoryState?.inventoryStatus ?? 
-    (medication ? InventoryService.calculateInventoryStatus(medication.quantityAvailable, medication.lowStockThreshold) : 'untracked');
-  const effectiveThreshold = enrichedInventoryState?.effectiveThreshold ?? medication?.lowStockThreshold ?? null;
+    (medication ? InventoryService.calculateInventoryStatus(medication.quantityAvailable) : 'untracked');
 
   // Resolve medication and AI info
   useEffect(() => {
@@ -109,12 +107,6 @@ export function MedicationDetailScreen() {
     );
   }, [deleteMedication, medicationId, medication?.name, router]);
 
-  const { registerConsumption } = useHistoryStore();
-  const handleQuickLog = useCallback((status: ConsumptionStatus) => {
-      registerConsumption(medicationId, status).then(() => {
-          Alert.alert(t('common.success'), t('medications.details.alertLogSuccess', { status: t(`medications.details.status${status.charAt(0).toUpperCase() + status.slice(1)}`) }));
-      }).catch(() => Alert.alert(t('medications.list.errorTitle'), t('medications.details.alertLogError')));
-  }, [medicationId, registerConsumption, t]);
 
   const handleGenerateAI = () => {
       if (medication) {
@@ -185,22 +177,23 @@ export function MedicationDetailScreen() {
           <View style={styles.badgeRow}>
             <MedicationStatusBadge expirationDate={medication.expirationDate} />
             <View style={styles.badgeSpacer} />
-            <InventoryIndicator quantity={medication.quantityAvailable} status={inventoryStatus} threshold={effectiveThreshold} />
+            <InventoryIndicator quantity={medication.quantityAvailable} status={inventoryStatus} />
           </View>
         </View>
 
         <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>{t('medications.details.logDose')}</Text>
-          <View style={styles.logButtons}>
-            <Button label={t('medications.details.btnTake')} onPress={() => handleQuickLog('taken')} style={styles.flexButton} />
-            <Button label={t('medications.details.btnSkip')} onPress={() => handleQuickLog('skipped')} variant="outline" style={styles.flexButton} />
-            <Button label={t('medications.details.btnPostpone')} onPress={() => handleQuickLog('postponed')} variant="outline" style={styles.flexButton} />
-          </View>
+          <DoseTodayPanel medicationId={medicationId} medicationName={medication.name} />
         </View>
 
         <View style={styles.quickActions}>
           <Text style={styles.sectionTitle}>{t('medications.details.management')}</Text>
           <Button label={t('medications.details.btnManageReminders')} onPress={() => router.push(`/medications/${medicationId}/reminders` as never)} variant="secondary" />
+          <Button
+            label={t('doseLog.btnHistory')}
+            onPress={() => router.push(`/medications/${medicationId}/dose-history` as never)}
+            variant="outline"
+            style={{ marginTop: Spacing.xs }}
+          />
         </View>
 
         <Card padded>
@@ -211,8 +204,7 @@ export function MedicationDetailScreen() {
           <DetailRow label={t('medications.details.lblExpiration')} value={formatExpirationDate(medication.expirationDate)} styles={styles} />
           <Divider styles={styles} />
           <DetailRow label={t('medications.details.lblQuantity')} value={medication.quantityAvailable !== null ? `${medication.quantityAvailable} ${t('medications.common.units')}` : null} styles={styles} />
-          <Divider styles={styles} />
-          <DetailRow label={t('medications.details.lblThreshold')} value={medication.lowStockThreshold !== null ? `${medication.lowStockThreshold} ${t('medications.common.units')}` : null} styles={styles} />
+
         </Card>
 
         {settings?.isAiEnabled && (

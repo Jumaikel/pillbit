@@ -4,6 +4,8 @@ import { initialSchema } from './001_initial_schema';
 import { addAiSettingsMigration } from './002_ai_settings';
 import { addLanguageSettingMigration } from './003_language_setting';
 import { addAiDosageAdministrationMigration } from './004_ai_dosage_administration';
+import { removeLowStockMigration } from './005_remove_low_stock';
+import { addPostponeReminderMigration } from './006_postpone_reminder';
 
 const migrations = [
   {
@@ -50,6 +52,30 @@ const migrations = [
             await db.execAsync(addAiDosageAdministrationMigration);
         } catch (e) {
              console.error("Migration 4 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 5,
+    name: '005_remove_low_stock',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(removeLowStockMigration);
+        } catch (e) {
+             console.error("Migration 5 Failed", e);
+             throw e;
+        }
+    }
+  },
+  {
+    version: 6,
+    name: '006_postpone_reminder',
+    up: async (db: SQLite.SQLiteDatabase) => {
+        try {
+            await db.execAsync(addPostponeReminderMigration);
+        } catch (e) {
+             console.error("Migration 6 Failed", e);
              throw e;
         }
     }

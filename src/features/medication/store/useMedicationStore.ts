@@ -64,7 +64,15 @@ interface MedicationActions {
  * unless you specifically need the full unfiltered list.
  */
 export const selectFilteredMedications = (state: MedicationState): Medication[] => {
-  if (!state.searchQuery.trim()) return state.medications;
+  if (!state.searchQuery.trim()) {
+    // Hide expired medications if there is no search query
+    return state.medications.filter((med) => {
+      if (!med.expirationDate) return true;
+      const { status } = ExpirationService.calculateStatus(med.expirationDate);
+      return status !== 'expired';
+    });
+  }
+  
   const q = state.searchQuery.toLowerCase().trim();
   return state.medications.filter(
     (med) =>
@@ -102,7 +110,6 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
       const id = await MedicationRepository.create(data);
       await ExpirationService.generateAlerts(id, data.expirationDate);
       await NotificationService.syncExpirationAlerts();
-      await NotificationService.syncLowStockAlerts();
       // Refresh the full list after creation
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
@@ -125,8 +132,6 @@ export const useMedicationStore = create<MedicationState & MedicationActions>((s
         await NotificationService.syncExpirationAlerts();
       }
       
-      await NotificationService.syncLowStockAlerts();
-
       const medications = await MedicationQueries.getAllMedications();
       set({ medications, isLoading: false });
     } catch (e) {

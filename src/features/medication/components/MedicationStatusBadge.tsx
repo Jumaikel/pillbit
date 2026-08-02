@@ -44,7 +44,7 @@ export function MedicationStatusBadge({ expirationDate }: MedicationStatusBadgeP
   
   const status = getExpirationStatus(expirationDate);
   const labelData = getExpirationLabel(expirationDate);
-  const label = t(labelData.key, labelData.params);
+  const label = t(labelData.key, labelData.params) as string;
   
   const isDark = theme === 'dark';
   

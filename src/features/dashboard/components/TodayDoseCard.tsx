@@ -8,6 +8,7 @@ import { useHistoryStore } from '@/features/history/store/useHistoryStore';
 import { useDashboardStore } from '../store/useDashboardStore';
 import { useTheme } from '@/hooks/useTheme';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 interface TodayDoseCardProps {
     dose: TodayDose;
@@ -20,6 +21,7 @@ export function TodayDoseCard({ dose }: TodayDoseCardProps) {
     const { reminderId, reminderTime, medicationId, medicationName, dosage, status } = dose;
     const registerConsumption = useHistoryStore((s) => s.registerConsumption);
     const loadDashboard = useDashboardStore((s) => s.loadDashboard);
+    const router = useRouter();
 
     const handleTake = async () => {
         try {
@@ -49,7 +51,11 @@ export function TodayDoseCard({ dose }: TodayDoseCardProps) {
     const formattedTime = timeDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     return (
-        <Card style={styles.container}>
+        <Card 
+            style={styles.container}
+            onPress={() => router.push(`/medications/${medicationId}` as never)}
+            accessibilityLabel={medicationName}
+        >
             <View style={styles.header}>
                 <View style={styles.timeContainer}>
                     <Ionicons name="time-outline" size={16} color={colors.textSecondary} />

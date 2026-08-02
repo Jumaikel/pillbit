@@ -4,7 +4,7 @@ import { useRouter, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 import { Spacing } from '@/constants';
 import { Button } from '@/components/Button';
-import { useInventoryStore, selectLowStockMedications, LowStockBanner } from '@/features/inventory';
+import { useInventoryStore } from '@/features/inventory';
 import { useExpirationStore, ExpirationBanner } from '@/features/expiration';
 import { useDashboardStore, TodayDoseCard } from '@/features/dashboard';
 import { useTheme } from '@/hooks/useTheme';
@@ -23,8 +23,7 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   
   const loadInventory = useInventoryStore((s) => s.loadInventory);
-  const lowStockItems = useInventoryStore(selectLowStockMedications);
-  
+  const emptyItemsCount = useInventoryStore((s) => s.emptyItems.length);
   const loadExpiration = useExpirationStore((s) => s.refreshExpirationData);
   const expiringSoonList = useExpirationStore((s) => s.expiringSoonList);
   const expiredList = useExpirationStore((s) => s.expiredList);
@@ -40,7 +39,7 @@ export default function HomeScreen() {
     }, [loadInventory, loadExpiration, loadDashboard])
   );
 
-  const hasEmpty = lowStockItems.some(item => item.inventoryStatus === 'empty');
+  const hasEmpty = emptyItemsCount > 0;
   const expirationCount = expiringSoonList.length + expiredList.length;
   const hasExpired = expiredList.length > 0;
 
@@ -53,11 +52,6 @@ export default function HomeScreen() {
       </View>
       
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
-        <LowStockBanner 
-          count={lowStockItems.length} 
-          hasEmpty={hasEmpty}
-          onPress={() => router.push('/medications/low-stock' as never)}
-        />
 
         <ExpirationBanner
           count={expirationCount}

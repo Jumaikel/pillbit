@@ -13,7 +13,6 @@ export interface CreateMedicationDTO {
     dosage: string;
     presentation?: string | null;
     quantityAvailable?: number | null;
-    lowStockThreshold?: number | null;
     expirationDate: string; 
     notes?: string | null;
     photoPath?: string | null;
@@ -67,6 +66,7 @@ export interface CreateConsumptionRecordDTO {
     status: ConsumptionStatus;
     quantityConsumed?: number | null; // defaults to 1
     notes?: string | null;
+    postponedReminderDatetime?: string | null;
 }
 
 export interface UpdateConsumptionRecordDTO {
@@ -97,13 +97,10 @@ export interface UpdateApplicationSettingDTO {
     isVoiceNotificationEnabled?: boolean;
     notifyDoseReminder?: boolean;
     notifyExpirationWarning?: boolean;
-    notifyLowStock?: boolean;
     reminderSnoozeMinutes?: number; 
     isNotificationSoundEnabled?: boolean;
     isNotificationVibrationEnabled?: boolean;
     theme?: Theme;
-    defaultLowStockThreshold?: number;
-    autoReduceStock?: boolean;
     aiInfoAutoGenerate?: boolean;
     showMedicalDisclaimer?: boolean;
     isAiEnabled?: boolean;

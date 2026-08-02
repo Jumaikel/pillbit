@@ -4,14 +4,6 @@
     "todayDoses": "Dosis de Hoy",
     "noDoses": "No tienes dosis programadas para hoy.",
     "addMedication": "Añadir Medicamento",
-    "lowStock": {
-      "outOfStock_one": "1 medicamento agotado",
-      "outOfStock_other": "{{count}} medicamentos necesitan atención",
-      "runningLow_one": "1 medicamento se está agotando",
-      "runningLow_other": "{{count}} medicamentos se están agotando",
-      "tapToManage": "Toca para gestionar el inventario",
-      "tapToView": "{{title}}. Toca para ver."
-    },
     "expiration": {
       "title": "Atención de Vencimiento",
       "subtitle_expired_one": "Tienes 1 medicamento vencido o próximo a vencer.",
@@ -72,17 +64,6 @@
       "title": "Funciones AI",
       "enable": "Habilitar Info AI",
       "enableDesc": "Usar IA para generar análisis de medicamentos."
-    },
-    "inventory": {
-      "title": "Control de Inventario",
-      "autoReduce": "Reducir Stock Automáticamente",
-      "globalThreshold": "Umbral de Stock Bajo Global",
-      "placeholderThreshold": "ej. 10",
-      "btnSave": "Guardar"
-    },
-    "notifications": {
-      "title": "Notificaciones",
-      "lowStock": "Alertas de Stock Bajo"
     }
   },
   "tabs": {
@@ -96,7 +77,6 @@
       "title": "Medicamentos",
       "add": "+ Añadir",
       "searchPlaceholder": "Buscar medicamentos…",
-      "lowStock": "Stock Bajo ({{count}})",
       "expiring": "Próximos a Vencer ({{count}})",
       "expired": "Vencidos ({{count}})",
       "loading": "Cargando medicamentos…",
@@ -131,11 +111,20 @@
       "placeholderDosage": "ej. 500mg",
       "labelExpiration": "Fecha de Vencimiento",
       "labelPresentation": "Presentación",
-      "placeholderPresentation": "ej. Tableta, Cápsula",
+      "placeholderPresentation": "Seleccionar presentación",
+      "presentations": {
+        "tablet": "Tableta",
+        "capsule": "Cápsula",
+        "cream": "Crema",
+        "syrup": "Jarabe",
+        "drops": "Gotas",
+        "injection": "Inyección",
+        "inhaler": "Inhalador",
+        "ointment": "Pomada",
+        "other": "Otro"
+      },
       "labelQuantity": "Cantidad Disponible",
       "placeholderQuantity": "ej. 30",
-      "labelThreshold": "Alerta de Stock Bajo",
-      "placeholderThreshold": "ej. 10",
       "labelNotes": "Notas",
       "placeholderNotes": "ej. Tomar con comida",
       "btnCancel": "← Cancelar",
@@ -158,7 +147,6 @@
       "lblPresentation": "Presentación",
       "lblExpiration": "Fecha de Vencimiento",
       "lblQuantity": "Cantidad Disponible",
-      "lblThreshold": "Alerta de Stock Bajo",
       "aiTitle": "Información AI",
       "btnReadInfo": "Leer Info",
       "btnStopReading": "Detener",
@@ -247,5 +235,36 @@
       "errorTitle": "Error en Análisis IA",
       "errorBody": "No se pudo generar la información para {{medicationName}}."
     }
+  },
+  "doseLog": {
+    "todayTitle": "Dosis de Hoy",
+    "noRemindersToday": "No hay recordatorios configurados para este medicamento.",
+    "btnTake": "Tomar",
+    "btnSkip": "Omitir",
+    "btnPostpone": "Posponer",
+    "statusTaken": "Tomado",
+    "statusSkipped": "Omitido",
+    "statusPostponed": "Pospuesto",
+    "takenAt": "Tomado a las {{time}}",
+    "skippedAt": "Omitido a las {{time}}",
+    "postponedAt": "Pospuesto · Nuevo aviso: {{time}}",
+    "nextReminder": "Próximo recordatorio: {{time}}",
+    "noMoreToday": "No hay más recordatorios hoy",
+    "scheduledFor": "Programado para las {{time}}",
+    "btnHistory": "Ver Historial de Dosis",
+    "historyTitle": "Historial de Dosis",
+    "historySubtitle": "Todos los registros de {{name}}",
+    "emptyTitle": "Sin registros aún",
+    "emptyDesc": "El historial de dosis aparecerá aquí una vez que registres una dosis.",
+    "filterAll": "Todos",
+    "filterTaken": "Tomados",
+    "filterSkipped": "Omitidos",
+    "filterPostponed": "Pospuestos",
+    "errorLog": "Error al registrar la dosis.",
+    "successLog": "Dosis registrada correctamente.",
+    "confirmSkipTitle": "Omitir Dosis",
+    "confirmSkipMessage": "¿Confirmas que deseas omitir esta dosis?",
+    "confirmSkipCancel": "Cancelar",
+    "confirmSkipConfirm": "Omitir"
   }
 }

@@ -49,11 +49,6 @@ export function InventoryBadge({
             background: '#E8F8ED',
             text: colors.success,
         },
-        low_stock: {
-            label: 'Low Stock',
-            background: '#FFF5E0',
-            text: colors.warning,
-        },
         empty: {
             label: 'Empty',
             background: '#FEE9E7',

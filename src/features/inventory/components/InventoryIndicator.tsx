@@ -8,8 +8,7 @@
  * ```tsx
  * <InventoryIndicator
  *   quantity={5}
- *   status="low_stock"
- *   threshold={10}
+ *   status="normal"
  * />
  * ```
  */
@@ -24,10 +23,6 @@ import { useTheme } from '@/hooks/useTheme';
 interface InventoryIndicatorProps {
     quantity: number | null;
     status: InventoryStatus;
-    /** Effective threshold used for status calculation */
-    threshold?: number | null;
-    /** Whether to show the threshold alongside the quantity */
-    showThreshold?: boolean;
 }
 
 // ─── Color map ────────────────────────────────────────────────────────────────
@@ -39,15 +34,12 @@ interface InventoryIndicatorProps {
 export function InventoryIndicator({
     quantity,
     status,
-    threshold,
-    showThreshold = false,
 }: InventoryIndicatorProps) {
   const { colors, typography } = useTheme();
   const styles = getStyles(colors, typography);
 
     const STATUS_DOT_COLOR: Record<InventoryStatus, string> = {
         normal: colors.success,
-        low_stock: colors.warning,
         empty: colors.error,
         untracked: colors.textDisabled,
     };
@@ -57,9 +49,6 @@ export function InventoryIndicator({
     let quantityText = 'Not tracked';
     if (quantity !== null && quantity !== undefined) {
         quantityText = `${quantity} units`;
-        if (showThreshold && threshold !== null && threshold !== undefined) {
-            quantityText += ` / ${threshold} threshold`;
-        }
     }
 
     return (
