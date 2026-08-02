@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
@@ -30,6 +30,7 @@ export default function HomeScreen() {
   
   const loadDashboard = useDashboardStore((s) => s.loadDashboard);
   const todayDoses = useDashboardStore((s) => s.todayDoses);
+  const isLoading = useDashboardStore((s) => s.isLoading);
   
   useFocusEffect(
     useCallback(() => {
@@ -38,6 +39,12 @@ export default function HomeScreen() {
       loadDashboard();
     }, [loadInventory, loadExpiration, loadDashboard])
   );
+
+  const handleRefresh = useCallback(() => {
+    loadInventory();
+    loadExpiration();
+    loadDashboard();
+  }, [loadInventory, loadExpiration, loadDashboard]);
 
   const hasEmpty = emptyItemsCount > 0;
   const expirationCount = expiringSoonList.length + expiredList.length;
@@ -51,7 +58,18 @@ export default function HomeScreen() {
         </Text>
       </View>
       
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+      <ScrollView 
+        style={styles.content} 
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+      >
 
         <ExpirationBanner
           count={expirationCount}

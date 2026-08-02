@@ -144,7 +144,9 @@ export class MedicationQueries {
              WHERE r.mdr_is_active = 1 
              AND m.mdc_deleted_datetime IS NULL
              AND m.mdc_is_discarded = 0
-             ORDER BY r.mdr_reminder_time ASC`
+             ORDER BY 
+                CASE WHEN c.csr_status IS NULL THEN 0 ELSE 1 END ASC,
+                r.mdr_reminder_time ASC`
         );
         return rows;
     }
@@ -175,7 +177,9 @@ export class MedicationQueries {
              AND m.mdc_deleted_datetime IS NULL
              AND m.mdc_is_discarded = 0
              AND m.mdc_id = ?
-             ORDER BY r.mdr_reminder_time ASC`,
+             ORDER BY 
+                CASE WHEN c.csr_status IS NULL THEN 0 ELSE 1 END ASC,
+                r.mdr_reminder_time ASC`,
             [medicationId]
         );
         return rows;
