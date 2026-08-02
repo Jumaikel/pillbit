@@ -117,6 +117,17 @@ Generación estructurada de información educativa de medicamentos. Lógica en `
 
 ## Changelog
 
+### v1.0.0
+- AI: Implement daily rate limits and robust prompt validation.
+- AI: Translate AI info, add dosage/administration, and notify in background.
+- Dashboard: Enhance home screen with pull-to-refresh and prioritize pending doses.
+- Medications: Enhance TTS reading capabilities and remove unused Voice Input.
+- History/Reminders: Replace low stock tracking with dose history and postpone feature.
+- I18n: Add missing translation for the Back button in Reminders screen.
+- Medications: Add header, back button and safe area to expiration screens.
+- Config: Move notification settings to expo-notifications plugin schema.
+- Chore: Fix TypeScript errors and clean up unused variables/imports.
+
 ### v0.7.0
 - Dose Log per Medication: `DoseTodayPanel`, `MedicationHistoryList`, `DoseLogService`, `useDoseLogStore`
 - Nueva pantalla `/medications/[id]/dose-history`
